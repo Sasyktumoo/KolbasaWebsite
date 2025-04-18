@@ -174,8 +174,10 @@ const CategoryPage = ({ route }: CategoryPageProps) => {
 
     // Build breadcrumbs from path parts
     let currentPath = 'product_catalog';
+    let pathSegments = ['product_catalog'];
+    
     categoryPath.slice(1).forEach((path) => {
-      currentPath += `/${path}`;
+      pathSegments.push(path);
       
       // Get a nice display name from the path
       const displayName = path.split('_').map(word => 
@@ -187,7 +189,7 @@ const CategoryPage = ({ route }: CategoryPageProps) => {
         label: displayName,
         onPress: () => navigation.navigate('CategoryPage', {
           categoryId: path,
-          categoryPath: currentPath.split('/'),
+          categoryPath: pathSegments,
           categoryName: displayName
         })
       });
@@ -214,8 +216,10 @@ const CategoryPage = ({ route }: CategoryPageProps) => {
     });
   };
 
+  // Rest of the component (render part) remains the same
   return (
     <SafeAreaView style={styles.container}>
+      {/* Rest of your existing rendering code */}
       <ScrollView>
         {/* Header - Same as your ProductDetailPage */}
         <View style={styles.header}>
@@ -355,7 +359,9 @@ const CategoryPage = ({ route }: CategoryPageProps) => {
   );
 };
 
+// Your existing styles...
 const styles = StyleSheet.create({
+  // All your existing styles here
   container: {
     flex: 1,
     backgroundColor: '#f9f9f9',

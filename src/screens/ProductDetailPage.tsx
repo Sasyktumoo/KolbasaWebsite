@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import BreadcrumbNavigation from '../components/BreadcrumbNavigation';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 
 // Define navigation param types
@@ -23,12 +23,26 @@ type RootStackParamList = {
     categoryName: string;
   };
   ProductDetailPage: {
-    product: any; // Replace with proper product type if available
+    product: Product;
     breadcrumbPath: string[];
   };
 };
 
-export default function ProductDetailScreen({ route }) {
+// Product type definition
+interface Product {
+  id: string;
+  name: string;
+  description?: string;
+  price: number;
+  minOrder: number;
+  image: any;
+}
+
+type ProductDetailScreenProps = {
+  route: RouteProp<RootStackParamList, 'ProductDetailPage'>;
+};
+
+const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [quantity, setQuantity] = useState(50);
   const [activeTab, setActiveTab] = useState('description');
@@ -36,12 +50,13 @@ export default function ProductDetailScreen({ route }) {
   // Get product data from navigation params
   const { product, breadcrumbPath } = route.params || { 
     product: {
+      id: 'beef_shank',
       name: 'Beef Shank',
       price: 228.65,
       minOrder: 50,
       image: require('../assets/images/placeholder.png')
     },
-    breadcrumbPath: ['product_catalog', 'food_products', 'meat', 'beef', 'beef-shank']
+    breadcrumbPath: ['product_catalog', 'meat_products', 'beef', 'beef_shank']
   };
   
   const pricePerKg = product.price;
@@ -72,22 +87,25 @@ export default function ProductDetailScreen({ route }) {
     ];
 
     // Build breadcrumbs from breadcrumbPath
-    let currentPath = '';
+    let currentPath = 'product_catalog';
+    let pathSegments = ['product_catalog'];
+    
     const pathItems = breadcrumbPath.slice(1, -1); // Skip the first and last items
-    pathItems.forEach((path, index) => {
-      if (index === 0) {
-        currentPath = path;
-      } else {
-        currentPath = `${currentPath}/${path}`;
-      }
+    pathItems.forEach((path) => {
+      pathSegments.push(path);
+      
+      // Get a nice display name from the path
+      const displayName = path.split('_').map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1)
+      ).join(' ');
       
       items.push({
         id: path,
-        label: path.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
+        label: displayName,
         onPress: () => navigation.navigate('CategoryPage', {
           categoryId: path,
-          categoryPath: ['product_catalog', ...(currentPath.split('/'))],
-          categoryName: path.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+          categoryPath: pathSegments,
+          categoryName: displayName
         })
       });
     });
@@ -102,6 +120,7 @@ export default function ProductDetailScreen({ route }) {
     return items;
   };
   
+  // The rest of your component stays the same
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
@@ -168,7 +187,7 @@ export default function ProductDetailScreen({ route }) {
           </Text>
         </View>
         
-        {/* Rest of the component remains unchanged */}
+        {/* Rest of your component remains the same */}
         {/* Tab Navigation */}
         <View style={styles.tabNavigation}>
           <TouchableOpacity 
@@ -275,11 +294,11 @@ export default function ProductDetailScreen({ route }) {
       </ScrollView>
     </SafeAreaView>
   );
-}
+};
 
 // Your existing styles remain the same
 const styles = StyleSheet.create({
-  // Your existing styles
+  // Your existing styles - kept for brevity
   container: {
     flex: 1,
     backgroundColor: '#f9f9f9',
@@ -297,7 +316,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   headerCompanyInfo: {
-    alignItems: 'flex-end',  // Right align all content
+    alignItems: 'flex-end',
     flex: 1,
   },
   phoneNumber: {
@@ -610,3 +629,5 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
 });
+
+export default ProductDetailScreen;
