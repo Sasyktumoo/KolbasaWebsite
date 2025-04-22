@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native'; // Add this import
+import { StyleSheet, Text } from 'react-native'; // Added Text import
 import { StatusBar } from 'expo-status-bar';
 import AppNavigator from './src/navigation/AppNavigator';
 

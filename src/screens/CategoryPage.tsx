@@ -14,19 +14,8 @@ import { Ionicons } from '@expo/vector-icons';
 import BreadcrumbNavigation from '../components/BreadcrumbNavigation';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-
-// Define navigation parameter types
-type RootStackParamList = {
-  CategoryPage: {
-    categoryId: string;
-    categoryPath: string[];
-    categoryName: string;
-  };
-  ProductDetailPage: {
-    product: Product;
-    breadcrumbPath: string[];
-  };
-};
+import { RootStackParamList } from '../navigation/AppNavigator';
+import { changeLanguage } from '../utils/language';
 
 // Type for our product data
 interface Product {
@@ -47,7 +36,7 @@ interface Category {
 }
 
 interface CategoryPageProps {
-  route: RouteProp<RootStackParamList, 'CategoryPage'>;
+  route: RouteProp<RootStackParamList, 'CategoryPage'> | RouteProp<RootStackParamList, 'Home'>;
 }
 
 const CategoryPage = ({ route }: CategoryPageProps) => {
@@ -84,55 +73,108 @@ const CategoryPage = ({ route }: CategoryPageProps) => {
 
   // Define meat product categories (shown after clicking "Meat Products")
   const meatCategories: Category[] = [
-    { id: 'beef', name: 'Beef', path: 'product_catalog/meat_products/beef' },
-    { id: 'pork', name: 'Pork', path: 'product_catalog/meat_products/pork' },
-    { id: 'lamb', name: 'Lamb', path: 'product_catalog/meat_products/lamb' },
-    { id: 'chicken', name: 'Chicken', path: 'product_catalog/meat_products/chicken' },
+    { id: 'salami', name: 'Salami', path: 'product_catalog/meat_products/salami' },
+    { id: 'sausages', name: 'Sausages', path: 'product_catalog/meat_products/sausages' },
+    { id: 'tibia', name: 'Tibia', path: 'product_catalog/meat_products/tibia' },
   ];
 
-  // Mock beef products to show when user clicks on "Beef"
-  const beefProducts: Product[] = [
-    {
-      id: 'beef_shank',
-      name: 'Beef Shank',
-      description: 'Premium cut beef shank with bone, perfect for slow cooking',
-      price: 228.65,
-      minOrder: 50,
-      image: require('../assets/images/placeholder.png')
-    },
-    {
-      id: 'beef_ribeye',
-      name: 'Beef Ribeye',
-      description: 'Prime beef ribeye steak, well marbled for extra flavor',
-      price: 354.80,
-      minOrder: 30,
-      image: require('../assets/images/placeholder.png')
-    },
-    {
-      id: 'beef_brisket',
-      name: 'Beef Brisket',
-      description: 'Tender beef brisket, ideal for smoking or slow roasting',
-      price: 190.25,
-      minOrder: 60,
-      image: require('../assets/images/placeholder.png')
-    },
-    {
-      id: 'ground_beef',
-      name: 'Ground Beef',
-      description: 'Fresh ground beef, 80% lean, 20% fat, perfect for burgers',
-      price: 145.50,
-      minOrder: 40,
-      image: require('../assets/images/placeholder.png')
-    },
-    {
-      id: 'beef_tenderloin',
-      name: 'Beef Tenderloin',
-      description: 'Premium cut beef tenderloin, the most tender beef cut',
-      price: 418.70,
-      minOrder: 25,
-      image: require('../assets/images/placeholder.png')
-    },
-  ];
+  // Create product arrays for each category
+  const productsByCategory: Record<string, Product[]> = {
+    'salami': [
+      {
+        id: 'italian_salami',
+        name: 'Italian Salami',
+        description: 'Traditional Italian dry cured salami with garlic and wine',
+        price: 320.50,
+        minOrder: 25,
+        image: require('../assets/images/placeholder.png')
+      },
+      {
+        id: 'pepperoni',
+        name: 'Pepperoni',
+        description: 'Classic pepperoni, perfect for pizzas and charcuterie boards',
+        price: 295.75,
+        minOrder: 30,
+        image: require('../assets/images/placeholder.png')
+      },
+      {
+        id: 'chorizo',
+        name: 'Chorizo',
+        description: 'Spanish-style chorizo with smoked paprika and garlic',
+        price: 340.25,
+        minOrder: 20,
+        image: require('../assets/images/placeholder.png')
+      }
+    ],
+    'sausages': [
+      {
+        id: 'bratwurst',
+        name: 'Bratwurst',
+        description: 'Traditional German sausage made from pork and veal',
+        price: 215.80,
+        minOrder: 40,
+        image: require('../assets/images/placeholder.png')
+      },
+      {
+        id: 'kielbasa',
+        name: 'Kielbasa',
+        description: 'Polish smoked sausage, perfect for grilling or adding to stews',
+        price: 235.40,
+        minOrder: 35,
+        image: require('../assets/images/placeholder.png')
+      },
+      {
+        id: 'andouille',
+        name: 'Andouille',
+        description: 'Cajun-style smoked sausage, essential for gumbo and jambalaya',
+        price: 275.60,
+        minOrder: 30,
+        image: require('../assets/images/placeholder.png')
+      }
+    ],
+    'tibia': [
+      {
+        id: 'beef_shank',
+        name: 'Beef Shank',
+        description: 'Premium cut beef shank with bone, perfect for slow cooking',
+        price: 228.65,
+        minOrder: 50,
+        image: require('../assets/images/placeholder.png')
+      },
+      {
+        id: 'beef_ribeye',
+        name: 'Beef Ribeye',
+        description: 'Prime beef ribeye steak, well marbled for extra flavor',
+        price: 354.80,
+        minOrder: 30,
+        image: require('../assets/images/placeholder.png')
+      },
+      {
+        id: 'beef_brisket',
+        name: 'Beef Brisket',
+        description: 'Tender beef brisket, ideal for smoking or slow roasting',
+        price: 190.25,
+        minOrder: 60,
+        image: require('../assets/images/placeholder.png')
+      },
+      {
+        id: 'ground_beef',
+        name: 'Ground Beef',
+        description: 'Fresh ground beef, 80% lean, 20% fat, perfect for burgers',
+        price: 145.50,
+        minOrder: 40,
+        image: require('../assets/images/placeholder.png')
+      },
+      {
+        id: 'beef_tenderloin',
+        name: 'Beef Tenderloin',
+        description: 'Premium cut beef tenderloin, the most tender beef cut',
+        price: 418.70,
+        minOrder: 25,
+        image: require('../assets/images/placeholder.png')
+      }
+    ]
+  };
 
   // Determine what to show based on categoryId
   const getSubcategories = (): Category[] => {
@@ -146,12 +188,10 @@ const CategoryPage = ({ route }: CategoryPageProps) => {
     }
   };
 
-  // Get products based on category
+  // Get products based on category - now dynamic
   const getProducts = (): Product[] => {
-    if (categoryId === 'beef') {
-      return beefProducts;
-    }
-    return [];
+    // Return products for the current category if they exist
+    return productsByCategory[categoryId] || [];
   };
 
   const subcategories = getSubcategories();
@@ -164,10 +204,11 @@ const CategoryPage = ({ route }: CategoryPageProps) => {
       {
         id: 'catalog',
         label: 'Product Catalog',
-        onPress: () => navigation.navigate('CategoryPage', { 
+        onPress: () => navigation.navigate('Home', { 
           categoryId: 'catalog',
           categoryPath: ['product_catalog'],
-          categoryName: 'Product Catalog'
+          categoryName: 'Product Catalog',
+          locale: route.params.locale || 'en'
         })
       }
     ];
@@ -190,7 +231,8 @@ const CategoryPage = ({ route }: CategoryPageProps) => {
         onPress: () => navigation.navigate('CategoryPage', {
           categoryId: path,
           categoryPath: pathSegments,
-          categoryName: displayName
+          categoryName: displayName,
+          locale: route.params.locale || 'en'
         })
       });
     });
@@ -201,28 +243,45 @@ const CategoryPage = ({ route }: CategoryPageProps) => {
   const handleProductPress = (product: Product) => {
     navigation.navigate('ProductDetailPage', { 
       product,
-      breadcrumbPath: [...categoryPath, product.id]
+      breadcrumbPath: [...categoryPath, product.id],
+      locale: route.params.locale || 'en'
     });
   };
 
   const handleSubcategoryPress = (category: Category) => {
     // Format the category path correctly
     const newPath = category.path.split('/');
+    const locale = route.params.locale || 'en';
     
-    navigation.navigate('CategoryPage', {
-      categoryId: category.id,
-      categoryPath: newPath,
-      categoryName: category.name
-    });
+    // Use the correct screen name based on whether it's the root catalog
+    if (category.id === 'catalog') {
+      navigation.navigate('Home', {
+        categoryId: category.id,
+        categoryPath: newPath,
+        categoryName: category.name,
+        locale
+      });
+    } else {
+      navigation.navigate('CategoryPage', {
+        categoryId: category.id,
+        categoryPath: newPath,
+        categoryName: category.name,
+        locale
+      });
+    }
   };
 
-  // Rest of the component (render part) remains the same
+  // Handle language change
+  const handleLanguageChange = (newLocale: string) => {
+    changeLanguage(navigation, { name: route.name as keyof RootStackParamList, params: route.params }, newLocale);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      {/* Rest of your existing rendering code */}
       <ScrollView>
-        {/* Header - Same as your ProductDetailPage */}
+        {/* Header section */}
         <View style={styles.header}>
+          {/* Header top section */}
           <View style={styles.headerTop}>
             <View style={styles.headerCompanyInfo}>
               <Text style={styles.logoText}>B2B.TRADE</Text>
@@ -240,10 +299,11 @@ const CategoryPage = ({ route }: CategoryPageProps) => {
           <View style={styles.navigationBar}>
             <TouchableOpacity 
               style={styles.catalogButton}
-              onPress={() => navigation.navigate('CategoryPage', { 
+              onPress={() => navigation.navigate('Home', { 
                 categoryId: 'catalog',
                 categoryPath: ['product_catalog'],
-                categoryName: 'Product Catalog'
+                categoryName: 'Product Catalog',
+                locale: route.params.locale || 'en'
               })}
             >
               <Text style={styles.catalogButtonText}>Catalog</Text>
@@ -261,7 +321,19 @@ const CategoryPage = ({ route }: CategoryPageProps) => {
               <Ionicons name="search" size={20} color="white" />
             </TouchableOpacity>
             <View style={styles.languageSelector}>
-              <Text style={styles.languageText}>Ru | Р</Text>
+              <TouchableOpacity onPress={() => handleLanguageChange('en')}>
+                <Text style={[
+                  styles.languageText, 
+                  route.params.locale === 'en' && styles.activeLanguage
+                ]}>En</Text>
+              </TouchableOpacity>
+              <Text style={styles.languageSeparator}>|</Text>
+              <TouchableOpacity onPress={() => handleLanguageChange('ru')}>
+                <Text style={[
+                  styles.languageText, 
+                  route.params.locale === 'ru' && styles.activeLanguage
+                ]}>Ru</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -588,6 +660,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#888',
   },
+  activeLanguage: {
+    fontWeight: 'bold',
+    color: '#FF3B30',
+  },
+  languageSeparator: {
+    marginHorizontal: 3,
+    color: '#999',
+  }
 });
 
 export default CategoryPage;

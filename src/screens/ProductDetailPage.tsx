@@ -14,19 +14,8 @@ import { Ionicons } from '@expo/vector-icons';
 import BreadcrumbNavigation from '../components/BreadcrumbNavigation';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-
-// Define navigation param types
-type RootStackParamList = {
-  CategoryPage: {
-    categoryId: string;
-    categoryPath: string[];
-    categoryName: string;
-  };
-  ProductDetailPage: {
-    product: Product;
-    breadcrumbPath: string[];
-  };
-};
+import { RootStackParamList } from '../navigation/AppNavigator';
+import { changeLanguage } from '../utils/language';
 
 // Product type definition
 interface Product {
@@ -56,7 +45,12 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
       minOrder: 50,
       image: require('../assets/images/placeholder.png')
     },
-    breadcrumbPath: ['product_catalog', 'meat_products', 'beef', 'beef_shank']
+    breadcrumbPath: ['product_catalog', 'meat_products', 'tibia', 'beef_shank']
+  };
+  
+  // Handle language change
+  const handleLanguageChange = (newLocale: string) => {
+    changeLanguage(navigation, { name: route.name as keyof RootStackParamList, params: route.params }, newLocale);
   };
   
   const pricePerKg = product.price;
@@ -71,21 +65,24 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
   
   const totalPrice = (pricePerKg * quantity).toFixed(2);
   
-  // Generate breadcrumb items based on the path
+  // Update the breadcrumb generation function
   const generateBreadcrumbItems = () => {
+    const locale = route.params.locale || 'en';
+    
     // Start with catalog
     const items = [
       {
         id: 'catalog',
         label: 'Product Catalog',
-        onPress: () => navigation.navigate('CategoryPage', { 
+        onPress: () => navigation.navigate('Home', { 
           categoryId: 'catalog',
           categoryPath: ['product_catalog'],
-          categoryName: 'Product Catalog'
+          categoryName: 'Product Catalog',
+          locale: locale
         })
       }
     ];
-
+  
     // Build breadcrumbs from breadcrumbPath
     let currentPath = 'product_catalog';
     let pathSegments = ['product_catalog'];
@@ -105,18 +102,19 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
         onPress: () => navigation.navigate('CategoryPage', {
           categoryId: path,
           categoryPath: pathSegments,
-          categoryName: displayName
+          categoryName: displayName,
+          locale
         })
       });
     });
-
+  
     // Add the current product as the last item
     items.push({
       id: 'current-product',
       label: product.name,
       onPress: () => {} // No action for current product
     });
-
+  
     return items;
   };
   
@@ -144,10 +142,11 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
           <View style={styles.navigationBar}>
             <TouchableOpacity 
               style={styles.catalogButton}
-              onPress={() => navigation.navigate('CategoryPage', { 
+              onPress={() => navigation.navigate('Home', { 
                 categoryId: 'catalog',
                 categoryPath: ['product_catalog'],
-                categoryName: 'Product Catalog'
+                categoryName: 'Product Catalog',
+                locale: route.params.locale || 'en'
               })}
             >
               <Text style={styles.catalogButtonText}>Catalog</Text>
@@ -166,7 +165,19 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
             </TouchableOpacity>
             {/* Language selector */}
             <View style={styles.languageSelector}>
-              <Text style={styles.languageText}>Ru | Р</Text>
+              <TouchableOpacity onPress={() => handleLanguageChange('en')}>
+                <Text style={[
+                  styles.languageText, 
+                  route.params.locale === 'en' && styles.activeLanguage
+                ]}>En</Text>
+              </TouchableOpacity>
+              <Text style={styles.languageSeparator}>|</Text>
+              <TouchableOpacity onPress={() => handleLanguageChange('ru')}>
+                <Text style={[
+                  styles.languageText, 
+                  route.params.locale === 'ru' && styles.activeLanguage
+                ]}>Ru</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -336,6 +347,8 @@ const styles = StyleSheet.create({
     padding: 5,
     borderRadius: 5,
     marginLeft: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   languageText: {
     fontSize: 12,
@@ -628,6 +641,14 @@ const styles = StyleSheet.create({
     height: '100%',
     resizeMode: 'contain',
   },
+  activeLanguage: {
+    fontWeight: 'bold',
+    color: '#FF3B30',
+  },
+  languageSeparator: {
+    marginHorizontal: 3,
+    color: '#999',
+  }
 });
 
 export default ProductDetailScreen;
