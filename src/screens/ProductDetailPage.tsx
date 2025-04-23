@@ -127,7 +127,7 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
           <View style={styles.headerTop}>
             {/* Right-aligned company info */}
             <View style={styles.headerCompanyInfo}>
-              <Text style={styles.logoText}>B2B.TRADE</Text>
+              <Text style={styles.logoText}>Магазин Колбасы</Text>
               <Text style={styles.phoneNumber}>+7 (999) 123-45-67</Text>
               <Text style={styles.emailText}>info@b2b.trade</Text>
             </View>
@@ -284,6 +284,16 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
             <TouchableOpacity style={styles.phoneButton}>
               <Ionicons name="call-outline" size={18} color="#FF3B30" />
               <Text style={styles.phoneButtonText}>Show phone number</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.phoneButton}>
+              <Ionicons name="call-outline" size={18} color="#FF3B30" />
+              <Text style={styles.phoneButtonText}>Show phone number</Text>
+            </TouchableOpacity>
+
+            {/* New Delivery Address Button */}
+            <TouchableOpacity style={styles.deliveryAddressButton}>
+              <Ionicons name="location-outline" size={18} color="#FF3B30" />
+              <Text style={styles.deliveryAddressText}>Enter delivery address</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -648,7 +658,23 @@ const styles = StyleSheet.create({
   languageSeparator: {
     marginHorizontal: 3,
     color: '#999',
-  }
+  },
+  deliveryAddressButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#FF3B30',
+    borderRadius: 5,
+    padding: 8,
+    width: '100%',
+    justifyContent: 'center',
+    marginTop: 10, // Add margin top to separate it from the phone button
+  },
+  deliveryAddressText: {
+    color: '#FF3B30',
+    marginLeft: 5,
+    fontSize: 12,
+  },
 });
 
 export default ProductDetailScreen;

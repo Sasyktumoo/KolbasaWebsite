@@ -16,6 +16,7 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { changeLanguage } from '../utils/language';
+import Header from '../components/Header';
 
 // Type for our product data
 interface Product {
@@ -279,64 +280,15 @@ const CategoryPage = ({ route }: CategoryPageProps) => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        {/* Header section */}
-        <View style={styles.header}>
-          {/* Header top section */}
-          <View style={styles.headerTop}>
-            <View style={styles.headerCompanyInfo}>
-              <Text style={styles.logoText}>B2B.TRADE</Text>
-              <Text style={styles.phoneNumber}>+7 (999) 123-45-67</Text>
-              <Text style={styles.emailText}>info@b2b.trade</Text>
-            </View>
-            
-            <View style={styles.headerIcons}>
-              <Ionicons name="notifications-outline" size={24} color="black" style={styles.icon} />
-              <Ionicons name="cart-outline" size={24} color="black" style={styles.icon} />
-              <Text style={styles.loginText}>Login / Register</Text>
-            </View>
-          </View>
-                    
-          <View style={styles.navigationBar}>
-            <TouchableOpacity 
-              style={styles.catalogButton}
-              onPress={() => navigation.navigate('Home', { 
-                categoryId: 'catalog',
-                categoryPath: ['product_catalog'],
-                categoryName: 'Product Catalog',
-                locale: route.params.locale || 'en'
-              })}
-            >
-              <Text style={styles.catalogButtonText}>Catalog</Text>
-            </TouchableOpacity>
-            <View style={styles.searchBar}>
-              <TextInput 
-                style={styles.searchInput}
-                placeholder="Find"
-              />
-            </View>
-            <TouchableOpacity style={styles.geographyButton}>
-              <Text>Search Geography</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.searchButton}>
-              <Ionicons name="search" size={20} color="white" />
-            </TouchableOpacity>
-            <View style={styles.languageSelector}>
-              <TouchableOpacity onPress={() => handleLanguageChange('en')}>
-                <Text style={[
-                  styles.languageText, 
-                  route.params.locale === 'en' && styles.activeLanguage
-                ]}>En</Text>
-              </TouchableOpacity>
-              <Text style={styles.languageSeparator}>|</Text>
-              <TouchableOpacity onPress={() => handleLanguageChange('ru')}>
-                <Text style={[
-                  styles.languageText, 
-                  route.params.locale === 'ru' && styles.activeLanguage
-                ]}>Ru</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
+        {/* New Header Component */}
+        <Header 
+          onCatalogPress={() => navigation.navigate('Home', { 
+            categoryId: 'catalog',
+            categoryPath: ['product_catalog'],
+            categoryName: 'Product Catalog',
+            locale: route.params.locale || 'en'
+          })}
+        />
         
         {/* Dynamic Breadcrumbs */}
         <BreadcrumbNavigation items={generateBreadcrumbItems()} />
