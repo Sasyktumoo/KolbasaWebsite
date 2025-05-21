@@ -1,0 +1,43 @@
+{
+  "translation": {
+    "header": {
+      "storeName": "Meat Store",
+      "phoneNumber": "+7 (999) 123-45-67",
+      "email": "info@b2b.trade"
+    },
+    "navigation": {
+      "catalog": "Catalog",
+      "aboutUs": "About Us",
+      "orderProducts": "Order Products",
+      "productDelivery": "Product Delivery",
+      "orderPayment": "Order Payment",
+      "faq": "FAQ",
+      "premiumProgram": "Premium Program",
+      "news": "News",
+      "feedback": "Feedback"
+    },
+    "search": {
+      "placeholder": "Search products..."
+    },
+    "auth": {
+      "loginRegister": "Login / Register"
+    },
+    "profile": {
+      "myProfile": "My Profile",
+      "myOrders": "My Orders",
+      "settings": "Settings",
+      "logout": "Log Out"
+    },
+    "aboutUs": {
+      "title": "About Us",
+      "paragraph1": "Prima Porte company has been working in the food market of St. Petersburg for 20 years...",
+      "advantages": "Our advantages:",
+      "advantage1": "1. First of all - high quality products.",
+      "advantage2": "2. Availability of goods of various price categories in one product segment.",
+      "advantage3": "3. Flexible ordering and delivery conditions.",
+      "advantage4": "4. Reasonable prices corresponding to the current market situation...",
+      "advantage5": "5. Constantly growing assortment.",
+      "advantage6": "6. Attractive partnership program."
+    }
+  }
+}

@@ -14,9 +14,14 @@ import { Ionicons } from '@expo/vector-icons';
 import BreadcrumbNavigation from '../components/BreadcrumbNavigation';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../navigation/AppNavigator';
+import { RootStackParamList as BaseRootStackParamList } from '../navigation/AppNavigator';
 import { changeLanguage } from '../utils/language';
 import Header from '../components/Header';
+
+// Extend the RootStackParamList to ensure Home accepts the same params as CategoryPage
+type RootStackParamList = BaseRootStackParamList & {
+  Home: { categoryId?: string; categoryPath?: string[]; categoryName?: string; locale: string; };
+};
 
 // Type for our product data
 interface Product {
@@ -42,7 +47,9 @@ interface CategoryPageProps {
 
 const CategoryPage = ({ route }: CategoryPageProps) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-  const { categoryId, categoryPath, categoryName } = route.params;
+  const categoryId = 'categoryId' in route.params ? route.params.categoryId : 'catalog';
+  const categoryPath = 'categoryPath' in route.params ? route.params.categoryPath : ['product_catalog'];
+  const categoryName = 'categoryName' in route.params ? route.params.categoryName : 'Product Catalog';
 
   // Define our top-level categories (main catalog categories)
   const mainCategories: Category[] = [
@@ -279,53 +286,45 @@ const CategoryPage = ({ route }: CategoryPageProps) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
-        {/* New Header Component */}
-        <Header 
-          onCatalogPress={() => navigation.navigate('Home', { 
-            categoryId: 'catalog',
-            categoryPath: ['product_catalog'],
-            categoryName: 'Product Catalog',
-            locale: route.params.locale || 'en'
-          })}
-        />
-        
-        {/* Dynamic Breadcrumbs */}
-        <BreadcrumbNavigation items={generateBreadcrumbItems()} />
-        
-        {/* Category Title */}
-        <View style={styles.titleContainer}>
-          <Text style={styles.categoryTitle}>{categoryName}</Text>
+      <Header onCatalogPress={() => navigation.navigate('Home')} />
+      
+      <BreadcrumbNavigation items={generateBreadcrumbItems()} />
+      
+      <View style={styles.contentContainer}>
+        {/* Left sidebar with categories */}
+        <View style={styles.sidebar}>
+          <Text style={styles.sidebarTitle}>Categories</Text>
+          {mainCategories.map(category => (
+            <TouchableOpacity
+              key={category.id}
+              style={[
+                styles.categoryItem, 
+                categoryId === category.id && styles.activeCategoryItem
+              ]}
+              onPress={() => handleSubcategoryPress(category)}
+            >
+              <Text style={[
+                styles.categoryText,
+                categoryId === category.id && styles.activeCategoryText
+              ]}>{category.name}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
 
-        {/* Subcategories Section (if any) */}
-        {subcategories.length > 0 && (
-          <View style={styles.subcategoriesSection}>
-            <Text style={styles.sectionTitle}>
-              {categoryId === 'catalog' ? 'Categories' : 'Subcategories'}
-            </Text>
-            
-            {/* For main catalog, show larger category cards with images */}
-            {categoryId === 'catalog' ? (
-              <View style={styles.mainCategoriesGrid}>
-                {subcategories.map((category) => (
-                  <TouchableOpacity 
-                    key={category.id}
-                    style={styles.mainCategoryCard}
-                    onPress={() => handleSubcategoryPress(category)}
-                  >
-                    <Image 
-                      source={category.image || require('../assets/images/placeholder.png')} 
-                      style={styles.categoryImage}
-                      resizeMode="cover"
-                    />
-                    <View style={styles.categoryOverlay}>
-                      <Text style={styles.mainCategoryName}>{category.name}</Text>
-                    </View>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            ) : (
+        {/* Main content area */}
+        <ScrollView style={styles.mainContent}>
+          {/* Category Title */}
+          <View style={styles.titleContainer}>
+            <Text style={styles.categoryTitle}>{categoryName}</Text>
+          </View>
+
+          {/* Subcategories Section (if any) */}
+          {subcategories.length > 0 && (
+            <View style={styles.subcategoriesSection}>
+              <Text style={styles.sectionTitle}>
+                {categoryId === 'catalog' ? 'Categories' : 'Subcategories'}
+              </Text>
+              
               <View style={styles.subcategoriesList}>
                 {subcategories.map((category) => (
                   <TouchableOpacity 
@@ -340,45 +339,45 @@ const CategoryPage = ({ route }: CategoryPageProps) => {
                   </TouchableOpacity>
                 ))}
               </View>
-            )}
-          </View>
-        )}
-
-        {/* Products Section */}
-        {products.length > 0 && (
-          <View style={styles.productsSection}>
-            <Text style={styles.sectionTitle}>Products</Text>
-            <View style={styles.productsGrid}>
-              {products.map((product) => (
-                <TouchableOpacity 
-                  key={product.id}
-                  style={styles.productCard}
-                  onPress={() => handleProductPress(product)}
-                >
-                  <Image 
-                    source={product.image} 
-                    style={styles.productImage}
-                    resizeMode="contain"
-                  />
-                  <Text style={styles.productName}>{product.name}</Text>
-                  <Text style={styles.productDescription} numberOfLines={2}>
-                    {product.description}
-                  </Text>
-                  <Text style={styles.productPrice}>{product.price}₽ per kg</Text>
-                  <Text style={styles.productMinOrder}>Min. order: {product.minOrder} kg</Text>
-                </TouchableOpacity>
-              ))}
             </View>
-          </View>
-        )}
+          )}
 
-        {/* Show message when no subcategories or products */}
-        {subcategories.length === 0 && products.length === 0 && (
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyMessage}>No items found in this category.</Text>
-          </View>
-        )}
-      </ScrollView>
+          {/* Products Section */}
+          {products.length > 0 && (
+            <View style={styles.productsSection}>
+              <Text style={styles.sectionTitle}>Products</Text>
+              <View style={styles.productsGrid}>
+                {products.map((product) => (
+                  <TouchableOpacity 
+                    key={product.id}
+                    style={styles.productCard}
+                    onPress={() => handleProductPress(product)}
+                  >
+                    <Image 
+                      source={product.image} 
+                      style={styles.productImage}
+                      resizeMode="contain"
+                    />
+                    <Text style={styles.productName}>{product.name}</Text>
+                    <Text style={styles.productDescription} numberOfLines={2}>
+                      {product.description}
+                    </Text>
+                    <Text style={styles.productPrice}>{product.price}₽ per kg</Text>
+                    <Text style={styles.productMinOrder}>Min. order: {product.minOrder} kg</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* Show message when no subcategories or products */}
+          {subcategories.length === 0 && products.length === 0 && (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyMessage}>No items found in this category.</Text>
+            </View>
+          )}
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };
@@ -619,7 +618,44 @@ const styles = StyleSheet.create({
   languageSeparator: {
     marginHorizontal: 3,
     color: '#999',
-  }
+  },
+  contentContainer: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  sidebar: {
+    width: 220,
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRightWidth: 1,
+    borderRightColor: '#e0e0e0',
+  },
+  sidebarTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    color: '#333',
+  },
+  categoryItem: {
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  activeCategoryItem: {
+    backgroundColor: '#f9f9f9',
+  },
+  categoryText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  activeCategoryText: {
+    color: '#FF3B30',
+    fontWeight: '500',
+  },
+  mainContent: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
 });
 
 export default CategoryPage;

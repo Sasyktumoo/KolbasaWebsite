@@ -4,16 +4,27 @@ import { createStackNavigator } from '@react-navigation/stack';
 import * as Linking from 'expo-linking';
 import { LinkingOptions } from '@react-navigation/native';
 
-import ProductDetailPage from '../screens/ProductDetailPage';
+import ProductDetailPage from '../screens/ProductDetail/ProductDetailPage';
 import CategoryPage from '../screens/CategoryPage';
+import HomePage from '../screens/HomePage';
+// Import the new screens
+import AboutUsScreen from '../screens/AboutUsScreen';
+import OrderProductsScreen from '../screens/OrderProductsScreen';
+import ProductDeliveryScreen from '../screens/ProductDeliveryScreen';
+import OrderPaymentScreen from '../screens/OrderPaymentScreen';
+import FAQScreen from '../screens/FAQScreen';
+import PremiumProgramScreen from '../screens/PremiumProgramScreen';
+import NewsScreen from '../screens/NewsScreen';
+import FeedbackScreen from '../screens/FeedbackScreen';
+import DummyScreen from '../screens/DummyScreen';
 
 // Define your root stack param list and export it for reuse elsewhere
 export type RootStackParamList = {
   Home: {
-    categoryId: string;
-    categoryPath: string[];
-    categoryName: string;
     locale: string;
+    categoryId?: string;
+    categoryPath?: string[];
+    categoryName?: string;
   };
   CategoryPage: {
     categoryId: string;
@@ -26,6 +37,16 @@ export type RootStackParamList = {
     breadcrumbPath: string[];
     locale: string;
   };
+  // Add the new screens to the param list
+  AboutUs: undefined;
+  OrderProducts: undefined;
+  ProductDelivery: undefined;
+  OrderPayment: undefined;
+  FAQ: undefined;
+  PremiumProgram: undefined;
+  News: undefined;
+  Feedback: undefined;
+  Dummy: undefined;
 };
 
 // Export the linking configuration to use in App.tsx
@@ -35,11 +56,8 @@ export const getLinkingConfig = (): LinkingOptions<RootStackParamList> => ({
     initialRouteName: 'Home',
     screens: {
       Home: {
-        path: ':locale/product_catalog',
+        path: ':locale?',
         parse: {
-          categoryId: () => 'catalog',
-          categoryPath: () => ['product_catalog'],
-          categoryName: () => 'Product Catalog',
           locale: (locale: string) => locale || 'en'
         },
         stringify: {
@@ -87,7 +105,7 @@ export const getLinkingConfig = (): LinkingOptions<RootStackParamList> => ({
               description: 'Product description',
               price: 100,
               minOrder: 10,
-              image: null // We'll fix this after confirming it works
+              image: null
             };
           },
           breadcrumbPath: (value: string) => ['product_catalog', 'product'],
@@ -97,7 +115,17 @@ export const getLinkingConfig = (): LinkingOptions<RootStackParamList> => ({
           productId: (product: any) => product.id,
           locale: (locale: string) => locale || 'en'
         }
-      }
+      },
+      // Add linking configuration for new screens
+      AboutUs: 'about-us',
+      OrderProducts: 'order-products',
+      ProductDelivery: 'product-delivery',
+      OrderPayment: 'order-payment',
+      FAQ: 'faq',
+      PremiumProgram: 'premium-program',
+      News: 'news',
+      Feedback: 'feedback',
+      Dummy: 'dummy',
     },
   },
 });
@@ -109,11 +137,8 @@ const AppNavigator = () => {
     <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
       <Stack.Screen 
         name="Home"
-        component={CategoryPage}
+        component={HomePage}
         initialParams={{
-          categoryId: 'catalog',
-          categoryPath: ['product_catalog'],
-          categoryName: 'Product Catalog',
           locale: 'en'
         }}
       />
@@ -121,7 +146,20 @@ const AppNavigator = () => {
         name="CategoryPage" 
         component={CategoryPage}
       />
-      <Stack.Screen name="ProductDetailPage" component={ProductDetailPage} />
+      <Stack.Screen 
+        name="ProductDetailPage" 
+        component={ProductDetailPage} 
+      />
+      {/* Add the new screens */}
+      <Stack.Screen name="AboutUs" component={AboutUsScreen} />
+      <Stack.Screen name="OrderProducts" component={OrderProductsScreen} />
+      <Stack.Screen name="ProductDelivery" component={ProductDeliveryScreen} />
+      <Stack.Screen name="OrderPayment" component={OrderPaymentScreen} />
+      <Stack.Screen name="FAQ" component={FAQScreen} />
+      <Stack.Screen name="PremiumProgram" component={PremiumProgramScreen} />
+      <Stack.Screen name="News" component={NewsScreen} />
+      <Stack.Screen name="Feedback" component={FeedbackScreen} />
+      <Stack.Screen name="Dummy" component={DummyScreen} />
     </Stack.Navigator>
   );
 };

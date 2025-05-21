@@ -12,6 +12,7 @@ import Login from './src/screens/Registration/Login';
 import Register from './src/screens/Registration/Register';
 import AppNavigator, { getLinkingConfig } from './src/navigation/AppNavigator';
 import { UserProvider } from './src/context/UserContext';
+import { LanguageProvider } from './src/context/languages/LanguageContext'; // Add this import
 
 // Define Auth Stack param list
 type AuthStackParamList = {
@@ -65,14 +66,14 @@ export default function App() {
   // Get the linking configuration from AppNavigator
   const linking = getLinkingConfig();
 
-  // Redirect to /en/product_catalog on first load
+  // Redirect to / on first load instead of /en/product_catalog
   useEffect(() => {
     if (Platform.OS === 'web') {
       try {
         const currentUrl = window.location.pathname;
-        if (currentUrl === '/' || currentUrl === '') {
-          console.log('Redirecting to /en/product_catalog');
-          window.history.replaceState({}, '', '/en/product_catalog');
+        if (currentUrl === '/en/product_catalog') {
+          console.log('Redirecting to /');
+          window.history.replaceState({}, '', '/');
         }
       } catch (e) {
         console.error('Navigation error:', e);
@@ -121,42 +122,45 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <UserProvider value={{ user, setUser }}>
-        <NavigationContainer 
-          linking={linking}
-          fallback={<Text>Loading Navigation...</Text>}
-          documentTitle={{
-            formatter: (options, route) => {
-              if (!route) return 'Магазин Колбасы - Meat Products';
-              
-              if (route.name === 'Main') {
-                // Let the main navigator handle title formatting
-                return 'Магазин Колбасы';
+      {/* Wrap everything in LanguageProvider */}
+      <LanguageProvider>
+        <UserProvider value={{ user, setUser }}>
+          <NavigationContainer 
+            linking={linking}
+            fallback={<Text>Loading Navigation...</Text>}
+            documentTitle={{
+              formatter: (options, route) => {
+                if (!route) return 'Магазин Колбасы - Meat Products';
+                
+                if (route.name === 'Main') {
+                  // Let the main navigator handle title formatting
+                  return 'Магазин Колбасы';
+                }
+                
+                // Auth screens
+                if (route.name === 'Login') return 'Sign In - Магазин Колбасы';
+                if (route.name === 'Register') return 'Create Account - Магазин Колбасы';
+                
+                return 'Магазин Колбасы - Meat Products';
               }
-              
-              // Auth screens
-              if (route.name === 'Login') return 'Sign In - Магазин Колбасы';
-              if (route.name === 'Register') return 'Create Account - Магазин Колбасы';
-              
-              return 'Магазин Колбасы - Meat Products';
-            }
-          }}
-        >
-          <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
-            {user ? (
-              // User is signed in, show main app
-              <Stack.Screen name="Main" component={AppNavigator} />
-            ) : (
-              // No user, show authentication screens
-              <>
-                <Stack.Screen name="Login" component={Login} />
-                <Stack.Screen name="Register" component={Register} />
-              </>
-            )}
-          </Stack.Navigator>
-          <StatusBar style="auto" />
-        </NavigationContainer>
-      </UserProvider>
+            }}
+          >
+            <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
+              {user ? (
+                // User is signed in, show main app
+                <Stack.Screen name="Main" component={AppNavigator} />
+              ) : (
+                // No user, show authentication screens
+                <>
+                  <Stack.Screen name="Login" component={Login} />
+                  <Stack.Screen name="Register" component={Register} />
+                </>
+              )}
+            </Stack.Navigator>
+            <StatusBar style="auto" />
+          </NavigationContainer>
+        </UserProvider>
+      </LanguageProvider>
     </ErrorBoundary>
   );
 }
