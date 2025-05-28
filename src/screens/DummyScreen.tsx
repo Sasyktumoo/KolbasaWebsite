@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Image, ActivityIndicator, Platform } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, Platform, ScrollView } from 'react-native';
 import { collection, addDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { FIREBASE_DB } from '../../FirebaseConfig';
@@ -19,120 +19,499 @@ const useLanguage = () => {
   };
 };
 
+// HTML input component for React Native Web
+const FileInput = ({ onChange, multiple = false, accept = "image/*", id }) => {
+  const inputRef = useRef(null);
+  
+  if (Platform.OS !== 'web') {
+    return null;
+  }
+  
+  return (
+    <View>
+      <input
+        id={id}
+        type="file"
+        ref={inputRef}
+        onChange={onChange}
+        multiple={multiple}
+        accept={accept}
+        style={{ marginBottom: 15 }}
+      />
+    </View>
+  );
+};
+
+// Product card component
+const ProductCard = ({ 
+  product, 
+  index, 
+  handleFileChange, 
+  previewUrls, 
+  isUploading 
+}) => {
+  return (
+    <View style={styles.productCard}>
+      <Text style={styles.productCardTitle}>{product?.name || "Unnamed Product"}</Text>
+      <View style={styles.productCardDetails}>
+        <Text style={styles.detailText}>Type: {product?.meatType || "N/A"}</Text>
+        <Text style={styles.detailText}>
+          Weight: {product?.netWeight?.value || "N/A"}{product?.netWeight?.unit || ""}
+        </Text>
+        <Text style={styles.detailText}>
+          Meat content: {product?.meatContent ? `${product.meatContent.value}${product.meatContent.unit || ''}` : "Not specified"}
+        </Text>
+      </View>
+
+      <Text style={styles.selectImagesText}>Select images for this product:</Text>
+      <FileInput 
+        id={`file-input-${index}`}
+        onChange={(e) => handleFileChange(e, index)}
+        multiple={true}
+        accept="image/jpeg,image/png"
+      />
+      
+      {/* Image previews */}
+      {previewUrls[index] && previewUrls[index].length > 0 && (
+        <View>
+          <Text style={styles.previewsTitle}>Selected Images:</Text>
+          <View style={styles.imagePreviewContainer}>
+            {previewUrls[index].map((url, imgIndex) => (
+              <View key={imgIndex} style={styles.imagePreview}>
+                <img 
+                  src={url} 
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                  }}
+                  alt={`Preview ${imgIndex + 1}`}
+                />
+              </View>
+            ))}
+          </View>
+        </View>
+      )}
+    </View>
+  );
+};
+
 const DummyScreen = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [progress, setProgress] = useState('');
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [previewUrls, setPreviewUrls] = useState([]);
   const { translate } = useLanguage();
   
-  // Array of image paths for web environment
-  const imagePaths = [
-    '/KolbasaWebsite/src/assets/images/1000049582.jpg',
-    '/KolbasaWebsite/src/assets/images/1000049583.jpg',
-    '/KolbasaWebsite/src/assets/images/1000049584.jpg'
-  ];
+const productsData = [
+
+/* ---------- NEW ENTRIES ---------- */
+
+{
+  name: "Копченый бекон, приготовленный на пару, порционный",
+  packaging: "вакуум",
+  netWeight: { value: 500, unit: "г", approximate: true },
+  storageTemperature: { min: 2, max: 6, unit: "°C" },
+  processingType: ["пропаривание", "копчение"],
+  meatType: "свинина",
+  meatContent: { value: 96, unit: "%", description: "96% мясистость" },
+  shelfLife: { value: 28, unit: "дней" },
+  translations: {
+    uk: {
+      name: "Копчений бекон, приготований на пару, порційний",
+      packaging: "вакуум",
+      meatType: "свинина",
+      meatContentDescription: "96% вміст м'яса",
+      processingType: ["на пару", "копчення"]
+    },
+    ru: {
+      name: "Копченый бекон, приготовленный на пару, порционный",
+      packaging: "вакуум",
+      meatType: "свинина",
+      meatContentDescription: "96% мясистость",
+      processingType: ["пропаривание", "копчение"]
+    },
+    en: {
+      name: "Smoked Bacon, Steamed, Portion",
+      packaging: "vacuum",
+      meatType: "pork",
+      meatContentDescription: "96% meat content",
+      processingType: ["steamed", "smoked"]
+    },
+    es: {
+      name: "Bacon ahumado, al vapor, porcionado",
+      packaging: "al vacío",
+      meatType: "cerdo",
+      meatContentDescription: "96% de contenido de carne",
+      processingType: ["al vapor", "ahumado"]
+    }
+  }
+},
+
+{
+  name: "Копченое мясо из Кротошина",
+  packaging: "вакуум",
+  netWeight: { value: 500, unit: "г", approximate: true },
+  storageTemperature: { min: 2, max: 6, unit: "°C" },
+  processingType: ["копчение"],
+  meatType: "свинина",
+  meatContent: { value: 86, unit: "%", description: "86% мясистость" },
+  shelfLife: { value: 28, unit: "дней" },
+  translations: {
+    uk: {
+      name: "Копчене м'ясо з Кротошина",
+      packaging: "вакуум",
+      meatType: "свинина",
+      meatContentDescription: "86% вміст м'яса",
+      processingType: ["копчення"]
+    },
+    ru: {
+      name: "Копченое мясо из Кротошина",
+      packaging: "вакуум",
+      meatType: "свинина",
+      meatContentDescription: "86% мясистость",
+      processingType: ["копчение"]
+    },
+    en: {
+      name: "Smoked Meat from Krotoszyn",
+      packaging: "vacuum",
+      meatType: "pork",
+      meatContentDescription: "86% meat content",
+      processingType: ["smoked"]
+    },
+    es: {
+      name: "Carne ahumada de Krotoszyn",
+      packaging: "al vacío",
+      meatType: "cerdo",
+      meatContentDescription: "86% de contenido de carne",
+      processingType: ["ahumado"]
+    }
+  }
+},
+
+{
+  name: "Колбаса Краковская, сухая, экстра",
+  packaging: "вакуум",
+  netWeight: { value: 1200, unit: "г", approximate: false },
+  storageTemperature: { min: 2, max: 25, unit: "°C" },
+  processingType: ["пропаривание", "сушка", "копчение"],
+  meatType: "свинина",
+  meatContent: {
+    value: 143,
+    unit: "г",
+    description: "На 100 г готового продукта уходит 143 г свинины."
+  },
+  shelfLife: { value: 54, unit: "дней" },
+  translations: {
+    uk: {
+      name: "Ковбаса Краківська, суха, екстра",
+      packaging: "вакуум",
+      meatType: "свинина",
+      meatContentDescription:
+        "На 100 г готового продукту використовується 143 г свинини",
+      processingType: ["на пару", "сушіння", "копчення"]
+    },
+    ru: {
+      name: "Колбаса Краковская, сухая, экстра",
+      packaging: "вакуум",
+      meatType: "свинина",
+      meatContentDescription:
+        "На 100 г готового продукта уходит 143 г свинины.",
+      processingType: ["пропаривание", "сушка", "копчение"]
+    },
+    en: {
+      name: "Krakowska Sausage, Dry, Extra",
+      packaging: "vacuum",
+      meatType: "pork",
+      meatContentDescription:
+        "143 g of pork used for 100 g of finished product",
+      processingType: ["steamed", "dried", "smoked"]
+    },
+    es: {
+      name: "Salchicha Krakowska, seca, extra",
+      packaging: "al vacío",
+      meatType: "cerdo",
+      meatContentDescription:
+        "Se usan 143 g de cerdo por cada 100 g de producto final",
+      processingType: ["al vapor", "secado", "ahumado"]
+    }
+  }
+},
+
+{
+  name: "Краковская колбаса с ветчиной из Швагры",
+  packaging: "вакуум",
+  netWeight: { value: 250, unit: "г", approximate: false },
+  storageTemperature: { min: 2, max: 25, unit: "°C" },
+  processingType: ["пропаривание", "сушка", "копчение"],
+  meatType: "свинина",
+  meatContent: {
+    value: 146,
+    unit: "г",
+    description: "На 100 г готового продукта уходит 146 г свинины."
+  },
+  shelfLife: { value: 57, unit: "дней" },
+  translations: {
+    uk: {
+      name: "Краківська ковбаса з шинкою зі Швагри",
+      packaging: "вакуум",
+      meatType: "свинина",
+      meatContentDescription:
+        "На 100 г готового продукту використовується 146 г свинини",
+      processingType: ["на пару", "сушіння", "копчення"]
+    },
+    ru: {
+      name: "Краковская колбаса с ветчиной из Швагры",
+      packaging: "вакуум",
+      meatType: "свинина",
+      meatContentDescription:
+        "На 100 г готового продукта уходит 146 г свинины.",
+      processingType: ["пропаривание", "сушка", "копчение"]
+    },
+    en: {
+      name: "Krakowska Sausage with Shvagra Ham",
+      packaging: "vacuum",
+      meatType: "pork",
+      meatContentDescription:
+        "146 g of pork used for 100 g of finished product",
+      processingType: ["steamed", "dried", "smoked"]
+    },
+    es: {
+      name: "Salchicha Krakowska con jamón de Shvagra",
+      packaging: "al vacío",
+      meatType: "cerdo",
+      meatContentDescription:
+        "Se usan 146 g de cerdo por cada 100 g de producto final",
+      processingType: ["al vapor", "secado", "ahumado"]
+    }
+  }
+},
+
+{
+  name: "Колбаса живецкая",
+  packaging: "вакуум",
+  netWeight: { value: 230, unit: "г", approximate: false },
+  storageTemperature: { min: 2, max: 25, unit: "°C" },
+  processingType: ["пропаривание", "сушка", "копчение"],
+  meatType: "свинина",
+  meatContent: {
+    value: 125,
+    unit: "г",
+    description: "100 г продукта изготовлено из 125 г свинины"
+  },
+  shelfLife: { value: 60, unit: "дней" },
+  translations: {
+    uk: {
+      name: "Ковбаса Живецька",
+      packaging: "вакуум",
+      meatType: "свинина",
+      meatContentDescription:
+        "100 г продукту виготовлено зі 125 г свинини",
+      processingType: ["на пару", "сушіння", "копчення"]
+    },
+    ru: {
+      name: "Колбаса живецкая",
+      packaging: "вакуум",
+      meatType: "свинина",
+      meatContentDescription:
+        "100 г продукта изготовлено из 125 г свинины",
+      processingType: ["пропаривание", "сушка", "копчение"]
+    },
+    en: {
+      name: "Zywiec Sausage",
+      packaging: "vacuum",
+      meatType: "pork",
+      meatContentDescription:
+        "125 g of pork used per 100 g of finished product",
+      processingType: ["steamed", "dried", "smoked"]
+    },
+    es: {
+      name: "Salchicha Zywiec",
+      packaging: "al vacío",
+      meatType: "cerdo",
+      meatContentDescription:
+        "Se usan 125 g de cerdo por cada 100 g de producto final",
+      processingType: ["al vapor", "secado", "ahumado"]
+    }
+  }
+},
+
+{
+  name: "Колбаса живецкая",
+  packaging: "вакуум",
+  netWeight: { value: 460, unit: "г", approximate: true },
+  storageTemperature: { min: 2, max: 25, unit: "°C" },
+  processingType: ["пропаривание", "сушка", "копчение"],
+  meatType: "свинина",
+  meatContent: {
+    value: 125,
+    unit: "г",
+    description: "100 г продукта производится из 125 г свинины"
+  },
+  shelfLife: { value: 60, unit: "дней" },
+  translations: {
+    uk: {
+      name: "Ковбаса Живецька",
+      packaging: "вакуум",
+      meatType: "свинина",
+      meatContentDescription:
+        "100 г продукту виготовлено зі 125 г свинини",
+      processingType: ["на пару", "сушіння", "копчення"]
+    },
+    ru: {
+      name: "Колбаса живецкая",
+      packaging: "вакуум",
+      meatType: "свинина",
+      meatContentDescription:
+        "100 г продукта производится из 125 г свинины",
+      processingType: ["пропаривание", "сушка", "копчение"]
+    },
+    en: {
+      name: "Zywiec Sausage",
+      packaging: "vacuum",
+      meatType: "pork",
+      meatContentDescription:
+        "125 g of pork used per 100 g of finished product",
+      processingType: ["steamed", "dried", "smoked"]
+    },
+    es: {
+      name: "Salchicha Zywiec",
+      packaging: "al vacío",
+      meatType: "cerdo",
+      meatContentDescription:
+        "Se usan 125 g de cerdo por cada 100 g de producto final",
+      processingType: ["al vapor", "secado", "ahumado"]
+    }
+  }
+}
+
+];
+  
+  // Initialize state for multiple products
+  useState(() => {
+    setSelectedFiles(new Array(productsData.length).fill([]));
+    setPreviewUrls(new Array(productsData.length).fill([]));
+  }, []);
+  
+  // Handle file selection for a specific product
+  const handleFileChange = (event, productIndex) => {
+    const files = Array.from(event.target.files);
+    
+    // Update selected files for this product
+    const newSelectedFiles = [...selectedFiles];
+    newSelectedFiles[productIndex] = files;
+    setSelectedFiles(newSelectedFiles);
+    
+    // Create preview URLs for the selected files
+    const previews = files.map(file => URL.createObjectURL(file));
+    const newPreviewUrls = [...previewUrls];
+    newPreviewUrls[productIndex] = previews;
+    setPreviewUrls(newPreviewUrls);
+  };
   
   // Function to upload an image to Firebase Storage and get its URL
-  const uploadImageAsync = async (path, index) => {
-    setProgress(`Uploading image ${index + 1}...`);
+  const uploadImageAsync = async (file, productIndex, imageIndex) => {
+    setProgress(`Uploading image ${imageIndex + 1} for product ${productIndex + 1}...`);
     
     try {
-      // Create unique filename
-      const filename = `berlinki_kids_${index + 1}_${Date.now()}.jpg`;
+      // Get English name from translations
+      const englishName = productsData[productIndex]?.translations?.en?.name || 
+                          productsData[productIndex]?.name || 
+                          `product_${productIndex + 1}`;
+      
+      // Format the name: replace spaces with underscores and remove special characters
+      const formattedName = englishName
+        .replace(/\s+/g, '_')       // Replace spaces with underscores
+        .replace(/[^\w_-]/g, '')    // Remove any special characters except underscores and hyphens
+        .toLowerCase();             // Convert to lowercase for consistency
+      
+      // Create filename with product name and number for multiple images
+      const imageNumber = imageIndex + 1;
+      const filename = `${formattedName}_${imageNumber}.jpg`;
       
       // Get reference to storage location
       const storage = getStorage();
       const storageRef = ref(storage, `products/${filename}`);
       
-      // For web environment, fetch the file and create a blob
-      const response = await fetch(path);
-      const blob = await response.blob();
-      
-      // Upload the blob
-      const snapshot = await uploadBytes(storageRef, blob);
+      // Upload the file directly
+      const snapshot = await uploadBytes(storageRef, file);
       
       // Get the download URL
       return await getDownloadURL(snapshot.ref);
     } catch (error) {
-      console.error(`Error uploading image ${index + 1}:`, error);
+      console.error(`Error uploading image ${imageIndex + 1} for product ${productIndex + 1}:`, error);
       throw error;
     }
   };
   
-  const addTestProduct = async () => {
+  const addProducts = async () => {
+    // Check if at least one product has images
+    const hasAnyImages = selectedFiles.some(files => files.length > 0);
+    if (!hasAnyImages) {
+      Alert.alert("Error", "Please select images for at least one product");
+      return;
+    }
+    
     setIsAdding(true);
     setProgress('Starting upload process...');
     
     try {
-      // Upload all images and get their URLs
-      const imageUrlPromises = imagePaths.map((path, index) => 
-        uploadImageAsync(path, index)
+      const results = [];
+      
+      // Process each product
+      for (let i = 0; i < productsData.length; i++) {
+        // Skip products with no images
+        if (!selectedFiles[i] || selectedFiles[i].length === 0) {
+          continue;
+        }
+        
+        setProgress(`Processing product ${i + 1}: ${productsData[i].name}...`);
+        
+        // Upload all images for this product
+        const imageUrlPromises = selectedFiles[i].map((file, imgIndex) => 
+          uploadImageAsync(file, i, imgIndex)
+        );
+        
+        const imageUrls = await Promise.all(imageUrlPromises);
+        
+        // Create a copy of the product data and add image URLs
+        const productWithImages = {
+          ...productsData[i],
+          imageUrls: imageUrls
+        };
+        
+        // Add the document to the "foodItems" collection
+        const docRef = await addDoc(collection(FIREBASE_DB, 'foodItems'), productWithImages);
+        results.push({
+          name: productWithImages.name,
+          id: docRef.id,
+          imageCount: imageUrls.length
+        });
+      }
+      
+      // Clean up preview URLs
+      const allPreviews = previewUrls.flat();
+      allPreviews.forEach(url => {
+        if (url) URL.revokeObjectURL(url);
+      });
+      
+      // Reset state
+      setSelectedFiles(new Array(productsData.length).fill([]));
+      setPreviewUrls(new Array(productsData.length).fill([]));
+      
+      // Show results
+      const resultMessage = results.map(r => 
+        `${r.name}: ID ${r.id}, ${r.imageCount} images`
+      ).join('\n');
+      
+      Alert.alert(
+        "Success", 
+        `Added ${results.length} products to database:\n\n${resultMessage}`
       );
       
-      setProgress('Uploading images to Firebase Storage...');
-      const imageUrls = await Promise.all(imageUrlPromises);
-      
-      setProgress('Images uploaded successfully. Adding product to database...');
-      
-      const productData = {
-        "name": "Берлинки Дети",
-        "packaging": "карты",
-        "netWeight": {
-          "value": 130,
-          "unit": "г",
-          "approximate": false
-        },
-        "storageTemperature": {
-          "min": 0,
-          "max": 6,
-          "unit": "°C"
-        },
-        "processingType": ["пропаривание", "копчение"],
-        "meatType": "курица",
-        "meatContent": {
-          "value": 90,
-          "unit": "%",
-          "description": "90% мясистость"
-        },
-        "shelfLife": null,
-        "imageUrls": imageUrls, // Add the uploaded image URLs
-        "translations": {
-          "uk": {
-            "name": "Берлінки Діти",
-            "packaging": "лоток",
-            "meatType": "курятина",
-            "meatContentDescription": "90% вміст м'яса",
-            "processingType": ["на пару", "копчення"]
-          },
-          "ru": {
-            "name": "Берлинки Дети",
-            "packaging": "карты",
-            "meatType": "курица",
-            "meatContentDescription": "90% мясистость",
-            "processingType": ["пропаривание", "копчение"]
-          },
-          "en": {
-            "name": "Berlinki Kids",
-            "packaging": "tray",
-            "meatType": "chicken",
-            "meatContentDescription": "90% meat content",
-            "processingType": ["steamed", "smoked"]
-          },
-          "es": {
-            "name": "Berlinki Niños",
-            "packaging": "bandeja",
-            "meatType": "pollo",
-            "meatContentDescription": "90% de contenido de carne",
-            "processingType": ["al vapor", "ahumado"]
-          }
-        }
-      };      
-
-      // Add the document to the "foodItems" collection
-      const docRef = await addDoc(collection(FIREBASE_DB, 'foodItems'), productData);
-      Alert.alert("Success", `Product added with ID: ${docRef.id}\nImages uploaded: ${imageUrls.length}`);
     } catch (error) {
-      console.error("Error adding product:", error);
-      Alert.alert("Error", `Failed to add test product: ${error.message}`);
+      console.error("Error adding products:", error);
+      Alert.alert("Error", `Failed to add products: ${error.message}`);
     } finally {
       setIsAdding(false);
       setProgress('');
@@ -141,48 +520,43 @@ const DummyScreen = () => {
 
   return (
     <TextPagesLayout>
-      <View style={styles.content}>
-        <Text style={styles.title}>Add Test Product with Images</Text>
-        <Text style={styles.description}>
-          Press the button below to upload product images to Firebase Storage and add the "Берлинки Дети" product to the foodItems collection with image URLs.
-        </Text>
-        
-        {/* Image previews */}
-        <View style={styles.imagePreviewContainer}>
-          {imagePaths.map((path, index) => (
-            <View key={index} style={styles.imagePreview}>
-              <Text style={styles.imageText}>Image {index + 1}</Text>
-            </View>
-          ))}
-        </View>
-        
-        <TouchableOpacity 
-          style={[styles.button, isAdding && styles.buttonDisabled]} 
-          onPress={addTestProduct}
-          disabled={isAdding}
-        >
-          <Text style={styles.buttonText}>
-            {isAdding ? "Processing..." : "Add Product with Images"}
+      <ScrollView>
+        <View style={styles.content}>
+          <Text style={styles.title}>Add Multiple Products with Images</Text>
+          <Text style={styles.description}>
+            Select images for each product using the file pickers below, then click "Add Products" to upload them to Firebase Storage.
           </Text>
-        </TouchableOpacity>
-        
-        {isAdding && (
-          <View style={styles.progressContainer}>
-            <ActivityIndicator size="small" color="#FF3B30" />
-            <Text style={styles.progressText}>{progress}</Text>
-          </View>
-        )}
-        
-        <Text style={styles.productTitle}>Product Details:</Text>
-        <View style={styles.productDetails}>
-          <Text style={styles.detailText}>Name: Берлинки Дети / Berlinki Kids</Text>
-          <Text style={styles.detailText}>Type: Chicken sausages</Text>
-          <Text style={styles.detailText}>Weight: 130g</Text>
-          <Text style={styles.detailText}>Meat content: 90%</Text>
-          <Text style={styles.detailText}>Processing: Steamed, Smoked</Text>
-          <Text style={styles.detailText}>Images: 3 images will be uploaded</Text>
+          
+          {/* Product cards */}
+          {productsData.map((product, index) => (
+            <ProductCard
+              key={index}
+              product={product}
+              index={index}
+              handleFileChange={handleFileChange}
+              previewUrls={previewUrls}
+              isUploading={isAdding}
+            />
+          ))}
+          
+          <TouchableOpacity 
+            style={[styles.button, isAdding && styles.buttonDisabled]} 
+            onPress={addProducts}
+            disabled={isAdding}
+          >
+            <Text style={styles.buttonText}>
+              {isAdding ? "Processing..." : "Add Products with Images"}
+            </Text>
+          </TouchableOpacity>
+          
+          {isAdding && (
+            <View style={styles.progressContainer}>
+              <ActivityIndicator size="small" color="#FF3B30" />
+              <Text style={styles.progressText}>{progress}</Text>
+            </View>
+          )}
         </View>
-      </View>
+      </ScrollView>
     </TextPagesLayout>
   );
 };
@@ -204,24 +578,50 @@ const styles = StyleSheet.create({
     color: '#444',
     marginBottom: 20,
   },
+  productCard: {
+    marginBottom: 30,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    backgroundColor: '#f9f9f9',
+  },
+  productCardTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    color: '#333',
+  },
+  productCardDetails: {
+    marginBottom: 15,
+  },
+  selectImagesText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#333',
+  },
+  previewsTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginTop: 15,
+    marginBottom: 10,
+    color: '#333',
+  },
   imagePreviewContainer: {
     flexDirection: 'row',
-    marginBottom: 20,
+    flexWrap: 'wrap',
+    marginBottom: 10,
   },
   imagePreview: {
-    width: 100,
-    height: 100,
+    width: 80,
+    height: 80,
     marginRight: 10,
+    marginBottom: 10,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#ddd',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f0f0f0',
-  },
-  imageText: {
-    color: '#555',
-    fontSize: 12,
+    overflow: 'hidden',
   },
   button: {
     backgroundColor: '#FF3B30',
@@ -248,23 +648,10 @@ const styles = StyleSheet.create({
     color: '#555',
     fontSize: 14,
   },
-  productTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    color: '#333',
-  },
-  productDetails: {
-    backgroundColor: '#f5f5f5',
-    padding: 20,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-  },
   detailText: {
-    fontSize: 16,
-    lineHeight: 24,
-    marginBottom: 8,
+    fontSize: 14,
+    lineHeight: 20,
+    marginBottom: 6,
     color: '#333',
   }
 });
