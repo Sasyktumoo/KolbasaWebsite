@@ -58,6 +58,7 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [quantity, setQuantity] = useState(50);
   const [activeTab, setActiveTab] = useState('description');
+  const { t } = useTranslation();
   
   // Create refs for scrolling to sections
   const flatListRef = useRef<FlatList>(null);
@@ -98,7 +99,7 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
       locale: route.params.locale || 'en',
       categoryId: 'catalog',
       categoryPath: ['product_catalog'],
-      categoryName: 'Product Catalog'
+      categoryName: t('productDetail.productCatalog')
     } as any);
   };
   
@@ -116,11 +117,11 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
     const items = [
       {
         id: 'catalog',
-        label: 'Product Catalog',
+        label: t('productDetail.productCatalog'),
         onPress: () => navigation.navigate('Home', { 
           categoryId: 'catalog',
           categoryPath: ['product_catalog'],
-          categoryName: 'Product Catalog',
+          categoryName: t('productDetail.productCatalog'),
           locale: locale
         })
       }
@@ -209,12 +210,12 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
           <View style={styles.titleContainer}>
             <Text style={styles.productTitle}>{product.name}</Text>
             <Text style={styles.productDescription}>
-              To order in bulk from the supplier, 
-              <Text style={styles.highlightText}> write </Text> 
-              or 
-              <Text style={styles.highlightText}> order a call </Text> 
-              or 
-              <Text style={styles.highlightText}> call </Text>
+              {t('productDetail.toOrderBulk')}
+              <Text style={styles.highlightText}> {t('productDetail.write')} </Text> 
+              {t('productDetail.or')}
+              <Text style={styles.highlightText}> {t('productDetail.orderCall')} </Text> 
+              {t('productDetail.or')}
+              <Text style={styles.highlightText}> {t('productDetail.call')} </Text>
             </Text>
           </View>
         );
@@ -226,26 +227,30 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
               style={[styles.tab, activeTab === 'description' && styles.activeTab]}
               onPress={scrollToDescription}
             >
-              <Text style={[styles.tabText, activeTab === 'description' && styles.activeTabText]}>Description</Text>
+              <Text style={[styles.tabText, activeTab === 'description' && styles.activeTabText]}>
+                {t('productDetail.tabs.description')}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity 
               style={[styles.tab, activeTab === 'characteristics' && styles.activeTab]}
               onPress={scrollToCharacteristics}
             >
-              <Text style={[styles.tabText, activeTab === 'characteristics' && styles.activeTabText]}>Characteristics</Text>
+              <Text style={[styles.tabText, activeTab === 'characteristics' && styles.activeTabText]}>
+                {t('productDetail.tabs.characteristics')}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity 
               style={[styles.tab, activeTab === 'reviews' && styles.activeTab]}
               onPress={() => scrollToReviews()}
             >
-              <Text style={[styles.tabText, activeTab === 'reviews' && styles.activeTabText]}>Reviews</Text>
+              <Text style={[styles.tabText, activeTab === 'reviews' && styles.activeTabText]}>
+                {t('productDetail.tabs.reviews')}
+              </Text>
             </TouchableOpacity>
           </View>
         );
       
-      // All other section cases remain the same...
       case SECTION_TYPES.MAIN:
-        // Existing MAIN case code...
         return (
           <View style={styles.mainProductSection}>
             {/* Product Image */}
@@ -260,18 +265,20 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
             {/* Purchase Panel */}
             <View style={styles.purchasePanel}>
               <View style={styles.priceRow}>
-                <Text style={styles.priceLabel}>Price per kg:</Text>
+                <Text style={styles.priceLabel}>{t('productDetail.pricePerKg')}:</Text>
                 <Text style={styles.pricePerKg}>{pricePerKg}₽</Text>
               </View>
               
               <View style={styles.infoBox}>
                 <Text style={styles.infoText}>
-                  Prices may vary due to currency volatility. For exact pricing, please 
-                  <Text style={styles.highlightText}> contact the supplier.</Text>
+                  {t('productDetail.priceDisclaimer')}
+                  <Text style={styles.highlightText}> {t('productDetail.contactSupplier')}</Text>
                 </Text>
               </View>
               
-              <Text style={styles.minOrderText}>Min. order: {product.minOrder} kg</Text>
+              <Text style={styles.minOrderText}>
+                {t('productDetail.minOrder')}: {product.minOrder} {t('productDetail.kg')}
+              </Text>
               
               {/* Quantity Selector */}
               <View style={styles.quantitySelector}>
@@ -293,12 +300,12 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
               </View>
               
               <View style={styles.priceRow}>
-                <Text style={styles.priceLabel}>Total price:</Text>
+                <Text style={styles.priceLabel}>{t('productDetail.totalPrice')}:</Text>
                 <Text style={styles.totalPrice}>{totalPrice}₽</Text>
               </View>
               
               <TouchableOpacity style={styles.orderButton}>
-                <Text style={styles.orderButtonText}>To order</Text>
+                <Text style={styles.orderButtonText}>{t('productDetail.toOrder')}</Text>
               </TouchableOpacity>
             </View>
             
@@ -306,35 +313,34 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
             <View style={styles.supplierCard}>
               <Text style={styles.supplierName}>Vyacheslav Nikolaevich Tyulenev</Text>
               <View style={styles.supplierBadge}>
-                <Text style={styles.supplierBadgeText}>Producer</Text>
+                <Text style={styles.supplierBadgeText}>{t('productDetail.producer')}</Text>
               </View>
               <TouchableOpacity style={styles.writeToSupplierButton}>
                 <Ionicons name="mail-outline" size={18} color="#FF3B30" />
-                <Text style={styles.writeToSupplierText}>Write to supplier</Text>
+                <Text style={styles.writeToSupplierText}>{t('productDetail.writeToSupplier')}</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.phoneButton}>
                 <Ionicons name="call-outline" size={18} color="#FF3B30" />
-                <Text style={styles.phoneButtonText}>Show phone number</Text>
+                <Text style={styles.phoneButtonText}>{t('productDetail.showPhoneNumber')}</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.phoneButton}>
                 <Ionicons name="call-outline" size={18} color="#FF3B30" />
-                <Text style={styles.phoneButtonText}>Request Callback From The Seller</Text>
+                <Text style={styles.phoneButtonText}>{t('productDetail.requestCallback')}</Text>
               </TouchableOpacity>
 
               {/* Delivery Address Button */}
               <TouchableOpacity style={styles.deliveryAddressButton}>
                 <Ionicons name="location-outline" size={18} color="#FF3B30" />
-                <Text style={styles.deliveryAddressText}>Enter delivery address</Text>
+                <Text style={styles.deliveryAddressText}>{t('productDetail.enterDeliveryAddress')}</Text>
               </TouchableOpacity>
             </View>
           </View>
         );
         
       case SECTION_TYPES.OTHER_PRODUCTS:
-        // Existing OTHER_PRODUCTS case code...
         return (
           <View style={styles.otherProductsSection}>
-            <Text style={styles.otherProductsTitle}>Other products from this supplier</Text>
+            <Text style={styles.otherProductsTitle}>{t('productDetail.otherProducts')}</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.thumbnailContainer}>
               {[1, 2, 3, 4, 5].map((item) => (
                 <View key={item} style={styles.thumbnailWrapper}>
@@ -349,7 +355,6 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
         );
         
       case SECTION_TYPES.DESCRIPTION:
-        // Existing DESCRIPTION case code...
         return (
           <View 
             style={styles.detailSection}
@@ -357,21 +362,20 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
               sectionRefs.current.description = event.nativeEvent.layout.y;
             }}
           >
-            <Text style={styles.detailSectionTitle}>Описание</Text>
+            <Text style={styles.detailSectionTitle}>{t('productDetail.tabs.description')}</Text>
             <Text style={styles.detailText}>
-              {product.description || 'Говядина бескостная тримминг 80%, мы обеспечиваем ветеринарное, а также полное документальное сопровождение всего груза. Оптовая продажа замороженного мяса с 1994 года! Цена указана за 1 кг.'}
+              {product.description || t('productDetail.defaultDescription')}
             </Text>
           </View>
         );
         
       case SECTION_TYPES.CHARACTERISTICS:
-        // Existing CHARACTERISTICS case code...
         const characteristicsData = [
-          { name: 'Артикул производителя', value: '2 сорт' },
-          { name: 'Вес (Кг)', value: '' },
-          { name: 'Вид продукта', value: 'Мясо соевое' },
-          { name: 'Единица кванта поставки', value: '0 кг' },
-          { name: 'Страна изготовитель', value: 'Беларусь' }
+          { name: t('productDetail.characteristics.manufacturerArticle'), value: '2 сорт' },
+          { name: t('productDetail.characteristics.weight'), value: '' },
+          { name: t('productDetail.characteristics.productType'), value: t('productDetail.characteristics.soyMeat') },
+          { name: t('productDetail.characteristics.supplyUnit'), value: '0 кг' },
+          { name: t('productDetail.characteristics.countryOfOrigin'), value: t('productDetail.characteristics.belarus') }
         ];
         
         return (
@@ -381,7 +385,7 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
               sectionRefs.current.characteristics = event.nativeEvent.layout.y;
             }}
           >
-            <Text style={styles.detailSectionTitle}>Характеристики</Text>
+            <Text style={styles.detailSectionTitle}>{t('productDetail.tabs.characteristics')}</Text>
             <FlatList
               data={characteristicsData}
               keyExtractor={(item, index) => `characteristic-${index}`}
@@ -396,7 +400,6 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
           </View>
         );
       case SECTION_TYPES.REVIEWS:
-        // Existing REVIEWS case code...
         return (
           <View
             style={styles.detailSection}
@@ -404,7 +407,7 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
               sectionRefs.current.reviews = event.nativeEvent.layout.y;
             }}
           >
-            <Text style={styles.detailSectionTitle}>Reviews</Text>
+            <Text style={styles.detailSectionTitle}>{t('productDetail.tabs.reviews')}</Text>
             <ReviewsSection productId={product.id} />
           </View>
         );      

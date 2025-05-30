@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { collection, addDoc, getDocs, query, where, orderBy } from 'firebase/firestore';
-import { FIREBASE_DB } from '../../FirebaseConfig'; // Adjust the import based on your project structure
+import { FIREBASE_DB } from '../../FirebaseConfig';
+import { useTranslation } from 'react-i18next';
 
 interface Review {
   id?: string;
@@ -18,6 +19,7 @@ interface ReviewsSectionProps {
 }
 
 const ReviewsSection = ({ productId }: ReviewsSectionProps) => {
+  const { t } = useTranslation();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [newReview, setNewReview] = useState({ userName: '', rating: 5, comment: '' });
@@ -54,9 +56,7 @@ const ReviewsSection = ({ productId }: ReviewsSectionProps) => {
   };
 
   const submitReview = async () => {
-    console.log('inside');
     if (!newReview.userName || !newReview.comment) return;
-    console.log('checkpoint');
     try {
       const reviewData = {
         productId,
@@ -97,13 +97,13 @@ const ReviewsSection = ({ productId }: ReviewsSectionProps) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Customer Reviews</Text>
+        <Text style={styles.title}>{t('reviews.title')}</Text>
         <TouchableOpacity 
           style={styles.addReviewButton} 
           onPress={() => setShowReviewForm(!showReviewForm)}
         >
           <Text style={styles.addReviewButtonText}>
-            {showReviewForm ? 'Cancel' : 'Write Review'}
+            {showReviewForm ? t('reviews.cancel') : t('reviews.writeReview')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -112,12 +112,12 @@ const ReviewsSection = ({ productId }: ReviewsSectionProps) => {
         <View style={styles.reviewForm}>
           <TextInput 
             style={styles.input}
-            placeholder="Your Name"
+            placeholder={t('reviews.yourName')}
             value={newReview.userName}
             onChangeText={(text) => setNewReview({...newReview, userName: text})}
           />
           <View style={styles.ratingInput}>
-            <Text>Your Rating: </Text>
+            <Text>{t('reviews.yourRating')}: </Text>
             <View style={styles.starContainer}>
               {Array(5).fill(0).map((_, i) => (
                 <TouchableOpacity 
@@ -136,7 +136,7 @@ const ReviewsSection = ({ productId }: ReviewsSectionProps) => {
           </View>
           <TextInput 
             style={[styles.input, styles.commentInput]}
-            placeholder="Your Review"
+            placeholder={t('reviews.yourReview')}
             value={newReview.comment}
             onChangeText={(text) => setNewReview({...newReview, comment: text})}
             multiline={true}
@@ -144,17 +144,16 @@ const ReviewsSection = ({ productId }: ReviewsSectionProps) => {
           <TouchableOpacity 
             style={styles.submitButton}
             onPress={() => {
-              console.log('Button pressed');
               submitReview();
             }}
           >
-            <Text style={styles.submitButtonText}>Submit Review</Text>
+            <Text style={styles.submitButtonText}>{t('reviews.submit')}</Text>
           </TouchableOpacity>
         </View>
       )}
 
       {loading ? (
-        <Text>Loading reviews...</Text>
+        <Text>{t('reviews.loading')}</Text>
       ) : reviews.length > 0 ? (
         <FlatList 
           data={reviews}
@@ -163,7 +162,7 @@ const ReviewsSection = ({ productId }: ReviewsSectionProps) => {
           scrollEnabled={false}
         />
       ) : (
-        <Text style={styles.noReviews}>No reviews yet. Be the first to write one!</Text>
+        <Text style={styles.noReviews}>{t('reviews.noReviews')}</Text>
       )}
     </View>
   );

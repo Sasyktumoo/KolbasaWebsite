@@ -657,3 +657,56 @@ const styles = StyleSheet.create({
 });
 
 export default DummyScreen;
+
+
+
+/*
+{
+  name: "Колбаса Краковская, сухая, экстра",
+  packaging: "вакуум",
+  netWeight: { value: 1200, unit: "г", approximate: false },
+  storageTemperature: { min: 2, max: 25, unit: "°C" },
+  processingType: ["пропаривание", "сушка", "копчение"],
+  meatType: "свинина",
+  meatContent: {
+    value: 143,
+    unit: "г",
+    description: "На 100 г готового продукта уходит 143 г свинины."
+  },
+  shelfLife: { value: 54, unit: "дней" },
+  translations: {
+    uk: {
+      name: "Ковбаса Краківська, суха, екстра",
+      packaging: "вакуум",
+      meatType: "свинина",
+      meatContentDescription:
+        "На 100 г готового продукту використовується 143 г свинини",
+      processingType: ["на пару", "сушіння", "копчення"]
+    },
+    ru: {
+      name: "Колбаса Краковская, сухая, экстра",
+      packaging: "вакуум",
+      meatType: "свинина",
+      meatContentDescription:
+        "На 100 г готового продукта уходит 143 г свинины.",
+      processingType: ["пропаривание", "сушка", "копчение"]
+    },
+    en: {
+      name: "Krakowska Sausage, Dry, Extra",
+      packaging: "vacuum",
+      meatType: "pork",
+      meatContentDescription:
+        "143 g of pork used for 100 g of finished product",
+      processingType: ["steamed", "dried", "smoked"]
+    },
+    es: {
+      name: "Salchicha Krakowska, seca, extra",
+      packaging: "al vacío",
+      meatType: "cerdo",
+      meatContentDescription:
+        "Se usan 143 g de cerdo por cada 100 g de producto final",
+      processingType: ["al vapor", "secado", "ahumado"]
+    }
+  }
+},
+ */

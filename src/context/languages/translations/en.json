@@ -38,6 +38,53 @@
       "advantage4": "4. Reasonable prices corresponding to the current market situation...",
       "advantage5": "5. Constantly growing assortment.",
       "advantage6": "6. Attractive partnership program."
+    },
+    "reviews": {
+      "title": "Customer Reviews",
+      "writeReview": "Write Review",
+      "cancel": "Cancel",
+      "yourName": "Your Name",
+      "yourRating": "Your Rating",
+      "yourReview": "Your Review",
+      "submit": "Submit Review",
+      "loading": "Loading reviews...",
+      "noReviews": "No reviews yet. Be the first to write one!"
+    },
+    "productDetail": {
+      "productCatalog": "Product Catalog",
+      "toOrderBulk": "To order in bulk from the supplier,",
+      "write": "write",
+      "or": "or",
+      "orderCall": "order a call",
+      "call": "call",
+      "pricePerKg": "Price per kg",
+      "priceDisclaimer": "Prices may vary due to currency volatility. For exact pricing, please",
+      "contactSupplier": "contact the supplier.",
+      "minOrder": "Min. order",
+      "kg": "kg",
+      "totalPrice": "Total price",
+      "toOrder": "To order",
+      "producer": "Producer",
+      "writeToSupplier": "Write to supplier",
+      "showPhoneNumber": "Show phone number",
+      "requestCallback": "Request Callback From The Seller",
+      "enterDeliveryAddress": "Enter delivery address",
+      "otherProducts": "Other products from this supplier",
+      "defaultDescription": "Boneless beef trimming 80%, we provide veterinary and complete documentary support for the entire cargo. Wholesale of frozen meat since 1994! The price is per 1 kg.",
+      "tabs": {
+        "description": "Description",
+        "characteristics": "Characteristics",
+        "reviews": "Reviews"
+      },
+      "characteristics": {
+        "manufacturerArticle": "Manufacturer Article",
+        "weight": "Weight (Kg)",
+        "productType": "Product Type",
+        "supplyUnit": "Supply Unit",
+        "countryOfOrigin": "Country of Origin",
+        "soyMeat": "Soy Meat",
+        "belarus": "Belarus"
+      }
     }
   }
 }
