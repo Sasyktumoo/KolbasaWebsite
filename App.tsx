@@ -10,18 +10,18 @@ import { onAuthStateChanged, User } from 'firebase/auth';
 import { FIREBASE_AUTH } from './FirebaseConfig';
 import Login from './src/screens/Registration/Login';
 import Register from './src/screens/Registration/Register';
-import AppNavigator, { getLinkingConfig } from './src/navigation/AppNavigator';
+import AppNavigator, { getLinkingConfig, RootStackParamList as AppNavigatorParamList } from './src/navigation/AppNavigator';
 import { UserProvider } from './src/context/UserContext';
 import { LanguageProvider } from './src/context/languages/LanguageContext'; // Add this import
+import { CartProvider } from './src/context/cart/CartContext'; // Add this import
 
-// Define Auth Stack param list
-type AuthStackParamList = {
-  Login: undefined;
-  Register: undefined;
-  Main: undefined;
+// Extend the RootStackParamList to include 'Main'
+type RootStackParamList = AppNavigatorParamList & {
+  Main: { initialRoute?: string } | undefined;
 };
 
-const Stack = createStackNavigator<AuthStackParamList>();
+// const Stack = createStackNavigator<AuthStackParamList>();
+const Stack = createStackNavigator<RootStackParamList>();
 
 // Error boundary component
 type ErrorBoundaryProps = {
@@ -122,44 +122,48 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      {/* Wrap everything in LanguageProvider */}
       <LanguageProvider>
-        <UserProvider value={{ user, setUser }}>
-          <NavigationContainer 
-            linking={linking}
-            fallback={<Text>Loading Navigation...</Text>}
-            documentTitle={{
-              formatter: (options, route) => {
-                if (!route) return 'Магазин Колбасы - Meat Products';
-                
-                if (route.name === 'Main') {
-                  // Let the main navigator handle title formatting
-                  return 'Магазин Колбасы';
-                }
-                
-                // Auth screens
-                if (route.name === 'Login') return 'Sign In - Магазин Колбасы';
-                if (route.name === 'Register') return 'Create Account - Магазин Колбасы';
-                
-                return 'Магазин Колбасы - Meat Products';
-              }
-            }}
-          >
-            <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
-              {user ? (
-                // User is signed in, show main app
-                <Stack.Screen name="Main" component={AppNavigator} />
-              ) : (
-                // No user, show authentication screens
-                <>
-                  <Stack.Screen name="Login" component={Login} />
-                  <Stack.Screen name="Register" component={Register} />
-                </>
-              )}
-            </Stack.Navigator>
-            <StatusBar style="auto" />
-          </NavigationContainer>
-        </UserProvider>
+        <CartProvider>
+          <UserProvider value={{ user, setUser }}>
+            <View style={{ flex: 1, height: '100%' }}>
+              <NavigationContainer 
+                linking={linking}
+                fallback={<Text>Loading Navigation...</Text>}
+                documentTitle={{
+                  formatter: (options, route) => {
+                    if (!route) return 'Магазин Колбасы - Meat Products';
+                    
+                    if (route.name === 'Main') {
+                      // Let the main navigator handle title formatting
+                      return 'Магазин Колбасы';
+                    }
+                    
+                    // Auth screens
+                    if (route.name === 'Login') return 'Sign In - Магазин Колбасы';
+                    if (route.name === 'Register') return 'Create Account - Магазин Колбасы';
+                    
+                    return 'Магазин Колбасы - Meat Products';
+                  }
+                }}
+              >
+                <Stack.Navigator 
+                  id={undefined} 
+                  screenOptions={{ 
+                    headerShown: false,
+                    cardStyle: { flex: 1 } 
+                  }}
+                >
+                  <Stack.Screen 
+                    name="Main" 
+                    component={AppNavigator} 
+                    initialParams={user ? undefined : { initialRoute: 'Login' }}
+                  />
+                </Stack.Navigator>
+                <StatusBar style="auto" />
+              </NavigationContainer>
+            </View>
+          </UserProvider>
+        </CartProvider>
       </LanguageProvider>
     </ErrorBoundary>
   );

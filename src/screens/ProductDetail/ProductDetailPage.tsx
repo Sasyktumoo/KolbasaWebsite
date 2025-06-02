@@ -18,17 +18,14 @@ import BreadcrumbNavigation from '../../components/BreadcrumbNavigation';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/AppNavigator';
-import { changeLanguage } from '../../utils/language';
 import styles from './ProductDetailPageDesign'
 import ReviewsSection from '../../components/ReviewsSection';
 import { useTranslation } from 'react-i18next';
-import { useContext } from 'react';
-import { LanguageContext } from '../../context/languages/LanguageContext';
-
-// Import the Header component
 import Header from '../../components/Header';
+import { useLanguage } from '../../context/languages/useLanguage';
+import { useCart } from '../../context/cart/CartContext';
 
-// Product type definition
+// Product type definition for navigation
 interface Product {
   id: string;
   name: string;
@@ -36,6 +33,44 @@ interface Product {
   price: number;
   minOrder: number;
   image: any;
+}
+
+// Firebase product type definition
+interface FirebaseProduct {
+  id?: string;
+  name: string;
+  packaging: string;
+  netWeight: {
+    value: number;
+    unit: string;
+    approximate: boolean;
+  };
+  storageTemperature: {
+    min: number;
+    max: number;
+    unit: string;
+  };
+  processingType: string[];
+  meatType: string;
+  meatContent: {
+    value: number;
+    unit: string;
+    description: string;
+  };
+  shelfLife: {
+    value: number;
+    unit: string;
+  } | null;
+  imageUrls?: string[];
+  translations: {
+    en: {
+      name: string;
+      packaging: string;
+      meatType: string;
+      meatContentDescription: string;
+      processingType: string[];
+    };
+  };
 }
 
 type ProductDetailScreenProps = {
@@ -58,7 +93,8 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [quantity, setQuantity] = useState(50);
   const [activeTab, setActiveTab] = useState('description');
-  const { t } = useTranslation();
+  const { t, currentLanguage } = useLanguage();
+  const { addItem } = useCart();
   
   // Create refs for scrolling to sections
   const flatListRef = useRef<FlatList>(null);
@@ -69,17 +105,19 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
   });
   
   // Get product data from navigation params
-  const { product, breadcrumbPath } = route.params || { 
+  const { product, breadcrumbPath, originalProduct } = route.params || { 
     product: {
-      id: 'beef_shank',
-      name: 'Beef Shank',
-      price: 228.65,
+      id: 'default_product',
+      name: 'Default Product',
+      price: 100,
       minOrder: 50,
       image: require('../../assets/images/placeholder.png')
     },
-    breadcrumbPath: ['product_catalog', 'meat_products', 'tibia', 'beef_shank']
+    breadcrumbPath: ['product_catalog', 'default_product']
   };
   
+  // Get the Firebase product data if it exists
+  const firebaseProduct = originalProduct as FirebaseProduct | undefined;
   
   const pricePerKg = product.price;
   
@@ -95,70 +133,65 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
   
   // Handler for catalog button press
   const handleCatalogPress = () => {
-    navigation.navigate('Home', { 
-      locale: route.params.locale || 'en',
+    navigation.navigate('CategoryPage', { 
       categoryId: 'catalog',
       categoryPath: ['product_catalog'],
-      categoryName: t('productDetail.productCatalog')
-    } as any);
-  };
-  
-  // Handle search
-  const handleSearch = (query: string) => {
-    console.log('Searching for:', query);
-    // Implement search functionality
+      categoryName: t('productDetail.productCatalog'),
+      locale: currentLanguage
+    });
   };
 
-  // Update the breadcrumb generation function
-  const generateBreadcrumbItems = () => {
-    const locale = route.params.locale || 'en';
+  // Add a function to handle adding to cart
+  const handleAddToCart = () => {
+    addItem({
+      id: product.id,
+      name: firebaseProduct?.translations?.[currentLanguage]?.name || product.name,
+      price: pricePerKg,
+      quantity: quantity,
+      imageUrl: firebaseProduct?.imageUrls?.[0],
+      weight: {
+        value: firebaseProduct?.netWeight?.value || 0,
+        unit: firebaseProduct?.netWeight?.unit || 'g'
+      }
+    });
     
+    // Show confirmation
+    Alert.alert(
+      t('cart.addedToCartTitle'),
+      t('cart.addedToCartMessage'),
+      [
+        { 
+          text: t('cart.continueShopping'), 
+          style: 'cancel' 
+        },
+        { 
+          text: t('cart.viewCart'), 
+          onPress: () => navigation.navigate('Cart')
+        }
+      ]
+    );
+  };
+
+  // Generate breadcrumb items
+  const generateBreadcrumbItems = () => {
     // Start with catalog
     const items = [
       {
         id: 'catalog',
         label: t('productDetail.productCatalog'),
         onPress: () => navigation.navigate('Home', { 
-          categoryId: 'catalog',
-          categoryPath: ['product_catalog'],
-          categoryName: t('productDetail.productCatalog'),
-          locale: locale
+          locale: currentLanguage
         })
       }
     ];
-  
-    // Build breadcrumbs from breadcrumbPath
-    let currentPath = 'product_catalog';
-    let pathSegments = ['product_catalog'];
-    
-    const pathItems = breadcrumbPath.slice(1, -1); // Skip the first and last items
-    pathItems.forEach((path) => {
-      pathSegments.push(path);
-      
-      // Get a nice display name from the path
-      const displayName = path.split('_').map(word => 
-        word.charAt(0).toUpperCase() + word.slice(1)
-      ).join(' ');
-      
-      items.push({
-        id: path,
-        label: displayName,
-        onPress: () => navigation.navigate('CategoryPage', {
-          categoryId: path,
-          categoryPath: pathSegments,
-          categoryName: displayName,
-          locale
-        })
-      });
-    });
-  
-    // Add the current product as the last item
+
+    // Add the current product as the last item with translated name
     items.push({
       id: 'current-product',
-      label: product.name,
+      label: firebaseProduct?.translations?.[currentLanguage]?.name || product.name,
       onPress: () => {} // No action for current product
     });
-  
+
     return items;
   };
   
@@ -168,7 +201,6 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
     { type: SECTION_TYPES.TITLE, id: 'title' },
     { type: SECTION_TYPES.TABS, id: 'tabs' },
     { type: SECTION_TYPES.MAIN, id: 'main' },
-    { type: SECTION_TYPES.OTHER_PRODUCTS, id: 'other_products' },
     { type: SECTION_TYPES.DESCRIPTION, id: 'description' },
     { type: SECTION_TYPES.CHARACTERISTICS, id: 'characteristics' },
     { type: SECTION_TYPES.REVIEWS, id: 'reviews' }
@@ -184,19 +216,18 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
   };
 
   const scrollToDescription = () => {
-    console.log("uopa");
     setActiveTab('description');
-    scrollToSection(5); // Index of description section
+    scrollToSection(4); // Index of description section
   };
 
   const scrollToCharacteristics = () => {
     setActiveTab('characteristics');
-    scrollToSection(6); // Index of characteristics section
+    scrollToSection(5); // Index of characteristics section
   };
-    // Add this with your other scroll functions
+
   const scrollToReviews = () => {
     setActiveTab('reviews');
-    scrollToSection(7); // Index of reviews section
+    scrollToSection(6); // Index of reviews section
   };
     
   // Render different sections based on type
@@ -208,7 +239,9 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
       case SECTION_TYPES.TITLE:
         return (
           <View style={styles.titleContainer}>
-            <Text style={styles.productTitle}>{product.name}</Text>
+            <Text style={styles.productTitle}>
+              {firebaseProduct?.translations?.[currentLanguage]?.name || product.name}
+            </Text>
             <Text style={styles.productDescription}>
               {t('productDetail.toOrderBulk')}
               <Text style={styles.highlightText}> {t('productDetail.write')} </Text> 
@@ -241,7 +274,7 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
             </TouchableOpacity>
             <TouchableOpacity 
               style={[styles.tab, activeTab === 'reviews' && styles.activeTab]}
-              onPress={() => scrollToReviews()}
+              onPress={scrollToReviews}
             >
               <Text style={[styles.tabText, activeTab === 'reviews' && styles.activeTabText]}>
                 {t('productDetail.tabs.reviews')}
@@ -304,8 +337,11 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
                 <Text style={styles.totalPrice}>{totalPrice}₽</Text>
               </View>
               
-              <TouchableOpacity style={styles.orderButton}>
-                <Text style={styles.orderButtonText}>{t('productDetail.toOrder')}</Text>
+              <TouchableOpacity 
+                style={styles.orderButton}
+                onPress={handleAddToCart}
+              >
+                <Text style={styles.orderButtonText}>{t('cart.addToCart')}</Text>
               </TouchableOpacity>
             </View>
             
@@ -337,23 +373,6 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
           </View>
         );
         
-      case SECTION_TYPES.OTHER_PRODUCTS:
-        return (
-          <View style={styles.otherProductsSection}>
-            <Text style={styles.otherProductsTitle}>{t('productDetail.otherProducts')}</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.thumbnailContainer}>
-              {[1, 2, 3, 4, 5].map((item) => (
-                <View key={item} style={styles.thumbnailWrapper}>
-                  <Image
-                    source={require('../../assets/images/placeholder.png')}
-                    style={styles.thumbnail}
-                  />
-                </View>
-              ))}
-            </ScrollView>
-          </View>
-        );
-        
       case SECTION_TYPES.DESCRIPTION:
         return (
           <View 
@@ -364,18 +383,50 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
           >
             <Text style={styles.detailSectionTitle}>{t('productDetail.tabs.description')}</Text>
             <Text style={styles.detailText}>
-              {product.description || t('productDetail.defaultDescription')}
+              {firebaseProduct?.translations?.[currentLanguage]?.meatContentDescription || 
+               product.description || 
+               t('productDetail.defaultDescription')}
             </Text>
           </View>
         );
         
       case SECTION_TYPES.CHARACTERISTICS:
-        const characteristicsData = [
-          { name: t('productDetail.characteristics.manufacturerArticle'), value: '2 сорт' },
-          { name: t('productDetail.characteristics.weight'), value: '' },
-          { name: t('productDetail.characteristics.productType'), value: t('productDetail.characteristics.soyMeat') },
-          { name: t('productDetail.characteristics.supplyUnit'), value: '0 кг' },
-          { name: t('productDetail.characteristics.countryOfOrigin'), value: t('productDetail.characteristics.belarus') }
+        // Build characteristics data from the Firebase product
+        const characteristicsData = firebaseProduct ? [
+          { 
+            name: t('productDetail.characteristics.productType'), 
+            value: firebaseProduct.translations?.[currentLanguage]?.meatType || firebaseProduct.meatType 
+          },
+          { 
+            name: t('productDetail.characteristics.weight'), 
+            value: `${firebaseProduct.netWeight?.value || 0} ${firebaseProduct.netWeight?.unit || 'g'}` 
+          },
+          { 
+            name: 'Packaging', 
+            value: firebaseProduct.translations?.[currentLanguage]?.packaging || firebaseProduct.packaging 
+          },
+          { 
+            name: 'Processing Type', 
+            value: firebaseProduct.translations?.[currentLanguage]?.processingType?.join(', ') || 
+                  firebaseProduct.processingType?.join(', ') || 'N/A'
+          },
+          { 
+            name: 'Storage Temperature', 
+            value: `${firebaseProduct.storageTemperature?.min || 0}°C to ${firebaseProduct.storageTemperature?.max || 0}°C` 
+          },
+          { 
+            name: 'Shelf Life', 
+            value: firebaseProduct.shelfLife ? 
+                  `${firebaseProduct.shelfLife.value} ${firebaseProduct.shelfLife.unit}` : 
+                  'N/A' 
+          }
+        ] : [
+          // Default fallback values if no Firebase product
+          { name: t('productDetail.characteristics.manufacturerArticle'), value: '-' },
+          { name: t('productDetail.characteristics.weight'), value: '-' },
+          { name: t('productDetail.characteristics.productType'), value: '-' },
+          { name: t('productDetail.characteristics.supplyUnit'), value: '-' },
+          { name: t('productDetail.characteristics.countryOfOrigin'), value: '-' }
         ];
         
         return (
@@ -418,7 +469,6 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
   
   return (
     <SafeAreaView style={styles.safeArea}>
-      {/* Replace the custom header with the Header component */}
       <Header onCatalogPress={handleCatalogPress} />
 
       <FlatList
@@ -426,7 +476,7 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
         data={sections}
         keyExtractor={item => item.id}
         renderItem={renderSection}
-        style={{ height: Dimensions.get('window').height - 100 }} // Fixed height
+
         contentContainerStyle={{ paddingBottom: 120 }} // Bottom padding
         showsVerticalScrollIndicator={true}
         onScrollToIndexFailed={info => {

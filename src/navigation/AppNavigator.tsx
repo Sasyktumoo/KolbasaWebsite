@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Platform } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as Linking from 'expo-linking';
-import { LinkingOptions } from '@react-navigation/native';
+import { LinkingOptions, useNavigation, useRoute, NavigationProp } from '@react-navigation/native';
 
 import ProductDetailPage from '../screens/ProductDetail/ProductDetailPage';
 import CategoryPage from '../screens/CategoryPage';
@@ -17,6 +17,11 @@ import PremiumProgramScreen from '../screens/PremiumProgramScreen';
 import NewsScreen from '../screens/NewsScreen';
 import FeedbackScreen from '../screens/FeedbackScreen';
 import DummyScreen from '../screens/DummyScreen';
+import Login from '../screens/Registration/Login';
+import Register from '../screens/Registration/Register';
+import ProfileScreen from '../screens/Profile/ProfileScreen'; // You'll need to create this file
+import CartScreen from '../screens/Cart/CartScreen'; // Import CartScreen
+import { useUser } from '../context/UserContext';
 
 // Define your root stack param list and export it for reuse elsewhere
 export type RootStackParamList = {
@@ -36,7 +41,12 @@ export type RootStackParamList = {
     product: any;
     breadcrumbPath: string[];
     locale: string;
+    originalProduct: any;
   };
+  // Add auth-related screens
+  Login: undefined;
+  Register: undefined;
+  Profile: undefined;
   // Add the new screens to the param list
   AboutUs: undefined;
   OrderProducts: undefined;
@@ -47,6 +57,7 @@ export type RootStackParamList = {
   News: undefined;
   Feedback: undefined;
   Dummy: undefined;
+  Cart: undefined; // Include Cart in the param list
 };
 
 // Export the linking configuration to use in App.tsx
@@ -126,6 +137,7 @@ export const getLinkingConfig = (): LinkingOptions<RootStackParamList> => ({
       News: 'news',
       Feedback: 'feedback',
       Dummy: 'dummy',
+      Cart: 'cart', // Linking configuration for Cart
     },
   },
 });
@@ -133,8 +145,20 @@ export const getLinkingConfig = (): LinkingOptions<RootStackParamList> => ({
 const Stack = createStackNavigator<RootStackParamList>();
 
 const AppNavigator = () => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const route = useRoute();
+  const { user } = useUser();
+  
+  // Handle initialRoute param for authentication flow
+  useEffect(() => {
+    const initialRoute = (route.params as any)?.initialRoute;
+    if (initialRoute && !user) {
+      navigation.navigate(initialRoute as keyof RootStackParamList);
+    }
+  }, [navigation, route.params, user]);
+
   return (
-    <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
+    <Stack.Navigator id={undefined} screenOptions={{ cardStyle: {flex:1}, headerShown: false }}>
       <Stack.Screen 
         name="Home"
         component={HomePage}
@@ -150,6 +174,12 @@ const AppNavigator = () => {
         name="ProductDetailPage" 
         component={ProductDetailPage} 
       />
+      {/* Add auth screens */}
+      <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen name="Register" component={Register} />
+      <Stack.Screen name="Profile" component={ProfileScreen} />
+      {/* Cart screen */}
+      <Stack.Screen name="Cart" component={CartScreen} />
       {/* Add the new screens */}
       <Stack.Screen name="AboutUs" component={AboutUsScreen} />
       <Stack.Screen name="OrderProducts" component={OrderProductsScreen} />

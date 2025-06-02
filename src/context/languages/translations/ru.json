@@ -20,13 +20,40 @@
       "placeholder": "Поиск товаров..."
     },
     "auth": {
-      "loginRegister": "Вход / Регистрация"
+      "loginRegister": "Вход / Регистрация",
+      "profile": "Мой профиль",
+      "logout": "Выйти"
     },
     "profile": {
       "myProfile": "Мой профиль",
       "myOrders": "Мои заказы",
       "settings": "Настройки",
       "logout": "Выйти"
+    },
+    "cart": {
+      "title": "Корзина",
+      "addToCart": "Добавить в корзину",
+      "totalItems": "Всего товаров",
+      "totalPrice": "Итоговая сумма",
+      "checkout": "Оформить заказ",
+      "emptyCart": "Ваша корзина пуста",
+      "continueShopping": "Продолжить покупки",
+      "clearCart": "Очистить корзину",
+      "clearCartTitle": "Очистить корзину",
+      "clearCartMessage": "Вы уверены, что хотите удалить все товары из корзины?",
+      "addedToCartTitle": "Добавлено в корзину",
+      "addedToCartMessage": "Товар добавлен в корзину",
+      "viewCart": "Перейти в корзину",
+      "emptyCartTitle": "Пустая корзина",
+      "emptyCartMessage": "Ваша корзина пуста. Пожалуйста, добавьте товары перед оформлением заказа.",
+      "checkoutTitle": "Оформление заказа",
+      "checkoutMessage": "Продолжить оформление заказа?",
+      "orderSuccess": "Ваш заказ успешно оформлен!"
+    },
+    "common": {
+      "cancel": "Отмена",
+      "confirm": "Подтвердить",
+      "continue": "Продолжить"
     },
     "aboutUs": {
       "title": "О нас",

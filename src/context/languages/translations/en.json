@@ -20,13 +20,40 @@
       "placeholder": "Search products..."
     },
     "auth": {
-      "loginRegister": "Login / Register"
+      "loginRegister": "Login / Register",
+      "profile": "My Profile",
+      "logout": "Log Out"
     },
     "profile": {
       "myProfile": "My Profile",
       "myOrders": "My Orders",
       "settings": "Settings",
       "logout": "Log Out"
+    },
+    "cart": {
+      "title": "Shopping Cart",
+      "addToCart": "Add to Cart",
+      "totalItems": "Total Items",
+      "totalPrice": "Total Price",
+      "checkout": "Checkout",
+      "emptyCart": "Your cart is empty",
+      "continueShopping": "Continue Shopping",
+      "clearCart": "Clear Cart",
+      "clearCartTitle": "Clear Shopping Cart",
+      "clearCartMessage": "Are you sure you want to remove all items from your cart?",
+      "addedToCartTitle": "Added to Cart",
+      "addedToCartMessage": "Item has been added to your cart",
+      "viewCart": "View Cart",
+      "emptyCartTitle": "Empty Cart",
+      "emptyCartMessage": "Your cart is empty. Please add items before checkout.",
+      "checkoutTitle": "Proceed to Checkout",
+      "checkoutMessage": "Continue to place your order?",
+      "orderSuccess": "Your order has been placed successfully!"
+    },
+    "common": {
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "continue": "Continue"
     },
     "aboutUs": {
       "title": "About Us",

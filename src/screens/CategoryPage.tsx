@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   StyleSheet, 
   Text, 
@@ -6,39 +6,70 @@ import {
   Image, 
   TouchableOpacity, 
   ScrollView,
-  TextInput,
   SafeAreaView,
-  FlatList 
+  FlatList,
+  ActivityIndicator,
+  Dimensions,
+  Alert
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import BreadcrumbNavigation from '../components/BreadcrumbNavigation';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList as BaseRootStackParamList } from '../navigation/AppNavigator';
-import { changeLanguage } from '../utils/language';
 import Header from '../components/Header';
+import { collection, getDocs } from 'firebase/firestore';
+import { FIREBASE_DB } from '../../FirebaseConfig';
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from '../context/languages/useLanguage';
+import { useCart } from '../context/cart/CartContext';
 
 // Extend the RootStackParamList to ensure Home accepts the same params as CategoryPage
 type RootStackParamList = BaseRootStackParamList & {
-  Home: { categoryId?: string; categoryPath?: string[]; categoryName?: string; locale: string; };
+  Home: { locale: string; };
+  ProductDetailPage: {
+    product: any;
+    breadcrumbPath: string[];
+    locale: string;
+    originalProduct: FirebaseProduct;
+  };
 };
 
-// Type for our product data
-interface Product {
-  id: string;
+// Type for our product data from Firebase
+interface FirebaseProduct {
+  id?: string;
   name: string;
-  description: string;
-  price: number;
-  minOrder: number;
-  image: any;
-}
-
-// Type for our category data
-interface Category {
-  id: string;
-  name: string;
-  path: string;
-  image?: any;
+  packaging: string;
+  netWeight: {
+    value: number;
+    unit: string;
+    approximate: boolean;
+  };
+  storageTemperature: {
+    min: number;
+    max: number;
+    unit: string;
+  };
+  processingType: string[];
+  meatType: string;
+  meatContent: {
+    value: number;
+    unit: string;
+    description: string;
+  };
+  shelfLife: {
+    value: number;
+    unit: string;
+  } | null;
+  imageUrls?: string[];
+  translations: {
+    en: {
+      name: string;
+      packaging: string;
+      meatType: string;
+      meatContentDescription: string;
+      processingType: string[];
+    };
+  };
 }
 
 interface CategoryPageProps {
@@ -47,614 +78,313 @@ interface CategoryPageProps {
 
 const CategoryPage = ({ route }: CategoryPageProps) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-  const categoryId = 'categoryId' in route.params ? route.params.categoryId : 'catalog';
-  const categoryPath = 'categoryPath' in route.params ? route.params.categoryPath : ['product_catalog'];
-  const categoryName = 'categoryName' in route.params ? route.params.categoryName : 'Product Catalog';
+  const { t, currentLanguage } = useLanguage();
+  const { addItem } = useCart();
+  
+  // State for Firebase products
+  const [products, setProducts] = useState<FirebaseProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Define our top-level categories (main catalog categories)
-  const mainCategories: Category[] = [
-    { 
-      id: 'meat_products', 
-      name: 'Meat Products', 
-      path: 'product_catalog/meat_products',
-      image: require('../assets/images/placeholder.png')
-    },
-    { 
-      id: 'dairy_products', 
-      name: 'Dairy Products', 
-      path: 'product_catalog/dairy_products',
-      image: require('../assets/images/placeholder.png')
-    },
-    { 
-      id: 'grains_cereals', 
-      name: 'Grains & Cereals', 
-      path: 'product_catalog/grains_cereals',
-      image: require('../assets/images/placeholder.png')
-    },
-    { 
-      id: 'vegetables', 
-      name: 'Vegetables', 
-      path: 'product_catalog/vegetables',
-      image: require('../assets/images/placeholder.png')
-    },
-  ];
-
-  // Define meat product categories (shown after clicking "Meat Products")
-  const meatCategories: Category[] = [
-    { id: 'salami', name: 'Salami', path: 'product_catalog/meat_products/salami' },
-    { id: 'sausages', name: 'Sausages', path: 'product_catalog/meat_products/sausages' },
-    { id: 'tibia', name: 'Tibia', path: 'product_catalog/meat_products/tibia' },
-  ];
-
-  // Create product arrays for each category
-  const productsByCategory: Record<string, Product[]> = {
-    'salami': [
-      {
-        id: 'italian_salami',
-        name: 'Italian Salami',
-        description: 'Traditional Italian dry cured salami with garlic and wine',
-        price: 320.50,
-        minOrder: 25,
-        image: require('../assets/images/placeholder.png')
-      },
-      {
-        id: 'pepperoni',
-        name: 'Pepperoni',
-        description: 'Classic pepperoni, perfect for pizzas and charcuterie boards',
-        price: 295.75,
-        minOrder: 30,
-        image: require('../assets/images/placeholder.png')
-      },
-      {
-        id: 'chorizo',
-        name: 'Chorizo',
-        description: 'Spanish-style chorizo with smoked paprika and garlic',
-        price: 340.25,
-        minOrder: 20,
-        image: require('../assets/images/placeholder.png')
-      }
-    ],
-    'sausages': [
-      {
-        id: 'bratwurst',
-        name: 'Bratwurst',
-        description: 'Traditional German sausage made from pork and veal',
-        price: 215.80,
-        minOrder: 40,
-        image: require('../assets/images/placeholder.png')
-      },
-      {
-        id: 'kielbasa',
-        name: 'Kielbasa',
-        description: 'Polish smoked sausage, perfect for grilling or adding to stews',
-        price: 235.40,
-        minOrder: 35,
-        image: require('../assets/images/placeholder.png')
-      },
-      {
-        id: 'andouille',
-        name: 'Andouille',
-        description: 'Cajun-style smoked sausage, essential for gumbo and jambalaya',
-        price: 275.60,
-        minOrder: 30,
-        image: require('../assets/images/placeholder.png')
-      }
-    ],
-    'tibia': [
-      {
-        id: 'beef_shank',
-        name: 'Beef Shank',
-        description: 'Premium cut beef shank with bone, perfect for slow cooking',
-        price: 228.65,
-        minOrder: 50,
-        image: require('../assets/images/placeholder.png')
-      },
-      {
-        id: 'beef_ribeye',
-        name: 'Beef Ribeye',
-        description: 'Prime beef ribeye steak, well marbled for extra flavor',
-        price: 354.80,
-        minOrder: 30,
-        image: require('../assets/images/placeholder.png')
-      },
-      {
-        id: 'beef_brisket',
-        name: 'Beef Brisket',
-        description: 'Tender beef brisket, ideal for smoking or slow roasting',
-        price: 190.25,
-        minOrder: 60,
-        image: require('../assets/images/placeholder.png')
-      },
-      {
-        id: 'ground_beef',
-        name: 'Ground Beef',
-        description: 'Fresh ground beef, 80% lean, 20% fat, perfect for burgers',
-        price: 145.50,
-        minOrder: 40,
-        image: require('../assets/images/placeholder.png')
-      },
-      {
-        id: 'beef_tenderloin',
-        name: 'Beef Tenderloin',
-        description: 'Premium cut beef tenderloin, the most tender beef cut',
-        price: 418.70,
-        minOrder: 25,
-        image: require('../assets/images/placeholder.png')
-      }
-    ]
-  };
-
-  // Determine what to show based on categoryId
-  const getSubcategories = (): Category[] => {
-    switch (categoryId) {
-      case 'catalog':
-        return mainCategories;
-      case 'meat_products':
-        return meatCategories;
-      default:
-        return [];
+  // Fetch products from Firebase
+  const fetchProducts = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const foodItemsRef = collection(FIREBASE_DB, 'foodItems');
+      const querySnapshot = await getDocs(foodItemsRef);
+      
+      const fetchedProducts: FirebaseProduct[] = [];
+      
+      querySnapshot.forEach((doc) => {
+        const data = doc.data() as FirebaseProduct;
+        fetchedProducts.push({
+          ...data,
+          id: doc.id,
+        });
+      });
+      
+      setProducts(fetchedProducts);
+    } catch (err) {
+      console.error("Error fetching products:", err);
+      setError("Failed to load products. Please try again later.");
+    } finally {
+      setLoading(false);
     }
   };
+  
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
-  // Get products based on category - now dynamic
-  const getProducts = (): Product[] => {
-    // Return products for the current category if they exist
-    return productsByCategory[categoryId] || [];
-  };
-
-  const subcategories = getSubcategories();
-  const products = getProducts();
-
-  // Generate breadcrumb items based on the path
+  // Generate breadcrumb items
   const generateBreadcrumbItems = () => {
-    // Start with catalog
-    const items = [
+    return [
       {
         id: 'catalog',
-        label: 'Product Catalog',
+        label: t('productDetail.productCatalog'),
         onPress: () => navigation.navigate('Home', { 
-          categoryId: 'catalog',
-          categoryPath: ['product_catalog'],
-          categoryName: 'Product Catalog',
-          locale: route.params.locale || 'en'
+          locale: route.params?.locale || 'en'
         })
       }
     ];
-
-    // Build breadcrumbs from path parts
-    let currentPath = 'product_catalog';
-    let pathSegments = ['product_catalog'];
-    
-    categoryPath.slice(1).forEach((path) => {
-      pathSegments.push(path);
-      
-      // Get a nice display name from the path
-      const displayName = path.split('_').map(word => 
-        word.charAt(0).toUpperCase() + word.slice(1)
-      ).join(' ');
-      
-      items.push({
-        id: path,
-        label: displayName,
-        onPress: () => navigation.navigate('CategoryPage', {
-          categoryId: path,
-          categoryPath: pathSegments,
-          categoryName: displayName,
-          locale: route.params.locale || 'en'
-        })
-      });
-    });
-
-    return items;
   };
 
-  const handleProductPress = (product: Product) => {
+  const handleProductPress = (product: FirebaseProduct) => {
+    // Create a product object compatible with ProductDetailPage
+    const detailProduct = {
+      id: product.id || 'unknown',
+      name: product.translations?.[currentLanguage]?.name || product.name,
+      description: product.translations?.[currentLanguage]?.meatContentDescription || '',
+      price: product.meatContent?.value || 0,
+      minOrder: 50, // Default value 
+      image: product.imageUrls && product.imageUrls.length > 0 
+        ? { uri: product.imageUrls[0] } 
+        : require('../assets/images/placeholder.png')
+    };
+    
     navigation.navigate('ProductDetailPage', { 
-      product,
-      breadcrumbPath: [...categoryPath, product.id],
-      locale: route.params.locale || 'en'
+      product: detailProduct,
+      breadcrumbPath: ['product_catalog', product.id || 'unknown'],
+      locale: currentLanguage,
+      originalProduct: product // Pass the original product data for detailed view
     });
   };
 
-  const handleSubcategoryPress = (category: Category) => {
-    // Format the category path correctly
-    const newPath = category.path.split('/');
-    const locale = route.params.locale || 'en';
+  // Update the renderProductItem function to include Add to Cart button
+  const renderProductItem = ({ item }: { item: FirebaseProduct }) => {
+    // Use translations based on current language
+    const name = item.translations?.[currentLanguage]?.name || item.name;
+    const description = item.translations?.[currentLanguage]?.meatContentDescription || '';
+    const meatType = item.translations?.[currentLanguage]?.meatType || item.meatType;
     
-    // Use the correct screen name based on whether it's the root catalog
-    if (category.id === 'catalog') {
-      navigation.navigate('Home', {
-        categoryId: category.id,
-        categoryPath: newPath,
-        categoryName: category.name,
-        locale
+    const handleAddToCart = () => {
+      addItem({
+        id: item.id || `product-${Date.now()}`,
+        name: name,
+        price: item.meatContent?.value || 0,
+        quantity: 1,
+        imageUrl: item.imageUrls && item.imageUrls.length > 0 ? item.imageUrls[0] : undefined,
+        weight: {
+          value: item.netWeight?.value || 0,
+          unit: item.netWeight?.unit || 'g'
+        }
       });
-    } else {
-      navigation.navigate('CategoryPage', {
-        categoryId: category.id,
-        categoryPath: newPath,
-        categoryName: category.name,
-        locale
-      });
-    }
-  };
-
-  // Handle language change
-  const handleLanguageChange = (newLocale: string) => {
-    changeLanguage(navigation, { name: route.name as keyof RootStackParamList, params: route.params }, newLocale);
+      
+      // Show confirmation
+      Alert.alert(
+        t('cart.addedToCartTitle'),
+        t('cart.addedToCartMessage'),
+        [
+          { 
+            text: t('cart.continueShopping'), 
+            style: 'cancel' 
+          },
+          { 
+            text: t('cart.viewCart'), 
+            onPress: () => navigation.navigate('Cart')
+          }
+        ]
+      );
+    };
+    
+    return (
+      <TouchableOpacity 
+        style={styles.productCard}
+        onPress={() => handleProductPress(item)}
+      >
+        <Image 
+          source={item.imageUrls && item.imageUrls.length > 0 
+            ? { uri: item.imageUrls[0] } 
+            : require('../assets/images/placeholder.png')} 
+          style={styles.productImage}
+          resizeMode="contain"
+        />
+        <Text style={styles.productName}>{name}</Text>
+        <Text style={styles.productDescription} numberOfLines={2}>
+          {description}
+        </Text>
+        <Text style={styles.productDetails}>
+          {t('productDetail.characteristics.productType')}: {meatType}
+        </Text>
+        <Text style={styles.productDetails}>
+          {t('productDetail.characteristics.weight')}: {item.netWeight?.value || 0} {item.netWeight?.unit || 'g'}
+        </Text>
+        
+        {/* Add to Cart Button */}
+        <TouchableOpacity 
+          style={styles.addToCartButton}
+          onPress={(e) => {
+            e.stopPropagation();
+            handleAddToCart();
+          }}
+        >
+          <Text style={styles.addToCartButtonText}>{t('cart.addToCart')}</Text>
+        </TouchableOpacity>
+      </TouchableOpacity>
+    );
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Header onCatalogPress={() => navigation.navigate('Home')} />
+    <SafeAreaView style = {{
+      flex: 1,
+      backgroundColor: '#f9f9f9',
+    }}>
+      <Header onCatalogPress={() => {
+        setLoading(true);
+        fetchProducts();
+      }} />
       
       <BreadcrumbNavigation items={generateBreadcrumbItems()} />
       
-      <View style={styles.contentContainer}>
-        {/* Left sidebar with categories */}
-        <View style={styles.sidebar}>
-          <Text style={styles.sidebarTitle}>Categories</Text>
-          {mainCategories.map(category => (
-            <TouchableOpacity
-              key={category.id}
-              style={[
-                styles.categoryItem, 
-                categoryId === category.id && styles.activeCategoryItem
-              ]}
-              onPress={() => handleSubcategoryPress(category)}
-            >
-              <Text style={[
-                styles.categoryText,
-                categoryId === category.id && styles.activeCategoryText
-              ]}>{category.name}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {/* Main content area */}
-        <ScrollView style={styles.mainContent}>
-          {/* Category Title */}
-          <View style={styles.titleContainer}>
-            <Text style={styles.categoryTitle}>{categoryName}</Text>
-          </View>
-
-          {/* Subcategories Section (if any) */}
-          {subcategories.length > 0 && (
-            <View style={styles.subcategoriesSection}>
-              <Text style={styles.sectionTitle}>
-                {categoryId === 'catalog' ? 'Categories' : 'Subcategories'}
-              </Text>
-              
-              <View style={styles.subcategoriesList}>
-                {subcategories.map((category) => (
-                  <TouchableOpacity 
-                    key={category.id}
-                    style={styles.subcategoryCard}
-                    onPress={() => handleSubcategoryPress(category)}
-                  >
-                    <View style={styles.subcategoryIconContainer}>
-                      <Ionicons name="folder-outline" size={24} color="#FF3B30" />
-                    </View>
-                    <Text style={styles.subcategoryName}>{category.name}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-          )}
-
-          {/* Products Section */}
-          {products.length > 0 && (
-            <View style={styles.productsSection}>
-              <Text style={styles.sectionTitle}>Products</Text>
-              <View style={styles.productsGrid}>
-                {products.map((product) => (
-                  <TouchableOpacity 
-                    key={product.id}
-                    style={styles.productCard}
-                    onPress={() => handleProductPress(product)}
-                  >
-                    <Image 
-                      source={product.image} 
-                      style={styles.productImage}
-                      resizeMode="contain"
-                    />
-                    <Text style={styles.productName}>{product.name}</Text>
-                    <Text style={styles.productDescription} numberOfLines={2}>
-                      {product.description}
-                    </Text>
-                    <Text style={styles.productPrice}>{product.price}₽ per kg</Text>
-                    <Text style={styles.productMinOrder}>Min. order: {product.minOrder} kg</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-          )}
-
-          {/* Show message when no subcategories or products */}
-          {subcategories.length === 0 && products.length === 0 && (
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyMessage}>No items found in this category.</Text>
-            </View>
-          )}
-        </ScrollView>
+      <View style={styles.titleContainer}>
+        <Text style={styles.categoryTitle}>{t('productDetail.productCatalog')}</Text>
       </View>
+
+    
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#FF3B30" />
+          <Text style={styles.loadingText}>Loading products...</Text>
+        </View>
+      ) : error ? (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      ) : products.length > 0 ? (
+        <FlatList
+          data={products}
+          renderItem={renderProductItem}           
+          keyExtractor={(item) => item.id}
+          numColumns={3}        
+          contentContainerStyle={styles.productsGrid}
+          columnWrapperStyle={styles.productRow}
+          showsVerticalScrollIndicator={true}
+        />
+      ) : (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyMessage}>No products found.</Text>
+        </View>
+      )}
+      
     </SafeAreaView>
   );
 };
 
-// Your existing styles...
 const styles = StyleSheet.create({
-  // All your existing styles here
+  flatList: {
+    flex: 1,  // Add this
+    width: '100%',
+  },
   container: {
-    flex: 1,
+    flex: 1,  // Add this
     backgroundColor: '#f9f9f9',
+    flexDirection: 'column',
   },
-  header: {
+  mainContent: {
+    flex: 1,  // Add this
     backgroundColor: '#fff',
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-  },
-  headerTop: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 15,
-  },
-  headerCompanyInfo: {
-    alignItems: 'flex-end',
-    flex: 1,
-  },
-  phoneNumber: {
-    fontSize: 14,
-    fontWeight: '500',
-    marginTop: 3,
-    color: '#555',
-  },
-  emailText: {
-    fontSize: 12,
-    color: '#555',
-    marginTop: 3,
-  },
-  languageSelector: {
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    padding: 5,
-    borderRadius: 5,
-    marginLeft: 10,
-  },
-  languageText: {
-    fontSize: 12,
-  },
-  logoText: {
-    fontSize: 40,
-    fontWeight: 'bold',
-  },
-  headerIcons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 20,
-  },
-  icon: {
-    marginHorizontal: 8,
-  },
-  loginText: {
-    fontSize: 14,
-    color: '#FF3B30',
-  },
-  navigationBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 5,
-  },
-  catalogButton: {
-    backgroundColor: '#FF3B30',
-    padding: 10,
-    borderRadius: 5,
-  },
-  catalogButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  searchBar: {
-    flex: 1,
-    marginHorizontal: 10,
-    backgroundColor: 'white',
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    borderRadius: 5,
-    height: 36,
-    justifyContent: 'center',
-  },
-  searchInput: {
-    padding: 8,
-  },
-  geographyButton: {
-    padding: 5,
-  },
-  searchButton: {
-    backgroundColor: '#FF3B30',
-    padding: 8,
-    borderRadius: 5,
-    marginLeft: 5,
   },
   titleContainer: {
     padding: 15,
     backgroundColor: '#fff',
     marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
   },
   categoryTitle: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: '#333',
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    marginLeft: 10,
-  },
-  subcategoriesSection: {
-    backgroundColor: '#fff',
-    padding: 10,
-    marginBottom: 10,
-  },
-  subcategoriesList: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  mainCategoriesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  mainCategoryCard: {
-    width: '48%',
-    height: 150,
-    marginBottom: 15,
-    borderRadius: 8,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  categoryImage: {
-    width: '100%',
-    height: '100%',
-  },
-  categoryOverlay: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    padding: 10,
-  },
-  mainCategoryName: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  subcategoryCard: {
-    width: '22%',
-    backgroundColor: '#f9f9f9',
-    borderRadius: 8,
-    padding: 10,
-    margin: '1.5%',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-  },
-  subcategoryIconContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 50,
-    width: 50,
-    height: 50,
+  loadingContainer: {
+    flex: 1,  // Add this
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: '#f0f0f0',
+    padding: 20,
   },
-  subcategoryName: {
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#555',
+  },
+  errorContainer: {
+    flex: 1,  // Add this
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#FF3B30',
     textAlign: 'center',
-    fontSize: 14,
-    fontWeight: '500',
   },
-  productsSection: {
-    backgroundColor: '#fff',
-    padding: 10,
+  emptyContainer: {
+    flex: 1,  // Add this
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  emptyMessage: {
+    fontSize: 16,
+    color: '#888',
   },
   productsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    padding: 10,
+    paddingBottom: 100,
+  },
+  productRow: {
     justifyContent: 'space-between',
   },
   productCard: {
     width: '31%',
     backgroundColor: '#fff',
     borderRadius: 8,
-    padding: 10,
+    padding: 12,
     marginBottom: 15,
     borderWidth: 1,
     borderColor: '#e0e0e0',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
   },
   productImage: {
     width: '100%',
-    height: 120,
-    marginBottom: 8,
+    height: 140,
+    marginBottom: 10,
+    borderRadius: 4,
   },
   productName: {
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 5,
+    color: '#333',
   },
   productDescription: {
     fontSize: 12,
     color: '#666',
-    marginBottom: 5,
-    height: 30,
+    marginBottom: 8,
+    height: 32,
   },
-  productPrice: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#333',
-    marginBottom: 3,
-  },
-  productMinOrder: {
+  productDetails: {
     fontSize: 12,
     color: '#888',
+    marginBottom: 3,
   },
-  emptyContainer: {
-    padding: 30,
+  addToCartButton: {
+    backgroundColor: '#FF3B30',
+    padding: 8,
+    borderRadius: 5,
     alignItems: 'center',
+    marginTop: 10,
   },
-  emptyMessage: {
-    fontSize: 16,
-    color: '#888',
-  },
-  activeLanguage: {
+  addToCartButtonText: {
+    color: 'white',
+    fontSize: 12,
     fontWeight: 'bold',
-    color: '#FF3B30',
-  },
-  languageSeparator: {
-    marginHorizontal: 3,
-    color: '#999',
-  },
-  contentContainer: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  sidebar: {
-    width: 220,
-    backgroundColor: '#fff',
-    padding: 15,
-    borderRightWidth: 1,
-    borderRightColor: '#e0e0e0',
-  },
-  sidebarTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    color: '#333',
-  },
-  categoryItem: {
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  activeCategoryItem: {
-    backgroundColor: '#f9f9f9',
-  },
-  categoryText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  activeCategoryText: {
-    color: '#FF3B30',
-    fontWeight: '500',
-  },
-  mainContent: {
-    flex: 1,
-    backgroundColor: '#fff',
   },
 });
 

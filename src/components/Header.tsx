@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   Animated,
   Platform,
-  ScrollView
+  ScrollView,
+  TextInput
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -17,17 +18,23 @@ import { LanguageContext } from '../context/languages/LanguageContext';
 import { useTranslation } from 'react-i18next';
 import SearchBar from './SearchBar';
 import { useLanguage } from '../context/languages/useLanguage';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../navigation/AppNavigator';
+import { useCart } from '../context/cart/CartContext';
+
+
 interface HeaderProps {
   onCatalogPress?: () => void;
 }
 
 const Header = ({ onCatalogPress }: HeaderProps) => {
-  const { user } = useUser();
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-  const dropdownAnimation = useRef(new Animated.Value(0)).current;
-  
-  const { translate, currentLanguage, changeLanguage } = useLanguage();
+  const [dropdownAnimation] = useState(new Animated.Value(0));
+  const [searchQuery, setSearchQuery] = useState('');
+  const { user } = useUser();
+  const { translate, changeLanguage, currentLanguage } = useLanguage();
+  const { getTotalItems } = useCart();
   
   const toggleDropdown = () => {
     if (isDropdownVisible) {
@@ -49,7 +56,7 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
   };
   
   // Toggle between English and Russian
-  const toggleLanguage = () => {
+  const toggleLanguageHandler = () => {
     // Get the current language directly from context to avoid closure issues
     const newLanguage = currentLanguage === 'en' ? 'ru' : 'en';
     console.log(`Toggle: current=${currentLanguage}, new=${newLanguage}`);
@@ -75,6 +82,29 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
     // Implement search functionality here
   };
 
+  const handleCatalogPress = () => {
+    if (onCatalogPress) {
+      onCatalogPress();
+    } else {
+      // Direct navigation to the CategoryPage instead of Home
+      navigation.navigate('CategoryPage', { 
+        categoryId: 'undefined',
+        categoryPath: ['product_catalog'],
+        categoryName: 'All Categories',
+        locale: currentLanguage
+      });
+    }
+  };
+
+  const handleLanguageChange = (lang: string) => {
+    changeLanguage(lang);
+  };
+
+  const handleSearchSubmit = () => {
+    console.log('Search query:', searchQuery);
+    // Implement search functionality
+  };
+
   // Navigation options with translated text
   const navigationOptions = [
     { id: 'about', name: translate('navigation.aboutUs'), route: 'AboutUs' },
@@ -97,85 +127,75 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
   return (
     <View style={styles.header}>
       <View style={styles.headerTop}>
-        <View style={styles.headerCompanyInfo}>
+        <TouchableOpacity onPress={() => navigation.navigate('Home', { locale: currentLanguage })}>
           <Text style={styles.logoText}>{translate('header.storeName')}</Text>
+        </TouchableOpacity>
+
+        <View style={styles.headerCompanyInfo}>
           <Text style={styles.phoneNumber}>{translate('header.phoneNumber')}</Text>
           <Text style={styles.emailText}>{translate('header.email')}</Text>
+          
+          {/* Language selector */}
+          <View style={styles.languageSelector}>
+            <TouchableOpacity onPress={() => handleLanguageChange('en')}>
+              <Text style={[styles.languageText, currentLanguage === 'en' && styles.activeLanguage]}>EN</Text>
+            </TouchableOpacity>
+            <Text style={styles.languageSeparator}>|</Text>
+            <TouchableOpacity onPress={() => handleLanguageChange('ru')}>
+              <Text style={[styles.languageText, currentLanguage === 'ru' && styles.activeLanguage]}>RU</Text>
+            </TouchableOpacity>
+          </View>
         </View>
         
         <View style={styles.headerIcons}>
-          <Ionicons name="notifications-outline" size={24} color="black" style={styles.icon} />
-          <Ionicons name="cart-outline" size={24} color="black" style={styles.icon} />
+          <TouchableOpacity style={styles.icon}>
+            <Ionicons name="heart-outline" size={24} color="#333" />
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.icon}
+            onPress={() => navigation.navigate('Cart')}
+          >
+            <Ionicons name="cart-outline" size={24} color="#333" />
+            {getTotalItems() > 0 && (
+              <View style={styles.cartBadge}>
+                <Text style={styles.cartBadgeText}>{getTotalItems()}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
           
           {user ? (
-            // User is logged in, show profile button
-            <View style={styles.profileContainer}>
-              <TouchableOpacity 
-                style={styles.profileButton}
-                onPress={toggleDropdown}
-              >
-                <Ionicons name="person-circle-outline" size={24} color="#FF3B30" />
-                <Text style={styles.profileText}>
-                  {user.displayName || user.email?.split('@')[0]}
-                </Text>
-                <Ionicons 
-                  name={isDropdownVisible ? "chevron-up" : "chevron-down"} 
-                  size={16} 
-                  color="#FF3B30" 
-                />
-              </TouchableOpacity>
+            // User is logged in - show profile and logout options
+            <TouchableOpacity 
+              style={styles.icon}
+              onPress={toggleDropdown}
+            >
+              <Ionicons name="person-circle-outline" size={24} color="#FF3B30" />
               
               {isDropdownVisible && (
-                <Animated.View style={[
-                  styles.dropdownMenu,
-                  { 
-                    opacity: dropdownAnimation,
-                    transform: [{ 
-                      translateY: dropdownAnimation.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [-10, 0]
-                      }) 
-                    }] 
-                  }
-                ]}>
+                <Animated.View 
+                  style={[
+                    styles.dropdown,
+                    {
+                      opacity: dropdownAnimation,
+                      transform: [{
+                        translateY: dropdownAnimation.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [-10, 0]
+                        })
+                      }]
+                    }
+                  ]}
+                >
                   <TouchableOpacity 
                     style={styles.dropdownItem}
                     onPress={() => {
                       toggleDropdown();
-                      // Navigate to profile page
-                      console.log('Navigate to profile');
+                      navigation.navigate('Profile');
                     }}
                   >
-                    <Ionicons name="person-outline" size={18} color="#333" />
-                    <Text style={styles.dropdownItemText}>{translate('profile.myProfile')}</Text>
+                    <Text style={styles.dropdownText}>{translate('auth.profile')}</Text>
                   </TouchableOpacity>
-                  
-                  <TouchableOpacity 
-                    style={styles.dropdownItem}
-                    onPress={() => {
-                      toggleDropdown();
-                      // Navigate to orders
-                      console.log('Navigate to orders');
-                    }}
-                  >
-                    <Ionicons name="list-outline" size={18} color="#333" />
-                    <Text style={styles.dropdownItemText}>{translate('profile.myOrders')}</Text>
-                  </TouchableOpacity>
-                  
-                  <TouchableOpacity 
-                    style={styles.dropdownItem}
-                    onPress={() => {
-                      toggleDropdown();
-                      // Navigate to settings
-                      console.log('Navigate to settings');
-                    }}
-                  >
-                    <Ionicons name="settings-outline" size={18} color="#333" />
-                    <Text style={styles.dropdownItemText}>{translate('profile.settings')}</Text>
-                  </TouchableOpacity>
-                  
-                  <View style={styles.dropdownDivider} />
-                  
                   <TouchableOpacity 
                     style={styles.dropdownItem}
                     onPress={() => {
@@ -183,41 +203,44 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
                       handleLogout();
                     }}
                   >
-                    <Ionicons name="log-out-outline" size={18} color="#FF3B30" />
-                    <Text style={[styles.dropdownItemText, styles.logoutText]}>{translate('profile.logout')}</Text>
+                    <Text style={styles.dropdownText}>{translate('auth.logout')}</Text>
                   </TouchableOpacity>
                 </Animated.View>
               )}
-            </View>
+            </TouchableOpacity>
           ) : (
-            // User is not logged in, show login/register buttons
+            // User is not logged in - show login/register button
             <TouchableOpacity 
-              onPress={() => navigation.navigate('Login' as never)}
-              style={styles.loginButton}
+              style={styles.icon}
+              onPress={() => navigation.navigate('Login')}
             >
               <Text style={styles.loginText}>{translate('auth.loginRegister')}</Text>
             </TouchableOpacity>
           )}
         </View>
       </View>
-                
+      
       <View style={styles.navigationBar}>
-        <TouchableOpacity 
-          style={styles.catalogButton}
-          onPress={onCatalogPress}
-        >
+        <TouchableOpacity style={styles.catalogButton} onPress={handleCatalogPress}>
           <Text style={styles.catalogButtonText}>{translate('navigation.catalog')}</Text>
         </TouchableOpacity>
         
-        {/* Search bar component */}
-        <SearchBar onSearch={handleSearch} placeholder={translate('search.placeholder')} />
+        <View style={styles.searchBar}>
+          <TextInput 
+            style={styles.searchInput}
+            placeholder={translate('search.placeholder')}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            onSubmitEditing={handleSearchSubmit}
+          />
+        </View>
         
-        {/* Language selector with toggle functionality */}
-        <TouchableOpacity 
-          style={styles.languageSelector}
-          onPress={toggleLanguage}
-        >
-          <Text style={styles.languageText}>{getLanguageDisplay()}</Text>
+        <TouchableOpacity style={styles.geographyButton}>
+          <Ionicons name="location-outline" size={24} color="#333" />
+        </TouchableOpacity>
+        
+        <TouchableOpacity style={styles.searchButton} onPress={handleSearchSubmit}>
+          <Ionicons name="search" size={20} color="white" />
         </TouchableOpacity>
       </View>
 
@@ -243,7 +266,6 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
 };
 
 const styles = StyleSheet.create({
-  // Existing styles...
   header: {
     backgroundColor: '#fff',
     padding: 10,
@@ -275,12 +297,22 @@ const styles = StyleSheet.create({
   languageSelector: {
     borderWidth: 1,
     borderColor: '#e0e0e0',
-    padding: 8,
+    padding: 5,
     borderRadius: 5,
-    marginLeft: 10,
+    marginTop: 5,
+    flexDirection: 'row',
   },
   languageText: {
     fontSize: 12,
+    paddingHorizontal: 3,
+  },
+  activeLanguage: {
+    fontWeight: 'bold',
+    color: '#FF3B30',
+  },
+  languageSeparator: {
+    marginHorizontal: 3,
+    color: '#999',
   },
   logoText: {
     fontSize: 40,
@@ -293,10 +325,6 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginHorizontal: 8,
-  },
-  loginButton: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
   },
   loginText: {
     fontSize: 14,
@@ -316,58 +344,29 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
-  profileContainer: {
-    position: 'relative',
-  },
-  profileButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 5,
+  searchBar: {
+    flex: 1,
+    marginHorizontal: 10,
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
     borderRadius: 5,
+    height: 36,
+    justifyContent: 'center',
   },
-  profileText: {
+  searchInput: {
+    padding: 8,
+  },
+  geographyButton: {
+    padding: 5,
+  },
+  searchButton: {
+    backgroundColor: '#FF3B30',
+    padding: 8,
+    borderRadius: 5,
     marginLeft: 5,
-    marginRight: 3,
-    color: '#FF3B30',
-    fontWeight: '500',
   },
-  dropdownMenu: {
-    position: 'absolute',
-    top: 40,
-    right: 0,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
-    width: 180,
-    zIndex: 1000,
-    ...Platform.select({
-      web: {
-        boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
-      },
-    }),
-  },
-  dropdownItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-  },
-  dropdownItemText: {
-    marginLeft: 10,
-    fontSize: 14,
-    color: '#333',
-  },
-  dropdownDivider: {
-    height: 1,
-    backgroundColor: '#e0e0e0',
-    marginVertical: 4,
-  },
-  logoutText: {
-    color: '#FF3B30',
-  },
+  // Existing styles...
   navOptionsBar: {
     marginTop: 10,
     backgroundColor: '#',
@@ -389,6 +388,47 @@ const styles = StyleSheet.create({
   navOptionText: {
     fontSize: 14,
     color: '#333',
+  },
+  dropdown: {
+    position: 'absolute',
+    right: 0,
+    top: 30,
+    backgroundColor: 'white',
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    padding: 5,
+    minWidth: 120,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+    zIndex: 100,
+  },
+  dropdownItem: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  dropdownText: {
+    fontSize: 14,
+    color: '#333',
+  },
+  cartBadge: {
+    position: 'absolute',
+    right: -6,
+    top: -6,
+    backgroundColor: '#FF3B30',
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cartBadgeText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
 });
 

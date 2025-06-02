@@ -8,7 +8,7 @@ import {
   Dimensions
 } from 'react-native';
 import Header from './Header';
-import Sidebar from './Sidebar';
+
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -28,16 +28,17 @@ const TextPagesLayout = ({ children, activeCategory }: LayoutProps) => {
     <SafeAreaView style={styles.container}>
       <Header />
       <View style={styles.contentContainer}>
-        {/* Left sidebar with categories - fixed position */}
-        <Sidebar activeCategory={activeCategory} />
+
         
         {/* Main content area */}
         <View style={styles.mainContent}>
           {hasScrollView ? (
             // If children already include a ScrollView, render directly to avoid nesting
+            console.log('Rendering existing ScrollView'),
             children
           ) : (
             // Otherwise wrap in our own ScrollView
+            console.log('Wrapping children in ScrollView'),
             <ScrollView 
               style={styles.scrollView}
               contentContainerStyle={styles.scrollViewContent}

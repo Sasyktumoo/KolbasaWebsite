@@ -13,19 +13,26 @@ import {
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../../navigation/AppNavigator';
 import { Ionicons } from '@expo/vector-icons';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   const signIn = async () => {
     setLoading(true);
     try {
       await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
       console.log('User signed in successfully');
+      
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Home', params: { locale: 'en' } }],
+      });
     } catch (error: any) {
       console.error(error);
       Alert.alert('Sign In Failed', error.message);
