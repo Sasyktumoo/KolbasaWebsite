@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   StyleSheet, 
   Text, 
@@ -18,6 +18,7 @@ import { Ionicons } from '@expo/vector-icons';
 const ProfileScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const { user } = useUser();
+  const [settingsExpanded, setSettingsExpanded] = useState(false);
   
   const handleLogout = async () => {
     try {
@@ -26,6 +27,10 @@ const ProfileScreen = () => {
     } catch (error) {
       console.error('Error signing out:', error);
     }
+  };
+
+  const toggleSettings = () => {
+    setSettingsExpanded(!settingsExpanded);
   };
 
   return (
@@ -42,21 +47,49 @@ const ProfileScreen = () => {
         </View>
         
         <View style={styles.profileActions}>
-          <TouchableOpacity style={styles.actionButton} onPress={() => {}}>
-            <Ionicons name="settings-outline" size={24} color="#333" style={styles.actionIcon} />
-            <Text style={styles.actionText}>Account Settings</Text>
+          {/* Profile & Settings Accordion */}
+          <TouchableOpacity style={styles.accordionHeader} onPress={toggleSettings}>
+            <View style={styles.accordionTitleContainer}>
+              <Ionicons name="settings-outline" size={24} color="#333" style={styles.actionIcon} />
+              <Text style={styles.actionText}>Profile & Settings</Text>
+            </View>
+            <Ionicons 
+              name={settingsExpanded ? "chevron-up" : "chevron-down"} 
+              size={24} 
+              color="#333" 
+            />
           </TouchableOpacity>
           
+          {settingsExpanded && (
+            <View style={styles.accordionContent}>
+              <TouchableOpacity style={styles.settingItem} onPress={() => {}}>
+                <Text style={styles.settingText}>Change Email</Text>
+              </TouchableOpacity>
+              <View style={styles.separator} />
+              
+              <TouchableOpacity style={styles.settingItem} onPress={() => {}}>
+                <Text style={styles.settingText}>Change Password</Text>
+              </TouchableOpacity>
+              <View style={styles.separator} />
+              
+              
+
+            </View>
+          )}
+          
+          {/* Order History */}
           <TouchableOpacity style={styles.actionButton} onPress={() => {}}>
             <Ionicons name="cart-outline" size={24} color="#333" style={styles.actionIcon} />
             <Text style={styles.actionText}>Order History</Text>
           </TouchableOpacity>
           
+          {/* Address Book */}
           <TouchableOpacity style={styles.actionButton} onPress={() => {}}>
-            <Ionicons name="heart-outline" size={24} color="#333" style={styles.actionIcon} />
-            <Text style={styles.actionText}>Favorites</Text>
+            <Ionicons name="location-outline" size={24} color="#333" style={styles.actionIcon} />
+            <Text style={styles.actionText}>Address Book</Text>
           </TouchableOpacity>
           
+          {/* Logout */}
           <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
             <Ionicons name="log-out-outline" size={24} color="#FF3B30" style={styles.actionIcon} />
             <Text style={styles.logoutText}>Logout</Text>
@@ -110,6 +143,46 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderWidth: 1,
     borderColor: '#e0e0e0',
+  },
+  accordionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
+  },
+  accordionTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  accordionContent: {
+    backgroundColor: '#f5f5f5',
+    borderWidth: 1,
+    borderTopWidth: 0,
+    borderColor: '#e0e0e0',
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
+    marginBottom: 10,
+    overflow: 'hidden',
+  },
+  settingItem: {
+    padding: 15,
+    paddingLeft: 53, // To align with the parent text
+  },
+  settingText: {
+    fontSize: 14,
+    color: '#555',
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#e0e0e0',
+    marginHorizontal: 15,
   },
   actionIcon: {
     marginRight: 15,

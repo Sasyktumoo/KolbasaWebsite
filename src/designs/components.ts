@@ -109,7 +109,7 @@ const components = StyleSheet.create({
   },
   productImage: {
     width: '100%',
-    height: 120,
+    height: '100%',
     marginBottom: 8,
   },
   characteristic: {

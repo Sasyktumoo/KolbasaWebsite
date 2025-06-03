@@ -95,6 +95,8 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
   const [activeTab, setActiveTab] = useState('description');
   const { t, currentLanguage } = useLanguage();
   const { addItem } = useCart();
+  // Add state to track current image index
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
   // Create refs for scrolling to sections
   const flatListRef = useRef<FlatList>(null);
@@ -128,7 +130,21 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
   const increaseQuantity = () => {
     setQuantity(quantity + 1);
   };
-  
+  const nextImage = () => {
+    if (firebaseProduct?.imageUrls && firebaseProduct.imageUrls.length > 0) {
+      setCurrentImageIndex((prevIndex) => 
+        prevIndex === firebaseProduct.imageUrls.length - 1 ? 0 : prevIndex + 1
+      );
+    }
+  };
+
+  const prevImage = () => {
+    if (firebaseProduct?.imageUrls && firebaseProduct.imageUrls.length > 0) {
+      setCurrentImageIndex((prevIndex) => 
+        prevIndex === 0 ? firebaseProduct.imageUrls.length - 1 : prevIndex - 1
+      );
+    }
+  };
   const totalPrice = (pricePerKg * quantity).toFixed(2);
   
   // Handler for catalog button press
@@ -288,11 +304,47 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
           <View style={styles.mainProductSection}>
             {/* Product Image */}
             <View style={styles.productImageContainer}>
+              {/* Display current image from imageUrls if available */}
               <Image 
-                source={product.image} 
+                source={
+                  firebaseProduct?.imageUrls && firebaseProduct.imageUrls.length > 0
+                    ? { uri: firebaseProduct.imageUrls[currentImageIndex] }
+                    : product.image
+                } 
                 style={styles.productImage}
                 resizeMode="contain"
               />
+              
+              {/* Image navigation controls - only show if multiple images exist */}
+              {firebaseProduct?.imageUrls && firebaseProduct.imageUrls.length > 1 && (
+                <View style={styles.imageNavigation}>
+                  <TouchableOpacity 
+                    style={styles.imageNavButton}
+                    onPress={prevImage}
+                  >
+                    <Ionicons name="chevron-back" size={24} color="#FF3B30" />
+                  </TouchableOpacity>
+                  
+                  <View style={styles.imageDots}>
+                    {firebaseProduct.imageUrls.map((_, index) => (
+                      <View 
+                        key={`dot-${index}`} 
+                        style={[
+                          styles.imageDot, 
+                          currentImageIndex === index && styles.activeImageDot
+                        ]} 
+                      />
+                    ))}
+                  </View>
+                  
+                  <TouchableOpacity 
+                    style={styles.imageNavButton}
+                    onPress={nextImage}
+                  >
+                    <Ionicons name="chevron-forward" size={24} color="#FF3B30" />
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
             
             {/* Purchase Panel */}

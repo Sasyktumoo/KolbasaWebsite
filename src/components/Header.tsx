@@ -7,7 +7,9 @@ import {
   Animated,
   Platform,
   ScrollView,
-  TextInput
+  TextInput,
+  Image,
+  Dimensions
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -127,31 +129,16 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
   return (
     <View style={styles.header}>
       <View style={styles.headerTop}>
-        <TouchableOpacity onPress={() => navigation.navigate('Home', { locale: currentLanguage })}>
-          <Text style={styles.logoText}>{translate('header.storeName')}</Text>
-        </TouchableOpacity>
-
+        {/* Remove the logo from here */}
+        
+        {/* Right side - Company Info */}
         <View style={styles.headerCompanyInfo}>
-          <Text style={styles.phoneNumber}>{translate('header.phoneNumber')}</Text>
-          <Text style={styles.emailText}>{translate('header.email')}</Text>
-          
-          {/* Language selector */}
-          <View style={styles.languageSelector}>
-            <TouchableOpacity onPress={() => handleLanguageChange('en')}>
-              <Text style={[styles.languageText, currentLanguage === 'en' && styles.activeLanguage]}>EN</Text>
-            </TouchableOpacity>
-            <Text style={styles.languageSeparator}>|</Text>
-            <TouchableOpacity onPress={() => handleLanguageChange('ru')}>
-              <Text style={[styles.languageText, currentLanguage === 'ru' && styles.activeLanguage]}>RU</Text>
-            </TouchableOpacity>
-          </View>
+          <Text style={styles.websiteTitle}>Meat Store</Text>
+          <Text style={styles.phoneNumber}>+1 (555) 123-4567</Text>
+          <Text style={styles.emailText}>info@b2b.trade</Text>
         </View>
         
         <View style={styles.headerIcons}>
-          <TouchableOpacity style={styles.icon}>
-            <Ionicons name="heart-outline" size={24} color="#333" />
-          </TouchableOpacity>
-          
           <TouchableOpacity 
             style={styles.icon}
             onPress={() => navigation.navigate('Cart')}
@@ -221,27 +208,38 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
       </View>
       
       <View style={styles.navigationBar}>
+        {/* Add logo to this row */}
+        <TouchableOpacity 
+          style={styles.logoContainer} 
+          onPress={() => navigation.navigate('Home', { locale: currentLanguage })}
+        >
+          <Image 
+            source={require('../../assets/Website_Logo.png')}
+            style={styles.logoImage}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
+        
         <TouchableOpacity style={styles.catalogButton} onPress={handleCatalogPress}>
           <Text style={styles.catalogButtonText}>{translate('navigation.catalog')}</Text>
         </TouchableOpacity>
         
-        <View style={styles.searchBar}>
-          <TextInput 
-            style={styles.searchInput}
-            placeholder={translate('search.placeholder')}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            onSubmitEditing={handleSearchSubmit}
-          />
+        {/* Search positioned on the right */}
+        <View style={styles.searchContainer}>
+          <View style={styles.searchBar}>
+            <TextInput 
+              style={styles.searchInput}
+              placeholder={translate('search.placeholder')}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              onSubmitEditing={handleSearchSubmit}
+            />
+          </View>
+          
+          <TouchableOpacity style={styles.searchButton} onPress={handleSearchSubmit}>
+            <Ionicons name="search" size={20} color="white" />
+          </TouchableOpacity>
         </View>
-        
-        <TouchableOpacity style={styles.geographyButton}>
-          <Ionicons name="location-outline" size={24} color="#333" />
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.searchButton} onPress={handleSearchSubmit}>
-          <Ionicons name="search" size={20} color="white" />
-        </TouchableOpacity>
       </View>
 
       {/* New navigation options bar */}
@@ -279,9 +277,19 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: 15,
   },
+  logoImage: {
+    height: Dimensions.get('window').width * 0.15, // Fixed height instead of percentage width
+  },
   headerCompanyInfo: {
     alignItems: 'flex-end',
     flex: 1,
+    marginRight: 20,
+  },
+  websiteTitle: {
+    fontSize: 55, // Increased from 18 to 24
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 3,
   },
   phoneNumber: {
     fontSize: 14,
@@ -301,6 +309,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 5,
     flexDirection: 'row',
+
   },
   languageText: {
     fontSize: 12,
@@ -309,10 +318,6 @@ const styles = StyleSheet.create({
   activeLanguage: {
     fontWeight: 'bold',
     color: '#FF3B30',
-  },
-  languageSeparator: {
-    marginHorizontal: 3,
-    color: '#999',
   },
   logoText: {
     fontSize: 40,
@@ -332,21 +337,22 @@ const styles = StyleSheet.create({
   },
   navigationBar: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end', // Align items to the bottom
     marginTop: 5,
+    paddingHorizontal: 10,
   },
   catalogButton: {
     backgroundColor: '#FF3B30',
     padding: 10,
     borderRadius: 5,
+    marginRight: 15, // Add spacing between catalog and search
   },
   catalogButtonText: {
     color: 'white',
     fontWeight: 'bold',
   },
   searchBar: {
-    flex: 1,
-    marginHorizontal: 10,
+    width: 180,
     backgroundColor: 'white',
     borderWidth: 1,
     borderColor: '#e0e0e0',
@@ -356,9 +362,6 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     padding: 8,
-  },
-  geographyButton: {
-    padding: 5,
   },
   searchButton: {
     backgroundColor: '#FF3B30',
@@ -429,6 +432,13 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 12,
     fontWeight: 'bold',
+  },
+  logoContainer: {
+    marginRight: 15, // Reduced spacing
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
 
