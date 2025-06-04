@@ -128,87 +128,8 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
   
   return (
     <View style={styles.header}>
-      <View style={styles.headerTop}>
-        {/* Remove the logo from here */}
-        
-        {/* Right side - Company Info */}
-        <View style={styles.headerCompanyInfo}>
-          <Text style={styles.websiteTitle}>Meat Store</Text>
-          <Text style={styles.phoneNumber}>+1 (555) 123-4567</Text>
-          <Text style={styles.emailText}>info@b2b.trade</Text>
-        </View>
-        
-        <View style={styles.headerIcons}>
-          <TouchableOpacity 
-            style={styles.icon}
-            onPress={() => navigation.navigate('Cart')}
-          >
-            <Ionicons name="cart-outline" size={24} color="#333" />
-            {getTotalItems() > 0 && (
-              <View style={styles.cartBadge}>
-                <Text style={styles.cartBadgeText}>{getTotalItems()}</Text>
-              </View>
-            )}
-          </TouchableOpacity>
-          
-          {user ? (
-            // User is logged in - show profile and logout options
-            <TouchableOpacity 
-              style={styles.icon}
-              onPress={toggleDropdown}
-            >
-              <Ionicons name="person-circle-outline" size={24} color="#FF3B30" />
-              
-              {isDropdownVisible && (
-                <Animated.View 
-                  style={[
-                    styles.dropdown,
-                    {
-                      opacity: dropdownAnimation,
-                      transform: [{
-                        translateY: dropdownAnimation.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [-10, 0]
-                        })
-                      }]
-                    }
-                  ]}
-                >
-                  <TouchableOpacity 
-                    style={styles.dropdownItem}
-                    onPress={() => {
-                      toggleDropdown();
-                      navigation.navigate('Profile');
-                    }}
-                  >
-                    <Text style={styles.dropdownText}>{translate('auth.profile')}</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity 
-                    style={styles.dropdownItem}
-                    onPress={() => {
-                      toggleDropdown();
-                      handleLogout();
-                    }}
-                  >
-                    <Text style={styles.dropdownText}>{translate('auth.logout')}</Text>
-                  </TouchableOpacity>
-                </Animated.View>
-              )}
-            </TouchableOpacity>
-          ) : (
-            // User is not logged in - show login/register button
-            <TouchableOpacity 
-              style={styles.icon}
-              onPress={() => navigation.navigate('Login')}
-            >
-              <Text style={styles.loginText}>{translate('auth.loginRegister')}</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
-      
-      <View style={styles.navigationBar}>
-        {/* Add logo to this row */}
+      <View style={styles.headerMain}>
+        {/* Logo aligned to far left */}
         <TouchableOpacity 
           style={styles.logoContainer} 
           onPress={() => navigation.navigate('Home', { locale: currentLanguage })}
@@ -220,29 +141,113 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
           />
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.catalogButton} onPress={handleCatalogPress}>
-          <Text style={styles.catalogButtonText}>{translate('navigation.catalog')}</Text>
-        </TouchableOpacity>
-        
-        {/* Search positioned on the right */}
-        <View style={styles.searchContainer}>
-          <View style={styles.searchBar}>
-            <TextInput 
-              style={styles.searchInput}
-              placeholder={translate('search.placeholder')}
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              onSubmitEditing={handleSearchSubmit}
-            />
+        {/* Right section with company info and controls */}
+        <View style={styles.rightSection}>
+          {/* Top row with company info only */}
+          <View style={styles.topRow}>
+            {/* Company Info */}
+            <View style={styles.headerCompanyInfo}>
+              <Text style={styles.websiteTitle}>Meat Store of Uncle Bucho</Text>
+              <Text style={styles.phoneNumber}>+1 (555) 123-4567</Text>
+              <Text style={styles.emailText}>info@b2b.trade</Text>
+            </View>
           </View>
           
-          <TouchableOpacity style={styles.searchButton} onPress={handleSearchSubmit}>
-            <Ionicons name="search" size={20} color="white" />
-          </TouchableOpacity>
+          {/* Bottom row with catalog, search and user icons */}
+          <View style={styles.navigationControls}>
+            <TouchableOpacity style={styles.catalogButton} onPress={handleCatalogPress}>
+              <Text style={styles.catalogButtonText}>{translate('navigation.catalog')}</Text>
+            </TouchableOpacity>
+            
+            <View style={styles.searchContainer}>
+              <View style={styles.searchBar}>
+                <TextInput 
+                  style={styles.searchInput}
+                  placeholder={translate('search.placeholder')}
+                  value={searchQuery}
+                  onChangeText={setSearchQuery}
+                  onSubmitEditing={handleSearchSubmit}
+                />
+              </View>
+              
+              <TouchableOpacity style={styles.searchButton} onPress={handleSearchSubmit}>
+                <Ionicons name="search" size={20} color="white" />
+              </TouchableOpacity>
+            </View>
+            
+            {/* Cart and user icons moved here */}
+            <View style={styles.headerIcons}>
+              <TouchableOpacity 
+                style={styles.icon}
+                onPress={() => navigation.navigate('Cart')}
+              >
+                <Ionicons name="cart-outline" size={24} color="#333" />
+                {getTotalItems() > 0 && (
+                  <View style={styles.cartBadge}>
+                    <Text style={styles.cartBadgeText}>{getTotalItems()}</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+              
+              {user ? (
+                // User is logged in - show profile and logout options
+                <TouchableOpacity 
+                  style={styles.icon}
+                  onPress={toggleDropdown}
+                >
+                  <Ionicons name="person-circle-outline" size={24} color="#FF3B30" />
+                  
+                  {isDropdownVisible && (
+                    <Animated.View 
+                      style={[
+                        styles.dropdown,
+                        {
+                          opacity: dropdownAnimation,
+                          transform: [{
+                            translateY: dropdownAnimation.interpolate({
+                              inputRange: [0, 1],
+                              outputRange: [-10, 0]
+                            })
+                          }]
+                        }
+                      ]}
+                    >
+                      <TouchableOpacity 
+                        style={styles.dropdownItem}
+                        onPress={() => {
+                          toggleDropdown();
+                          navigation.navigate('Profile');
+                        }}
+                      >
+                        <Text style={styles.dropdownText}>{translate('auth.profile')}</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity 
+                        style={styles.dropdownItem}
+                        onPress={() => {
+                          toggleDropdown();
+                          handleLogout();
+                        }}
+                      >
+                        <Text style={styles.dropdownText}>{translate('auth.logout')}</Text>
+                      </TouchableOpacity>
+                    </Animated.View>
+                  )}
+                </TouchableOpacity>
+              ) : (
+                // User is not logged in - show login/register button
+                <TouchableOpacity 
+                  style={styles.icon}
+                  onPress={() => navigation.navigate('Login')}
+                >
+                  <Text style={styles.loginText}>{translate('auth.loginRegister')}</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
         </View>
       </View>
-
-      {/* New navigation options bar */}
+      
+      {/* Navigation options bar */}
       <ScrollView 
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -266,25 +271,48 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
 const styles = StyleSheet.create({
   header: {
     backgroundColor: '#fff',
-    padding: 10,
+    paddingVertical: 0,
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
-    zIndex: 10, // Ensure dropdown appears above other elements
   },
-  headerTop: {
+  
+  headerMain: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
+  },
+  
+  logoContainer: {
+    alignSelf: 'flex-start',
+    paddingLeft: 0,
+    marginLeft: 0,
+  },
+  
+  logoImage: {
+    paddingTop: 10,
+    height: Dimensions.get('window').width * 0.1,
+    width: Dimensions.get('window').width * 0.14
+  },
+  
+  rightSection: {
+    alignItems: 'flex-end',
+  },
+  
+  topRow: {
+    flexDirection: 'row',
     marginBottom: 15,
   },
-  logoImage: {
-    height: Dimensions.get('window').width * 0.15, // Fixed height instead of percentage width
-  },
+  
   headerCompanyInfo: {
     alignItems: 'flex-end',
-    flex: 1,
-    marginRight: 20,
+    marginRight: 10
   },
+  
+  navigationControls: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+  },
+  
   websiteTitle: {
     fontSize: 55, // Increased from 18 to 24
     fontWeight: 'bold',
@@ -326,7 +354,7 @@ const styles = StyleSheet.create({
   headerIcons: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 20,
+    marginLeft: 15, // Added margin to separate from search
   },
   icon: {
     marginHorizontal: 8,
@@ -335,17 +363,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#FF3B30',
   },
-  navigationBar: {
-    flexDirection: 'row',
-    alignItems: 'flex-end', // Align items to the bottom
-    marginTop: 5,
-    paddingHorizontal: 10,
-  },
   catalogButton: {
     backgroundColor: '#FF3B30',
     padding: 10,
     borderRadius: 5,
-    marginRight: 15, // Add spacing between catalog and search
+    marginRight: 15,
   },
   catalogButtonText: {
     color: 'white',
@@ -432,9 +454,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 12,
     fontWeight: 'bold',
-  },
-  logoContainer: {
-    marginRight: 15, // Reduced spacing
   },
   searchContainer: {
     flexDirection: 'row',

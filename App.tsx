@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -150,7 +150,10 @@ export default function App() {
                   id={undefined} 
                   screenOptions={{ 
                     headerShown: false,
-                    cardStyle: { flex: 1 } 
+                    cardStyle: { 
+                      flex: 1,
+                      paddingHorizontal: Dimensions.get('window').width * 0.2, // Add horizontal padding to all screens
+                    } 
                   }}
                 >
                   <Stack.Screen 
