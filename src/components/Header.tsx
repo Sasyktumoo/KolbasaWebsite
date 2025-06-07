@@ -37,6 +37,8 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
   const { user } = useUser();
   const { translate, changeLanguage, currentLanguage } = useLanguage();
   const { getTotalItems } = useCart();
+  const [isLangDropdownVisible, setIsLangDropdownVisible] = useState(false);
+  const [langDropdownAnimation] = useState(new Animated.Value(0));
   
   const toggleDropdown = () => {
     if (isDropdownVisible) {
@@ -50,6 +52,26 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
       // Open dropdown with animation
       setIsDropdownVisible(true);
       Animated.timing(dropdownAnimation, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true
+      }).start();
+    }
+  };
+  
+  // Toggle language dropdown
+  const toggleLangDropdown = () => {
+    if (isLangDropdownVisible) {
+      // Close dropdown with animation
+      Animated.timing(langDropdownAnimation, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true
+      }).start(() => setIsLangDropdownVisible(false));
+    } else {
+      // Open dropdown with animation
+      setIsLangDropdownVisible(true);
+      Animated.timing(langDropdownAnimation, {
         toValue: 1,
         duration: 200,
         useNativeDriver: true
@@ -147,7 +169,7 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
           <View style={styles.topRow}>
             {/* Company Info */}
             <View style={styles.headerCompanyInfo}>
-              <Text style={styles.websiteTitle}>Meat Store of Uncle Bucho</Text>
+              <Text style={styles.websiteTitle}>{translate('header.storeName')}</Text>
               <Text style={styles.phoneNumber}>+1 (555) 123-4567</Text>
               <Text style={styles.emailText}>info@b2b.trade</Text>
             </View>
@@ -177,6 +199,54 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
             
             {/* Cart and user icons moved here */}
             <View style={styles.headerIcons}>
+              {/* Planet icon only without text */}
+              <View style={styles.languageSelectorContainer}>
+                <TouchableOpacity 
+                  style={[styles.icon, styles.languageSelector]}
+                  onPress={toggleLangDropdown}
+                >
+                  <Ionicons name="globe-outline" size={22} color="#333" />
+                </TouchableOpacity>
+                
+                {isLangDropdownVisible && (
+                  <Animated.View 
+                    style={[
+                      styles.dropdown,
+                      styles.langDropdown,
+                      {
+                        opacity: langDropdownAnimation,
+                        transform: [{
+                          translateY: langDropdownAnimation.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [-10, 0]
+                          })
+                        }]
+                      }
+                    ]}
+                  >
+                    <TouchableOpacity 
+                      style={[styles.dropdownItem, currentLanguage === 'en' ? styles.activeLanguageItem : null]}
+                      onPress={() => {
+                        handleLanguageChange('en');
+                        toggleLangDropdown();
+                      }}
+                    >
+                      <Text style={[styles.dropdownText, currentLanguage === 'en' ? styles.activeLanguageText : null]}>English | $</Text>
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity 
+                      style={[styles.dropdownItem, currentLanguage === 'ru' ? styles.activeLanguageItem : null]}
+                      onPress={() => {
+                        handleLanguageChange('ru');
+                        toggleLangDropdown();
+                      }}
+                    >
+                      <Text style={[styles.dropdownText, currentLanguage === 'ru' ? styles.activeLanguageText : null]}>Русский | ₽</Text>
+                    </TouchableOpacity>
+                  </Animated.View>
+                )}
+              </View>
+              
               <TouchableOpacity 
                 style={styles.icon}
                 onPress={() => navigation.navigate('Cart')}
@@ -274,12 +344,14 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
+    zIndex: 10, // Add z-index to header
   },
   
   headerMain: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
+    zIndex: 20, // Higher than header
   },
   
   logoContainer: {
@@ -296,6 +368,7 @@ const styles = StyleSheet.create({
   
   rightSection: {
     alignItems: 'flex-end',
+    zIndex: 30, // Higher than headerMain
   },
   
   topRow: {
@@ -311,6 +384,7 @@ const styles = StyleSheet.create({
   navigationControls: {
     flexDirection: 'row',
     alignItems: 'flex-end',
+    zIndex: 40, // Higher than rightSection
   },
   
   websiteTitle: {
@@ -333,19 +407,34 @@ const styles = StyleSheet.create({
   languageSelector: {
     borderWidth: 1,
     borderColor: '#e0e0e0',
-    padding: 5,
+    padding: 6,
     borderRadius: 5,
-    marginTop: 5,
-    flexDirection: 'row',
-
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   languageText: {
     fontSize: 12,
     paddingHorizontal: 3,
+    marginLeft: 3,
   },
-  activeLanguage: {
-    fontWeight: 'bold',
+  languageSelectorContainer: {
+    position: 'relative',
+    zIndex: 1500, // Much higher than before
+  },
+  langDropdown: {
+    position: 'absolute',
+    right: 0,
+    minWidth: 120,
+    top: 35,
+    zIndex: 2000, // Extremely high z-index
+    elevation: 8, // Increased for Android
+  },
+  activeLanguageItem: {
+    backgroundColor: 'rgba(255, 59, 48, 0.1)',
+  },
+  activeLanguageText: {
     color: '#FF3B30',
+    fontWeight: 'bold',
   },
   logoText: {
     fontSize: 40,
@@ -354,7 +443,8 @@ const styles = StyleSheet.create({
   headerIcons: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 15, // Added margin to separate from search
+    marginLeft: 15,
+    zIndex: 50, // Higher than navigationControls
   },
   icon: {
     marginHorizontal: 8,
@@ -394,7 +484,8 @@ const styles = StyleSheet.create({
   // Existing styles...
   navOptionsBar: {
     marginTop: 10,
-    backgroundColor: '#',
+    backgroundColor: '#fff',
+    zIndex: 5, // Lower than everything else
   },
   navOptionsContainer: {
     flexDirection: 'row',
@@ -428,8 +519,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
-    elevation: 3,
-    zIndex: 100,
+    elevation: 8, // Increased for Android
+    zIndex: 2000, // Extremely high z-index
   },
   dropdownItem: {
     paddingVertical: 8,

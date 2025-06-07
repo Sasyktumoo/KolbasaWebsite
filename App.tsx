@@ -125,7 +125,11 @@ export default function App() {
       <LanguageProvider>
         <CartProvider>
           <UserProvider value={{ user, setUser }}>
-            <View style={{ flex: 1, height: '100%' }}>
+            <View style={{ 
+              flex: 1, 
+              height: '100%', 
+              backgroundColor: '#fff' // Add white background to container
+            }}>
               <NavigationContainer 
                 linking={linking}
                 fallback={<Text>Loading Navigation...</Text>}
@@ -145,6 +149,36 @@ export default function App() {
                     return 'Магазин Колбасы - Meat Products';
                   }
                 }}
+                theme={{
+                  // Add theme with white background
+                  colors: {
+                    background: '#fff',
+                    primary: '#FF3B30',
+                    card: '#fff',
+                    text: '#333',
+                    border: '#e0e0e0',
+                    notification: '#FF3B30',
+                  },
+                  dark: false,
+                  fonts: {
+                    regular: {
+                      fontFamily: 'System',
+                      fontWeight: 'normal',
+                    },
+                    medium: {
+                      fontFamily: 'System',
+                      fontWeight: '500',
+                    },
+                    bold: {
+                      fontFamily: 'System',
+                      fontWeight: 'bold',
+                    },
+                    heavy: {
+                      fontFamily: 'System',
+                      fontWeight: '900',
+                    },
+                  },
+                }}
               >
                 <Stack.Navigator 
                   id={undefined} 
@@ -152,7 +186,8 @@ export default function App() {
                     headerShown: false,
                     cardStyle: { 
                       flex: 1,
-                      paddingHorizontal: Dimensions.get('window').width * 0.2, // Add horizontal padding to all screens
+                      paddingHorizontal: Dimensions.get('window').width * 0.2,
+                      backgroundColor: '#fff', // Explicitly set background color
                     } 
                   }}
                 >

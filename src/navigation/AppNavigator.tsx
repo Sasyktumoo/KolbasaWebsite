@@ -21,6 +21,7 @@ import Login from '../screens/Registration/Login';
 import Register from '../screens/Registration/Register';
 import ProfileScreen from '../screens/Profile/ProfileScreen'; // You'll need to create this file
 import CartScreen from '../screens/Cart/CartScreen'; // Import CartScreen
+import AddressBookScreen from '../screens/Profile/AddressBookScreen'; // Import AddressBookScreen
 import { useUser } from '../context/UserContext';
 
 // Define your root stack param list and export it for reuse elsewhere
@@ -58,6 +59,7 @@ export type RootStackParamList = {
   Feedback: undefined;
   Dummy: undefined;
   Cart: undefined; // Include Cart in the param list
+  AddressBook: undefined; // Include AddressBook in the param list
 };
 
 // Export the linking configuration to use in App.tsx
@@ -138,6 +140,7 @@ export const getLinkingConfig = (): LinkingOptions<RootStackParamList> => ({
       Feedback: 'feedback',
       Dummy: 'dummy',
       Cart: 'cart', // Linking configuration for Cart
+      AddressBook: 'address-book', // Linking configuration for AddressBook
     },
   },
 });
@@ -190,6 +193,7 @@ const AppNavigator = () => {
       <Stack.Screen name="News" component={NewsScreen} />
       <Stack.Screen name="Feedback" component={FeedbackScreen} />
       <Stack.Screen name="Dummy" component={DummyScreen} />
+      <Stack.Screen name="AddressBook" component={AddressBookScreen} />
     </Stack.Navigator>
   );
 };
