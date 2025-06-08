@@ -27,7 +27,8 @@ import {
   reauthenticateWithCredential, 
   EmailAuthProvider,
   User,
-  sendEmailVerification // Add this import
+  sendEmailVerification,
+  verifyBeforeUpdateEmail // Add this import
 } from 'firebase/auth';
 
 const ProfileScreen = () => {
@@ -132,11 +133,11 @@ const ProfileScreen = () => {
         return;
       }
       
-      // Step 2: Change email (this triggers Firebase to send verification)
-      await updateEmail(user, newEmail);
-      
-      // Step 3: Send email verification to the new email
-      await sendEmailVerification(user);
+      // Step 2: Use verifyBeforeUpdateEmail instead of updateEmail
+      // This sends a verification email to the new address first
+      if (FIREBASE_AUTH.currentUser) {
+        await verifyBeforeUpdateEmail(FIREBASE_AUTH.currentUser, newEmail);
+      }
       
       // Success
       setEmailModalVisible(false);
@@ -160,12 +161,6 @@ const ProfileScreen = () => {
           translate('profile.pleaseRelogin'),
           [{ text: translate('common.ok'), onPress: handleLogout }]
         );
-      } else if (error.code === 'auth/operation-not-allowed' || 
-                 error.message.includes('verify the new email')) {
-        // This is actually a limitation of Firebase - we need to use a different approach
-        setErrors({
-          general: translate('profile.errorVerificationRequired')
-        });
       } else {
         setErrors({
           general: translate('profile.errorEmailChange')
