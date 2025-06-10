@@ -237,10 +237,6 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
     scrollToSection(4); // Index of description section
   };
 
-  const scrollToCharacteristics = () => {
-    setActiveTab('characteristics');
-    scrollToSection(5); // Index of characteristics section
-  };
 
   const scrollToReviews = () => {
     setActiveTab('reviews');
@@ -274,26 +270,18 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
         return (
           <View style={styles.tabNavigation}>
             <TouchableOpacity 
-              style={[styles.tab, activeTab === 'description' && styles.activeTab]}
+              style={styles.tab}
               onPress={scrollToDescription}
             >
-              <Text style={[styles.tabText, activeTab === 'description' && styles.activeTabText]}>
+              <Text style={styles.tabText}>
                 {t('productDetail.tabs.description')}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity 
-              style={[styles.tab, activeTab === 'characteristics' && styles.activeTab]}
-              onPress={scrollToCharacteristics}
-            >
-              <Text style={[styles.tabText, activeTab === 'characteristics' && styles.activeTabText]}>
-                {t('productDetail.tabs.characteristics')}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={[styles.tab, activeTab === 'reviews' && styles.activeTab]}
+              style={styles.tab}
               onPress={scrollToReviews}
             >
-              <Text style={[styles.tabText, activeTab === 'reviews' && styles.activeTabText]}>
+              <Text style={styles.tabText}>
                 {t('productDetail.tabs.reviews')}
               </Text>
             </TouchableOpacity>

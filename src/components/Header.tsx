@@ -162,11 +162,7 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
     { id: 'dummy', name: "dummy", route: 'Dummy' }
   ];
   
-  // Helper function to get language display text
-  const getLanguageDisplay = () => {
-    console.log('Rendering language display with:', currentLanguage);
-    return currentLanguage === 'en' ? 'En | $' : 'Ru | ₽';
-  };
+
   
   return (
     <View style={styles.header}>
@@ -262,6 +258,26 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
                       }}
                     >
                       <Text style={[styles.dropdownText, currentLanguage === 'ru' ? styles.activeLanguageText : null]}>Русский | ₽</Text>
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity 
+                      style={[styles.dropdownItem, currentLanguage === 'es' ? styles.activeLanguageItem : null]}
+                      onPress={() => {
+                        handleLanguageChange('es');
+                        toggleLangDropdown();
+                      }}
+                    >
+                      <Text style={[styles.dropdownText, currentLanguage === 'es' ? styles.activeLanguageText : null]}>Español | $</Text>
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity 
+                      style={[styles.dropdownItem, currentLanguage === 'uk' ? styles.activeLanguageItem : null]}
+                      onPress={() => {
+                        handleLanguageChange('uk');
+                        toggleLangDropdown();
+                      }}
+                    >
+                      <Text style={[styles.dropdownText, currentLanguage === 'uk' ? styles.activeLanguageText : null]}>Українська | ₴</Text>
                     </TouchableOpacity>
                   </Animated.View>
                 )}
