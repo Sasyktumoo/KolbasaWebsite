@@ -2,7 +2,7 @@
   "expo": {
     "name": "KolbasaWebsite",
     "experiments": {
-      "baseUrl": "/my-repo-name"   
+      "baseUrl": "/KolbasaWebsite"   
     },
     "slug": "KolbasaWebsite",
     "version": "1.0.0",
