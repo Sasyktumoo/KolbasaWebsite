@@ -132,11 +132,17 @@ const OrderReviewScreen = () => {
             
             {items.map((item, index) => (
               <View key={`${item.id}-${index}`} style={styles.orderItem}>
-                <Image 
-                  source={item.imageUrl ? { uri: item.imageUrl } : require('../../assets/images/placeholder.png')} 
-                  style={styles.itemImage}
-                  resizeMode="contain"
-                />
+                {item.imageUrl ? (
+                  <Image 
+                    source={{ uri: item.imageUrl }} 
+                    style={styles.itemImage}
+                    resizeMode="contain"
+                  />
+                ) : (
+                  <View style={[styles.itemImage, styles.placeholderContainer]}>
+                    <Ionicons name="image-outline" size={30} color="#cccccc" />
+                  </View>
+                )}
                 <View style={styles.itemInfo}>
                   <Text style={styles.itemName}>{item.name}</Text>
                   <Text style={styles.itemMeta}>
@@ -288,6 +294,11 @@ const styles = StyleSheet.create({
     height: 70,
     borderRadius: 4,
     marginRight: 15,
+  },
+  placeholderContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
   },
   itemInfo: {
     flex: 1,

@@ -58,11 +58,18 @@ const CartScreen = () => {
 
   const renderItem = ({ item }) => (
     <View style={styles.cartItem}>
-      <Image 
-        source={item.imageUrl ? { uri: item.imageUrl } : require('../../assets/images/placeholder.png')} 
-        style={styles.itemImage}
-        resizeMode="contain"
-      />
+      {/* Replace the cart item image */}
+      {item.imageUrl ? (
+        <Image 
+          source={{ uri: item.imageUrl }} 
+          style={styles.productImage}
+          resizeMode="contain"
+        />
+      ) : (
+        <View style={[styles.productImage, styles.placeholderContainer]}>
+          <Ionicons name="image-outline" size={40} color="#cccccc" />
+        </View>
+      )}
       
       <View style={styles.itemDetails}>
         <Text style={styles.itemName}>{item.name}</Text>
@@ -438,11 +445,16 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
-  itemImage: {
+  productImage: {
     width: 70,
     height: 70,
     borderRadius: 4,
     marginRight: 15,
+  },
+  placeholderContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
   },
   itemDetails: {
     flex: 1,

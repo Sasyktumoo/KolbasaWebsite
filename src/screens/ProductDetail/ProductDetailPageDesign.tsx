@@ -431,6 +431,11 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: colors.text.primary,
   },
+  placeholderContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+  },
 });
 
 export default styles;

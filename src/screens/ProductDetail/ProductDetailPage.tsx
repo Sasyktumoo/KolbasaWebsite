@@ -114,7 +114,7 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
       name: 'Default Product',
       price: 100,
       minOrder: 50,
-      image: require('../../assets/images/placeholder.png')
+      image: {}
     },
     breadcrumbPath: ['product_catalog', 'default_product']
   };
@@ -294,15 +294,17 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
             {/* Product Image */}
             <View style={styles.productImageContainer}>
               {/* Display current image from imageUrls if available */}
-              <Image 
-                source={
-                  firebaseProduct?.imageUrls && firebaseProduct.imageUrls.length > 0
-                    ? { uri: firebaseProduct.imageUrls[currentImageIndex] }
-                    : product.image
-                } 
-                style={styles.productImage}
-                resizeMode="contain"
-              />
+              {firebaseProduct?.imageUrls && firebaseProduct.imageUrls.length > 0 ? (
+                <Image
+                  source={{ uri: firebaseProduct.imageUrls[0] }}
+                  style={styles.productImage}
+                  resizeMode="contain"
+                />
+              ) : (
+                <View style={[styles.productImage, styles.placeholderContainer]}>
+                  <Ionicons name="image-outline" size={80} color="#cccccc" />
+                </View>
+              )}
               
               {/* Image navigation controls - only show if multiple images exist */}
               {firebaseProduct?.imageUrls && firebaseProduct.imageUrls.length > 1 && (

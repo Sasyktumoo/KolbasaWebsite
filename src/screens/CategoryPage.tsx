@@ -244,9 +244,10 @@ const CategoryPage = ({ route }: CategoryPageProps) => {
       description: product.translations?.[currentLanguage]?.meatContentDescription || '',
       price: product.meatContent?.value || 0,
       minOrder: 50, // Default value 
+      // Change this
       image: product.imageUrls && product.imageUrls.length > 0 
         ? { uri: product.imageUrls[0] } 
-        : require('../assets/images/placeholder.png')
+        : { uri: 'https://via.placeholder.com/150?text=No+Image' } // Use a web placeholder instead
     };
     
     navigation.navigate('ProductDetailPage', { 
@@ -289,13 +290,17 @@ const CategoryPage = ({ route }: CategoryPageProps) => {
         style={styles.productCard}
         onPress={() => onPress(item)}
       >
-        <Image 
-          source={item.imageUrls && item.imageUrls.length > 0 
-            ? { uri: item.imageUrls[0] } 
-            : require('../assets/images/placeholder.png')} 
-          style={styles.productImage}
-          resizeMode="contain"
-        />
+        {item.imageUrls && item.imageUrls.length > 0 ? (
+          <Image 
+            source={{ uri: item.imageUrls[0] }}
+            style={styles.productImage}
+            resizeMode="contain"
+          />
+        ) : (
+          <View style={[styles.productImage, styles.placeholderContainer]}>
+            <Ionicons name="image-outline" size={50} color="#cccccc" />
+          </View>
+        )}
         <Text style={styles.productName} numberOfLines={2}>{name}</Text>
         <Text style={styles.productDescription} numberOfLines={2}>
           {description}
@@ -562,6 +567,11 @@ const styles = StyleSheet.create({
     height: 140,
     marginBottom: 10,
     borderRadius: 4,
+  },
+  placeholderContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
   },
   productName: {
     fontSize: 16,
