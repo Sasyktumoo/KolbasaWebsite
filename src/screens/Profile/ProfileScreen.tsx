@@ -8,7 +8,6 @@ import {
   ScrollView,
   Modal,
   TextInput,
-  Alert,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform
@@ -21,6 +20,7 @@ import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import Header from '../../components/Header';
 import { Ionicons } from '@expo/vector-icons';
 import { useLanguage } from '../../context/languages/useLanguage';
+import { useAlert } from '../../context/AlertContext';
 import { 
   updateEmail, 
   updatePassword, 
@@ -28,7 +28,8 @@ import {
   EmailAuthProvider,
   User,
   sendEmailVerification,
-  verifyBeforeUpdateEmail // Add this import
+  verifyBeforeUpdateEmail,
+  applyActionCode,
 } from 'firebase/auth';
 
 const ProfileScreen = () => {
@@ -36,6 +37,7 @@ const ProfileScreen = () => {
   const { user } = useUser();
   const [settingsExpanded, setSettingsExpanded] = useState(false);
   const { translate, currentLanguage } = useLanguage();
+  const { alert } = useAlert();
   const [loading, setLoading] = useState(false);
   
   // State for modals
@@ -51,6 +53,13 @@ const ProfileScreen = () => {
   // Form errors
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   
+  // State for email verification flow
+  const [emailVerificationSent, setEmailVerificationSent] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [verificationError, setVerificationError] = useState('');
+  const [emailChangeInProgress, setEmailChangeInProgress] = useState(false);
+  const [pendingNewEmail, setPendingNewEmail] = useState('');
+
   const handleLogout = async () => {
     try {
       await FIREBASE_AUTH.signOut();
@@ -133,20 +142,16 @@ const ProfileScreen = () => {
         return;
       }
       
-      // Step 2: Use verifyBeforeUpdateEmail instead of updateEmail
-      // This sends a verification email to the new address first
+      // Step 2: Send verification email
       if (FIREBASE_AUTH.currentUser) {
         await verifyBeforeUpdateEmail(FIREBASE_AUTH.currentUser, newEmail);
+        
+        // Update the state to show verification UI
+        setEmailVerificationSent(true);
+        setPendingNewEmail(newEmail);
+        setEmailChangeInProgress(true);
+        resetForms(); // Clear the form
       }
-      
-      // Success
-      setEmailModalVisible(false);
-      resetForms();
-      Alert.alert(
-        translate('profile.verificationRequired'),
-        translate('profile.verificationEmailSent'),
-        [{ text: translate('common.ok') }]
-      );
       
     } catch (error: any) {
       console.error('Email update error:', error);
@@ -156,7 +161,7 @@ const ProfileScreen = () => {
           newEmail: translate('profile.errorEmailInUse')
         });
       } else if (error.code === 'auth/requires-recent-login') {
-        Alert.alert(
+        alert(
           translate('profile.recentLoginRequired'),
           translate('profile.pleaseRelogin'),
           [{ text: translate('common.ok'), onPress: handleLogout }]
@@ -169,6 +174,37 @@ const ProfileScreen = () => {
     } finally {
       setLoading(false);
     }
+  };
+  
+  // Handle verification code resend
+  const handleResendVerification = async () => {
+    if (!user || !pendingNewEmail) return;
+    
+    setLoading(true);
+    try {
+      if (FIREBASE_AUTH.currentUser) {
+        await verifyBeforeUpdateEmail(FIREBASE_AUTH.currentUser, pendingNewEmail);
+        
+        alert(
+          translate('profile.verificationResent'),
+          translate('profile.verificationEmailResent')
+        );
+      }
+    } catch (error) {
+      console.error('Error resending verification:', error);
+      setVerificationError(translate('profile.errorResendingVerification'));
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Handle cancel email change
+  const handleCancelEmailChange = () => {
+    setEmailVerificationSent(false);
+    setEmailChangeInProgress(false);
+    setPendingNewEmail('');
+    setVerificationCode('');
+    setVerificationError('');
   };
   
   // Handle password change
@@ -213,26 +249,26 @@ const ProfileScreen = () => {
       // Update password
       await updatePassword(user, newPassword);
       
-      // Success
-      setPasswordModalVisible(false);
-      resetForms();
-      Alert.alert(
+      // Replace custom alert with our global one
+      alert(
         translate('profile.success'),
-        translate('profile.passwordChangeSuccess')
+        translate('profile.passwordChangeSuccess'),
+        [{ 
+          text: translate('common.ok'),
+          onPress: () => {
+            setPasswordModalVisible(false);
+            resetForms();
+          }
+        }]
       );
     } catch (error: any) {
       console.error('Password update error:', error);
       
       if (error.code === 'auth/requires-recent-login') {
-        Alert.alert(
+        alert(
           translate('profile.recentLoginRequired'),
           translate('profile.pleaseRelogin'),
-          [
-            {
-              text: translate('common.ok'),
-              onPress: handleLogout
-            }
-          ]
+          [{ text: translate('common.ok'), onPress: handleLogout }]
         );
       } else {
         setErrors({
@@ -273,14 +309,40 @@ const ProfileScreen = () => {
           
           {settingsExpanded && (
             <View style={styles.accordionContent}>
+              {/* Show email change status if in progress */}
+              {emailChangeInProgress && (
+                <View style={styles.verificationStatus}>
+                  <Ionicons name="mail-outline" size={20} color="#FF3B30" />
+                  <Text style={styles.verificationText}>
+                    {translate('profile.emailVerificationPending')}
+                  </Text>
+                  <TouchableOpacity onPress={handleResendVerification}>
+                    <Text style={styles.resendLink}>
+                      {translate('profile.resendVerification')}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={handleCancelEmailChange}>
+                    <Text style={styles.cancelLink}>
+                      {translate('profile.cancel')}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+              
               <TouchableOpacity 
                 style={styles.settingItem} 
                 onPress={() => {
                   resetForms();
                   setEmailModalVisible(true);
                 }}
+                disabled={emailChangeInProgress}
               >
-                <Text style={styles.settingText}>{translate('profile.changeEmail')}</Text>
+                <Text style={[
+                  styles.settingText, 
+                  emailChangeInProgress && styles.disabledText
+                ]}>
+                  {translate('profile.changeEmail')}
+                </Text>
               </TouchableOpacity>
               <View style={styles.separator} />
               
@@ -333,8 +395,17 @@ const ProfileScreen = () => {
         >
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{translate('profile.changeEmail')}</Text>
-              <TouchableOpacity onPress={() => setEmailModalVisible(false)}>
+              <Text style={styles.modalTitle}>
+                {emailVerificationSent 
+                  ? translate('profile.verifyYourEmail') 
+                  : translate('profile.changeEmail')}
+              </Text>
+              <TouchableOpacity onPress={() => {
+                setEmailModalVisible(false);
+                if (emailVerificationSent) {
+                  setEmailVerificationSent(false);
+                }
+              }}>
                 <Ionicons name="close" size={24} color="#333" />
               </TouchableOpacity>
             </View>
@@ -342,46 +413,100 @@ const ProfileScreen = () => {
             <View style={styles.modalBody}>
               {errors.general && <Text style={styles.errorText}>{errors.general}</Text>}
               
-              <View style={styles.formGroup}>
-                <Text style={styles.label}>{translate('profile.currentPassword')}</Text>
-                <TextInput
-                  style={[styles.input, errors.currentPassword ? styles.inputError : null]}
-                  secureTextEntry
-                  value={currentPassword}
-                  onChangeText={setCurrentPassword}
-                  placeholder={translate('profile.enterCurrentPassword')}
-                />
-                {errors.currentPassword && (
-                  <Text style={styles.errorText}>{errors.currentPassword}</Text>
-                )}
-              </View>
-              
-              <View style={styles.formGroup}>
-                <Text style={styles.label}>{translate('profile.newEmail')}</Text>
-                <TextInput
-                  style={[styles.input, errors.newEmail ? styles.inputError : null]}
-                  keyboardType="email-address"
-                  value={newEmail}
-                  onChangeText={setNewEmail}
-                  placeholder={translate('profile.enterNewEmail')}
-                  autoCapitalize="none"
-                />
-                {errors.newEmail && (
-                  <Text style={styles.errorText}>{errors.newEmail}</Text>
-                )}
-              </View>
-              
-              <TouchableOpacity 
-                style={[styles.saveButton, loading ? styles.disabledButton : null]}
-                onPress={handleChangeEmail}
-                disabled={loading}
-              >
-                {loading ? (
-                  <ActivityIndicator color="white" size="small" />
-                ) : (
-                  <Text style={styles.buttonText}>{translate('profile.updateEmail')}</Text>
-                )}
-              </TouchableOpacity>
+              {!emailVerificationSent ? (
+                // Email change form
+                <>
+                  <View style={styles.formGroup}>
+                    <Text style={styles.label}>{translate('profile.currentPassword')}</Text>
+                    <TextInput
+                      style={[styles.input, errors.currentPassword ? styles.inputError : null]}
+                      secureTextEntry
+                      value={currentPassword}
+                      onChangeText={setCurrentPassword}
+                      placeholder={translate('profile.enterCurrentPassword')}
+                    />
+                    {errors.currentPassword && (
+                      <Text style={styles.errorText}>{errors.currentPassword}</Text>
+                    )}
+                  </View>
+                  
+                  <View style={styles.formGroup}>
+                    <Text style={styles.label}>{translate('profile.newEmail')}</Text>
+                    <TextInput
+                      style={[styles.input, errors.newEmail ? styles.inputError : null]}
+                      keyboardType="email-address"
+                      value={newEmail}
+                      onChangeText={setNewEmail}
+                      placeholder={translate('profile.enterNewEmail')}
+                      autoCapitalize="none"
+                    />
+                    {errors.newEmail && (
+                      <Text style={styles.errorText}>{errors.newEmail}</Text>
+                    )}
+                  </View>
+                  
+                  <TouchableOpacity 
+                    style={[styles.saveButton, loading ? styles.disabledButton : null]}
+                    onPress={handleChangeEmail}
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <ActivityIndicator color="white" size="small" />
+                    ) : (
+                      <Text style={styles.buttonText}>{translate('profile.updateEmail')}</Text>
+                    )}
+                  </TouchableOpacity>
+                </>
+              ) : (
+                // Verification sent screen
+                <View style={styles.verificationContainer}>
+                  <Ionicons name="mail-outline" size={50} color="#FF3B30" style={styles.verificationIcon} />
+                  
+                  <Text style={styles.verificationTitle}>
+                    {translate('profile.checkYourEmail')}
+                  </Text>
+                  
+                  <Text style={styles.verificationInstructions}>
+                    {`${translate('profile.verificationEmailSentTo')} ${pendingNewEmail}`}
+                  </Text>
+                  
+                  <Text style={styles.verificationNote}>
+                    {translate('profile.clickLinkInEmail')}
+                  </Text>
+                  
+                  {verificationError && (
+                    <Text style={styles.errorText}>{verificationError}</Text>
+                  )}
+                  
+                  <View style={styles.verificationActions}>
+                    <TouchableOpacity 
+                      style={styles.resendButton}
+                      onPress={handleResendVerification}
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <ActivityIndicator color="#FF3B30" size="small" />
+                      ) : (
+                        <Text style={styles.resendButtonText}>
+                          {translate('profile.resendEmail')}
+                        </Text>
+                      )}
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity 
+                      style={styles.doneButton}
+                      onPress={() => {
+                        setEmailModalVisible(false);
+                        setEmailVerificationSent(false);
+                      }}
+                    >
+                      <Text style={styles.doneButtonText}>
+                        {translate('profile.done')}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
             </View>
           </View>
         </KeyboardAvoidingView>
@@ -648,6 +773,98 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  
+  // New styles for verification flow
+  verificationStatus: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF5F5',
+    padding: 10,
+    borderRadius: 4,
+    marginBottom: 10,
+    marginHorizontal: 15,
+    marginTop: 10,
+    flexWrap: 'wrap',
+  },
+  verificationText: {
+    color: '#555',
+    fontSize: 12,
+    marginLeft: 5,
+    marginRight: 10,
+  },
+  resendLink: {
+    color: '#FF3B30',
+    fontSize: 12,
+    fontWeight: '500',
+    marginRight: 10,
+  },
+  cancelLink: {
+    color: '#555',
+    fontSize: 12,
+    fontWeight: '500',
+    textDecorationLine: 'underline',
+  },
+  disabledText: {
+    color: '#aaa',
+  },
+  verificationContainer: {
+    alignItems: 'center',
+    padding: 10,
+  },
+  verificationIcon: {
+    marginBottom: 15,
+  },
+  verificationTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  verificationInstructions: {
+    fontSize: 14,
+    color: '#555',
+    textAlign: 'center',
+    marginBottom: 15,
+  },
+  verificationNote: {
+    fontSize: 12,
+    color: '#777',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  verificationActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingHorizontal: 10,
+  },
+  resendButton: {
+    borderWidth: 1,
+    borderColor: '#FF3B30',
+    borderRadius: 4,
+    padding: 10,
+    flex: 1,
+    marginRight: 5,
+    alignItems: 'center',
+  },
+  resendButtonText: {
+    color: '#FF3B30',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  doneButton: {
+    backgroundColor: '#FF3B30',
+    borderRadius: 4,
+    padding: 10,
+    flex: 1,
+    marginLeft: 5,
+    alignItems: 'center',
+  },
+  doneButtonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '500',
   },
 });
 

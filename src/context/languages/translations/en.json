@@ -17,7 +17,10 @@
       "feedback": "Feedback"
     },
     "search": {
-      "placeholder": "Search products..."
+      "placeholder": "Search products...",
+      "results": "Search results",
+      "noResults": "No results found for \"{{query}}\"",
+      "clearFilter": "Clear filter"
     },
     "auth": {
       "loginRegister": "Login / Register",
@@ -62,7 +65,20 @@
       "errorPasswordChange": "Failed to update password. Please try again",
       "errorEmailInUse": "This email is already in use by another account",
       "recentLoginRequired": "Recent Login Required",
-      "pleaseRelogin": "For security reasons, please log out and log back in before changing your credentials"
+      "pleaseRelogin": "For security reasons, please log out and log back in before changing your credentials",
+      
+      "verifyYourEmail": "Verify Your Email",
+      "checkYourEmail": "Check Your Email",
+      "verificationEmailSentTo": "We've sent a verification email to:",
+      "clickLinkInEmail": "Click the link in the email to complete your email change. The link will expire in 1 hour.",
+      "resendEmail": "Resend Email",
+      "done": "Done",
+      "verificationResent": "Verification Email Resent",
+      "verificationEmailResent": "A new verification email has been sent to your inbox.",
+      "emailVerificationPending": "Email verification pending. Please check your inbox.",
+      "resendVerification": "Resend",
+      "errorResendingVerification": "Error resending verification email. Please try again.",
+      "cancel": "Cancel"
     },
     "cart": {
       "title": "Shopping Cart",
@@ -87,7 +103,9 @@
     "common": {
       "cancel": "Cancel",
       "confirm": "Confirm",
-      "continue": "Continue"
+      "continue": "Continue",
+      "ok": "OK",
+      "delete": "Delete"
     },
     "aboutUs": {
       "title": "About Us",
@@ -148,6 +166,8 @@
       }
     },
     "addressBook": {
+      "error": "Error",
+      "errorInvalidId": "Cannot delete this address due to a missing identifier.",
       "title": "Address Book",
       "addNew": "Add New Address",
       "editAddress": "Edit Address",
@@ -185,6 +205,50 @@
       "errorDeleting": "Error deleting address",
       "errorSettingDefault": "Error setting default address",
       "errorNotLoggedIn": "You must be logged in to manage addresses"
+    },
+    "checkout": {
+      "title": "Checkout",
+      "contactInfo": "Contact Information",
+      "name": "Name",
+      "namePlaceholder": "Enter your name",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "phone": "Phone",
+      "phonePlaceholder": "Enter your phone number",
+      "deliveryAddress": "Delivery Address",
+      "selectAddress": "Select an address",
+      "noAddresses": "You don't have any saved addresses",
+      "addNewAddress": "Add New Address",
+      "additionalInfo": "Additional Information",
+      "orderNotes": "Order Notes",
+      "orderNotesPlaceholder": "Special instructions for delivery or preparation",
+      "continueToReview": "Continue to Review",
+      "errorName": "Name is required",
+      "errorEmail": "Email is required",
+      "errorInvalidEmail": "Please enter a valid email",
+      "errorPhone": "Phone number is required",
+      "errorAddress": "Please select a delivery address"
+    },
+    
+    "orderReview": {
+      "title": "Order Review",
+      "orderItems": "Order Items",
+      "quantity": "Quantity",
+      "subtotal": "Subtotal",
+      "shipping": "Shipping",
+      "freeShipping": "Free",
+      "total": "Total",
+      "customerInfo": "Customer Information",
+      "deliveryAddress": "Delivery Address",
+      "additionalNotes": "Additional Notes",
+      "placeOrder": "Place Order",
+      "disclaimer": "By placing your order, you agree to our terms and conditions. You will receive a confirmation email once your order is processed.",
+      "emptyCartTitle": "Empty Cart",
+      "emptyCartMessage": "Your cart is empty. Please add items before completing your order.",
+      "orderSuccessTitle": "Order Placed Successfully",
+      "orderSuccessMessage": "Thank you for your order! Your order has been placed and is being processed.",
+      "orderErrorTitle": "Order Error",
+      "orderErrorMessage": "There was an error processing your order. Please try again later."
     }
   }
 }

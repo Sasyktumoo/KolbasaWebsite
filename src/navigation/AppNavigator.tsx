@@ -23,6 +23,8 @@ import ProfileScreen from '../screens/Profile/ProfileScreen'; // You'll need to 
 import CartScreen from '../screens/Cart/CartScreen'; // Import CartScreen
 import AddressBookScreen from '../screens/Profile/AddressBookScreen'; // Import AddressBookScreen
 import { useUser } from '../context/UserContext';
+import CheckoutFormScreen from '../screens/Cart/CheckoutFormScreen';
+import OrderReviewScreen from '../screens/Cart/OrderReviewScreen';
 
 // Define your root stack param list and export it for reuse elsewhere
 export type RootStackParamList = {
@@ -33,6 +35,7 @@ export type RootStackParamList = {
     categoryName?: string;
   };
   CategoryPage: {
+    searchQuery?: string;
     categoryId: string;
     categoryPath: string[];
     categoryName: string;
@@ -60,6 +63,16 @@ export type RootStackParamList = {
   Dummy: undefined;
   Cart: undefined; // Include Cart in the param list
   AddressBook: undefined; // Include AddressBook in the param list
+  CheckoutForm: undefined;
+  OrderReview: {
+    customerInfo: {
+      name: string;
+      email: string;
+      phone: string;
+      message: string;
+      address: any;
+    }
+  };
 };
 
 // Export the linking configuration to use in App.tsx
@@ -194,6 +207,8 @@ const AppNavigator = () => {
       <Stack.Screen name="Feedback" component={FeedbackScreen} />
       <Stack.Screen name="Dummy" component={DummyScreen} />
       <Stack.Screen name="AddressBook" component={AddressBookScreen} />
+      <Stack.Screen name="CheckoutForm" component={CheckoutFormScreen} />
+      <Stack.Screen name="OrderReview" component={OrderReviewScreen} />
     </Stack.Navigator>
   );
 };

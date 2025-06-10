@@ -8,7 +8,6 @@ import {
   ScrollView,
   TextInput,
   SafeAreaView,
-  Alert,
   Dimensions,
   Platform,
   FlatList
@@ -24,6 +23,7 @@ import { useTranslation } from 'react-i18next';
 import Header from '../../components/Header';
 import { useLanguage } from '../../context/languages/useLanguage';
 import { useCart } from '../../context/cart/CartContext';
+import { useAlert } from '../../context/AlertContext'; // Add this import
 
 // Product type definition for navigation
 interface Product {
@@ -95,6 +95,7 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
   const [activeTab, setActiveTab] = useState('description');
   const { t, currentLanguage } = useLanguage();
   const { addItem } = useCart();
+  const { alert } = useAlert(); // Add this line
   // Add state to track current image index
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
@@ -171,8 +172,8 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
       }
     });
     
-    // Show confirmation
-    Alert.alert(
+    // Replace Alert.alert with custom alert
+    alert(
       t('cart.addedToCartTitle'),
       t('cart.addedToCartMessage'),
       [

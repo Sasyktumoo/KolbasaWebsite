@@ -36,6 +36,11 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const { user } = useUser();
   const { translate, changeLanguage, currentLanguage } = useLanguage();
+  
+  // Reset search query when language changes
+  useEffect(() => {
+    setSearchQuery('');
+  }, [currentLanguage]);
   const { getTotalItems } = useCart();
   const [isLangDropdownVisible, setIsLangDropdownVisible] = useState(false);
   const [langDropdownAnimation] = useState(new Animated.Value(0));
@@ -125,8 +130,23 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
   };
 
   const handleSearchSubmit = () => {
-    console.log('Search query:', searchQuery);
-    // Implement search functionality
+    if (!searchQuery.trim()) {
+      return; // Don't search with empty query
+    }
+    
+    console.log('Searching for:', searchQuery);
+    
+    // Navigate to CategoryPage with search query parameter
+    navigation.navigate('CategoryPage', { 
+      categoryId: 'search',
+      categoryPath: ['product_catalog', 'search'],
+      categoryName: `${translate('search.results')}: ${searchQuery}`,
+      locale: currentLanguage,
+      searchQuery: searchQuery.trim().toLowerCase() // Pass search query as param
+    });
+    
+    // Clear search field after searching
+    setSearchQuery('');
   };
 
   // Navigation options with translated text
@@ -253,8 +273,13 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
               >
                 <Ionicons name="cart-outline" size={24} color="#333" />
                 {getTotalItems() > 0 && (
-                  <View style={styles.cartBadge}>
-                    <Text style={styles.cartBadgeText}>{getTotalItems()}</Text>
+                  <View style={[
+                    styles.cartBadge,
+                    getTotalItems() > 99 && styles.cartBadgeWide
+                  ]}>
+                    <Text style={styles.cartBadgeText}>
+                      {getTotalItems() > 99 ? '99+' : getTotalItems()}
+                    </Text>
                   </View>
                 )}
               </TouchableOpacity>
@@ -536,14 +561,18 @@ const styles = StyleSheet.create({
     top: -6,
     backgroundColor: '#FF3B30',
     borderRadius: 10,
-    width: 20,
+    minWidth: 20,
     height: 20,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 4,
+  },
+  cartBadgeWide: {
+    minWidth: 28,
   },
   cartBadgeText: {
     color: 'white',
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: 'bold',
   },
   searchContainer: {

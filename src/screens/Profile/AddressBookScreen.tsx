@@ -6,7 +6,6 @@ import {
   SafeAreaView,
   TouchableOpacity,
   FlatList,
-  Alert,
   ActivityIndicator,
   Modal,
   TextInput,
@@ -22,6 +21,7 @@ import Header from '../../components/Header';
 import { Ionicons } from '@expo/vector-icons';
 import { useLanguage } from '../../context/languages/useLanguage';
 import { collection, addDoc, updateDoc, deleteDoc, getDocs, doc, getFirestore, query, where, setDoc } from 'firebase/firestore';
+import { useAlert } from '../../context/AlertContext';
 
 // Address type definition
 interface Address {
@@ -41,6 +41,7 @@ const AddressBookScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const { user } = useUser();
   const { translate, currentLanguage } = useLanguage();
+  const { alert } = useAlert();
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
@@ -102,7 +103,7 @@ const AddressBookScreen = () => {
       setAddresses(fetchedAddresses);
     } catch (error) {
       console.error('Error fetching addresses:', error);
-      Alert.alert(translate('addressBook.errorFetching'));
+      alert(translate('addressBook.error'), translate('addressBook.errorFetching'));
     } finally {
       setLoading(false);
     }
@@ -128,7 +129,7 @@ const AddressBookScreen = () => {
   const saveAddress = async () => {
     if (!validateForm()) return;
     if (!user) {
-      Alert.alert(translate('addressBook.errorNotLoggedIn'));
+      alert(translate('addressBook.error'), translate('addressBook.errorNotLoggedIn'));
       return;
     }
     
@@ -163,21 +164,69 @@ const AddressBookScreen = () => {
       
     } catch (error) {
       console.error('Error saving address:', error);
-      Alert.alert(translate('addressBook.errorSaving'));
+      alert(translate('addressBook.error'), translate('addressBook.errorSaving'));
     } finally {
       setLoading(false);
     }
+  };
+  
+  // Confirm deletion
+  const confirmDelete = (id: string | undefined) => {
+    if (!id) {
+      console.error('Cannot delete address: ID is undefined');
+      alert(
+        translate('addressBook.error'),
+        translate('addressBook.errorInvalidId')
+      );
+      return;
+    }
+    
+    alert(
+      translate('addressBook.deleteConfirmTitle'),
+      translate('addressBook.deleteConfirmMessage'),
+      [
+        {
+          text: translate('common.cancel'),
+          style: 'cancel'
+        },
+        {
+          text: translate('common.delete'),
+          onPress: () => deleteAddress(id),
+          style: 'destructive'
+        }
+      ]
+    );
   };
   
   // Delete address
   const deleteAddress = async (id: string) => {
     try {
       setLoading(true);
-      await deleteDoc(doc(db, 'addresses', id));
+      
+      // Create a reference to the document
+      const addressRef = doc(db, 'addresses', id);
+      
+      // Delete the document
+      await deleteDoc(addressRef);
+      
+      // Log success
+      console.log(`Successfully deleted address with ID: ${id}`);
+      
+      // Update the local state immediately for better UX
+      setAddresses(addresses.filter(address => address.id !== id));
+      
+      // Then refresh from server
       fetchAddresses();
+      
     } catch (error) {
+      // Log detailed error
       console.error('Error deleting address:', error);
-      Alert.alert(translate('addressBook.errorDeleting'));
+      
+      // Show user-friendly error message
+      alert(
+        translate('addressBook.errorDeleting'),
+        error instanceof Error ? error.message : String(error)
+      );
     } finally {
       setLoading(false);
     }
@@ -203,7 +252,7 @@ const AddressBookScreen = () => {
       fetchAddresses();
     } catch (error) {
       console.error('Error setting default address:', error);
-      Alert.alert(translate('addressBook.errorSettingDefault'));
+      alert(translate('addressBook.error'), translate('addressBook.errorSettingDefault'));
     } finally {
       setLoading(false);
     }
@@ -241,25 +290,6 @@ const AddressBookScreen = () => {
     setCountry(address.country);
     setPhoneNumber(address.phoneNumber);
     setModalVisible(true);
-  };
-  
-  // Confirm deletion
-  const confirmDelete = (id: string) => {
-    Alert.alert(
-      translate('addressBook.deleteConfirmTitle'),
-      translate('addressBook.deleteConfirmMessage'),
-      [
-        {
-          text: translate('common.cancel'),
-          style: 'cancel'
-        },
-        {
-          text: translate('common.delete'),
-          onPress: () => deleteAddress(id),
-          style: 'destructive'
-        }
-      ]
-    );
   };
   
   // Render each address item
@@ -301,9 +331,14 @@ const AddressBookScreen = () => {
         
         <TouchableOpacity 
           style={styles.addressAction}
-          onPress={() => confirmDelete(item.id!)}
+          onPress={() => item.id ? confirmDelete(item.id) : null}
+          disabled={!item.id}
         >
-          <Ionicons name="trash-outline" size={18} color="#FF3B30" />
+          <Ionicons 
+            name="trash-outline" 
+            size={18} 
+            color={item.id ? "#FF3B30" : "#ccc"} 
+          />
         </TouchableOpacity>
       </View>
     </View>

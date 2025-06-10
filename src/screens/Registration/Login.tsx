@@ -7,7 +7,6 @@ import {
   TouchableOpacity, 
   SafeAreaView,
   ActivityIndicator,
-  Alert,
   Image
 } from 'react-native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -16,12 +15,14 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/AppNavigator';
 import { Ionicons } from '@expo/vector-icons';
+import { useAlert } from '../../context/AlertContext'; // Import useAlert
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const { alert } = useAlert(); // Add the useAlert hook
 
   const signIn = async () => {
     setLoading(true);
@@ -35,7 +36,8 @@ const Login = () => {
       });
     } catch (error: any) {
       console.error(error);
-      Alert.alert('Sign In Failed', error.message);
+      // Replace Alert.alert with custom alert
+      alert('Sign In Failed', error.message);
     } finally {
       setLoading(false);
     }
@@ -76,7 +78,8 @@ const Login = () => {
         
         <TouchableOpacity 
           style={styles.forgotPassword}
-          onPress={() => Alert.alert('Reset Password', 'Feature coming soon!')}
+          // Replace Alert.alert with custom alert
+          onPress={() => alert('Reset Password', 'Feature coming soon!')}
         >
           <Text style={styles.forgotPasswordText}>Forgot password?</Text>
         </TouchableOpacity>

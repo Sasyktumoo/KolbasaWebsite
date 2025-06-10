@@ -7,13 +7,13 @@ import {
   TouchableOpacity, 
   SafeAreaView,
   ActivityIndicator,
-  Alert,
   ScrollView
 } from 'react-native';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { useAlert } from '../../context/AlertContext'; // Import useAlert
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -22,15 +22,18 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
+  const { alert } = useAlert(); // Add the useAlert hook
 
   const signUp = async () => {
     if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
+      // Replace Alert.alert with custom alert
+      alert('Error', 'Passwords do not match');
       return;
     }
     
     if (password.length < 6) {
-      Alert.alert('Error', 'Password should be at least 6 characters');
+      // Replace Alert.alert with custom alert
+      alert('Error', 'Password should be at least 6 characters');
       return;
     }
 
@@ -45,10 +48,18 @@ const Register = () => {
         });
       }
       
-      Alert.alert('Success', 'Account created successfully');
+      // Replace Alert.alert with custom alert and add a success button
+      alert('Success', 'Account created successfully', [
+        { 
+          text: 'Sign In', 
+          onPress: () => navigation.navigate('Login' as never),
+          style: 'default'
+        }
+      ]);
     } catch (error: any) {
       console.error(error);
-      Alert.alert('Sign Up Failed', error.message);
+      // Replace Alert.alert with custom alert
+      alert('Sign Up Failed', error.message);
     } finally {
       setLoading(false);
     }

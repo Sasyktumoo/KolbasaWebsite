@@ -47,13 +47,8 @@ const CartScreen = () => {
       return;
     }
     
-    setCheckoutDialogVisible(true);
-  };
-  
-  const handleConfirmCheckout = () => {
-    setCheckoutDialogVisible(false);
-    setSuccessDialogVisible(true);
-    clearCart();
+    // Navigate to checkout form instead of showing dialog
+    navigation.navigate('CheckoutForm');
   };
   
   const handleSuccessDialogDismiss = () => {
@@ -291,7 +286,7 @@ const CartScreen = () => {
                   paddingHorizontal: 16,
                 }}
                 labelStyle={{ color: '#FFFFFF', fontSize: 16 }}
-                onPress={handleConfirmCheckout}
+                onPress={handleCheckout}
               >
                 {t('common.confirm') || 'Confirm'}
               </Button>

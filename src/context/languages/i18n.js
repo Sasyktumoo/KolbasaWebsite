@@ -9,7 +9,9 @@ i18n
   .init({
     resources: {
       en: en,
-      ru: ru
+      ru: ru,
+      es: es,
+      uk: uk
     },
     lng: 'en', // default language
     fallbackLng: 'en',
