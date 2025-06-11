@@ -84,13 +84,6 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
     }
   };
   
-  // Toggle between English and Russian
-  const toggleLanguageHandler = () => {
-    // Get the current language directly from context to avoid closure issues
-    const newLanguage = currentLanguage === 'en' ? 'ru' : 'en';
-    console.log(`Toggle: current=${currentLanguage}, new=${newLanguage}`);
-    changeLanguage(newLanguage);
-  };
 
   // Debug whenever currentLanguage changes
   useEffect(() => {
