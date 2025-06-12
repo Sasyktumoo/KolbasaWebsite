@@ -16,9 +16,6 @@ import { useNavigation } from '@react-navigation/native';
 import { signOut } from 'firebase/auth';
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
 import { useUser } from '../context/UserContext';
-import { LanguageContext } from '../context/languages/LanguageContext';
-import { useTranslation } from 'react-i18next';
-import SearchBar from './SearchBar';
 import { useLanguage } from '../context/languages/useLanguage';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -97,11 +94,6 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
     } catch (error) {
       console.error('Error signing out: ', error);
     }
-  };
-
-  const handleSearch = (query: string) => {
-    console.log('Searching for:', query);
-    // Implement search functionality here
   };
 
   const handleCatalogPress = () => {
