@@ -17,7 +17,7 @@
       "feedback": "Feedback"
     },
     "search": {
-      "placeholder": "Search products...",
+      "placeholder": "Search products....",
       "results": "Search results",
       "noResults": "No results found for \"{{query}}\"",
       "clearFilter": "Clear filter"
