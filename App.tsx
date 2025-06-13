@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Dimensions, StyleSheet, Text, View, ActivityIndicator } from 'react-native';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -12,17 +12,17 @@ import Login from './src/screens/Registration/Login';
 import Register from './src/screens/Registration/Register';
 import AppNavigator, { getLinkingConfig, RootStackParamList as AppNavigatorParamList } from './src/navigation/AppNavigator';
 import { UserProvider } from './src/context/UserContext';
-import { LanguageProvider } from './src/context/languages/LanguageContext';
-import { CartProvider } from './src/context/cart/CartContext';
-import { AlertProvider } from './src/context/AlertContext';
+import { LanguageProvider } from './src/context/languages/LanguageContext'; // Add this import
+import { CartProvider } from './src/context/cart/CartContext'; // Add this import
+import { AlertProvider } from './src/context/AlertContext'; // Add this import
 import { Ionicons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
-
 // Extend the RootStackParamList to include 'Main'
 type RootStackParamList = AppNavigatorParamList & {
   Main: { initialRoute?: string } | undefined;
 };
 
+// const Stack = createStackNavigator<AuthStackParamList>();
 const Stack = createStackNavigator<RootStackParamList>();
 
 // Error boundary component
@@ -64,7 +64,7 @@ export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [initializing, setInitializing] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [fontsLoaded] = useFonts(Ionicons.font);    
+ 
   // Get the linking configuration from AppNavigator
   const linking = getLinkingConfig();
 
@@ -105,14 +105,10 @@ export default function App() {
     }
   }, [initializing]);
 
-  // Show loading screen if fonts aren't loaded or app is still initializing
-  if (!fontsLoaded || initializing) {
+  if (initializing) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#FF3B30" />
-        <Text style={styles.loadingText}>
-          {!fontsLoaded ? 'Loading resources...' : 'Initializing app...'}
-        </Text>
+      <View style={styles.container}>
+        <Text>Loading...</Text>
       </View>
     );
   }
@@ -135,7 +131,7 @@ export default function App() {
               <View style={{ 
                 flex: 1, 
                 height: '100%', 
-                backgroundColor: '#fff'
+                backgroundColor: '#fff' // Add white background to container
               }}>
                 <NavigationContainer 
                   linking={linking}
@@ -194,7 +190,7 @@ export default function App() {
                       cardStyle: { 
                         flex: 1,
                         paddingHorizontal: Dimensions.get('window').width * 0.2,
-                        backgroundColor: '#fff',
+                        backgroundColor: '#fff', // Explicitly set background color
                       } 
                     }}
                   >
@@ -221,19 +217,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  loadingText: {
-    marginTop: 15,
-    fontSize: 16,
-    color: '#333',
-    textAlign: 'center',
   },
   errorContainer: {
     flex: 1,
