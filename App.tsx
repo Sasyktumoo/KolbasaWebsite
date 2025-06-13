@@ -15,8 +15,7 @@ import { UserProvider } from './src/context/UserContext';
 import { LanguageProvider } from './src/context/languages/LanguageContext'; // Add this import
 import { CartProvider } from './src/context/cart/CartContext'; // Add this import
 import { AlertProvider } from './src/context/AlertContext'; // Add this import
-import { Ionicons } from '@expo/vector-icons';
-import { useFonts } from 'expo-font';
+
 // Extend the RootStackParamList to include 'Main'
 type RootStackParamList = AppNavigatorParamList & {
   Main: { initialRoute?: string } | undefined;
