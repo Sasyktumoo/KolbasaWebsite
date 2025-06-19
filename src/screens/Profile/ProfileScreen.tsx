@@ -282,7 +282,16 @@ const ProfileScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header onCatalogPress={() => navigation.navigate('Home', { locale: currentLanguage })} />
+      <Header
+        onCatalogPress={() =>
+          navigation.navigate('CategoryPage', {
+            categoryId: 'someId',
+            categoryPath: ['somePath'],
+            categoryName: 'Catalog',
+            locale: 'en', // or whichever locale you need
+          })
+        }
+      />
       
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.profileHeader}>

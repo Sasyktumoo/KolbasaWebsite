@@ -10,7 +10,8 @@ import {
   SafeAreaView,
   Dimensions,
   Platform,
-  FlatList
+  FlatList,
+  ActivityIndicator
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import BreadcrumbNavigation from '../../components/BreadcrumbNavigation';
@@ -19,11 +20,12 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/AppNavigator';
 import styles from './ProductDetailPageDesign'
 import ReviewsSection from '../../components/ReviewsSection';
-import { useTranslation } from 'react-i18next';
 import Header from '../../components/Header';
 import { useLanguage } from '../../context/languages/useLanguage';
 import { useCart } from '../../context/cart/CartContext';
 import { useAlert } from '../../context/AlertContext'; // Add this import
+import { getFirestore, collection, addDoc } from 'firebase/firestore';
+import emailService from '../../services/EmailService';
 
 // Product type definition for navigation
 interface Product {
@@ -98,6 +100,11 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
   const { alert } = useAlert(); // Add this line
   // Add state to track current image index
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showPhonePopup, setShowPhonePopup] = useState(false);
+  const [showCallbackForm, setShowCallbackForm] = useState(false);
+  const [callbackPhone, setCallbackPhone] = useState('');
+  const [callbackComments, setCallbackComments] = useState('');
+  const [sendingCallbackRequest, setSendingCallbackRequest] = useState(false);
   
   // Create refs for scrolling to sections
   const flatListRef = useRef<FlatList>(null);
@@ -394,23 +401,29 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
               <View style={styles.supplierBadge}>
                 <Text style={styles.supplierBadgeText}>{t('productDetail.producer')}</Text>
               </View>
+              
+              {/* Keep the write to supplier button */}
               <TouchableOpacity style={styles.writeToSupplierButton}>
                 <Ionicons name="mail-outline" size={18} color="#FF3B30" />
                 <Text style={styles.writeToSupplierText}>{t('productDetail.writeToSupplier')}</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.phoneButton}>
+              
+              {/* Show phone number - now opens popup */}
+              <TouchableOpacity 
+                style={styles.phoneButton}
+                onPress={() => setShowPhonePopup(true)}
+              >
                 <Ionicons name="call-outline" size={18} color="#FF3B30" />
                 <Text style={styles.phoneButtonText}>{t('productDetail.showPhoneNumber')}</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.phoneButton}>
+              
+              {/* Request callback - now triggers callback request */}
+              <TouchableOpacity 
+                style={styles.phoneButton}
+                onPress={handleRequestCallback}
+              >
                 <Ionicons name="call-outline" size={18} color="#FF3B30" />
                 <Text style={styles.phoneButtonText}>{t('productDetail.requestCallback')}</Text>
-              </TouchableOpacity>
-
-              {/* Delivery Address Button */}
-              <TouchableOpacity style={styles.deliveryAddressButton}>
-                <Ionicons name="location-outline" size={18} color="#FF3B30" />
-                <Text style={styles.deliveryAddressText}>{t('productDetail.enterDeliveryAddress')}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -510,6 +523,271 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
     }
   };
   
+  // Phone popup component
+  const PhonePopup = ({ visible, onClose }) => {
+    if (!visible) return null;
+    
+    // Sample phone number - you can replace with actual data from supplier
+    const phoneNumber = "+34 652 346 651";
+    
+    return (
+      <View style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000,
+      }}>
+        <View style={{
+          backgroundColor: 'white',
+          borderRadius: 10,
+          padding: 20,
+          width: '80%',
+          alignItems: 'center',
+        }}>
+          <Text style={{
+            fontSize: 18,
+            fontWeight: 'bold',
+            marginBottom: 15,
+          }}>{t('productDetail.phoneNumber')}</Text>
+          
+          <Text style={{
+            fontSize: 22,
+            fontWeight: 'bold',
+            marginBottom: 20,
+            color: '#FF3B30',
+          }}>{phoneNumber}</Text>
+          
+          <TouchableOpacity 
+            style={{
+              backgroundColor: '#FF3B30',
+              paddingVertical: 10,
+              paddingHorizontal: 20,
+              borderRadius: 5,
+            }} 
+            onPress={onClose}
+          >
+            <Text style={{
+              color: 'white',
+              fontWeight: 'bold',
+            }}>{t('common.close')}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+  
+  // Callback Request Form component
+  const CallbackRequestForm = ({ visible, onClose }) => {
+    if (!visible) return null;
+    
+    const handleSubmitCallback = async () => {
+      // Validate phone number
+      if (!callbackPhone.trim()) {
+        alert(
+          t('productDetail.invalidPhoneTitle') || 'Invalid Phone',
+          t('productDetail.invalidPhoneMessage') || 'Please enter a valid phone number.',
+          [{ text: t('common.ok') || 'OK', style: 'default' }]
+        );
+        return;
+      }
+      
+      setSendingCallbackRequest(true);
+      
+      try {
+        // Create callback request data
+        const callbackRequest = {
+          productId: product.id,
+          productName: firebaseProduct?.translations?.[currentLanguage]?.name || product.name,
+          phone: callbackPhone,
+          comments: callbackComments,
+          requestedAt: new Date().toISOString(),
+        };
+        
+        // Save to Firestore
+        const db = getFirestore();
+        await addDoc(collection(db, 'callbackRequests'), callbackRequest);
+        
+        // Send email notification if on web platform
+        if (Platform.OS === 'web') {
+          try {
+            await emailService.initialize();
+            
+            // Prepare callback email data
+            const callbackEmailData = {
+              type: 'callback' as 'callback', // Use type assertion to ensure it's the literal type
+              customer: {
+                name: 'Customer', // We don't collect name for callbacks
+                email: 'sasyktumoo@gmail.com', // Send to supplier email
+                phone: callbackPhone,
+              },
+              product: {
+                id: product.id,
+                name: firebaseProduct?.translations?.[currentLanguage]?.name || product.name,
+              },
+              comments: callbackComments,
+            };
+            
+            // Send callback request email
+            await emailService.sendCallbackRequest(callbackEmailData);
+          } catch (emailError) {
+            console.error("Failed to send callback request email:", emailError);
+            // Don't show error to user as the request was still saved
+          }
+        }
+        
+        // Show success message and close form
+        alert(
+          t('productDetail.callbackRequestTitle') || 'Request Callback',
+          t('productDetail.callbackRequestMessage') || 'Your callback request has been sent to the supplier. They will contact you shortly.',
+          [{ text: t('common.ok') || 'OK', onPress: onClose }]
+        );
+        
+        // Reset form
+        setCallbackPhone('');
+        setCallbackComments('');
+        
+      } catch (error) {
+        console.error('Error submitting callback request:', error);
+        alert(
+          t('productDetail.callbackErrorTitle') || 'Request Failed',
+          t('productDetail.callbackErrorMessage') || 'We encountered an error sending your request. Please try again later.',
+          [{ text: t('common.ok') || 'OK', style: 'default' }]
+        );
+      } finally {
+        setSendingCallbackRequest(false);
+      }
+    };
+    
+    return (
+      <View style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000,
+      }}>
+        <View style={{
+          backgroundColor: 'white',
+          borderRadius: 10,
+          padding: 20,
+          width: '80%',
+          maxWidth: 400,
+        }}>
+          <Text style={{
+            fontSize: 18,
+            fontWeight: 'bold',
+            marginBottom: 20,
+            textAlign: 'center',
+          }}>{t('productDetail.requestCallbackTitle')}</Text>
+          
+          <Text style={{
+            fontSize: 14,
+            marginBottom: 5,
+          }}>{t('productDetail.phoneNumberLabel')}*</Text>
+          
+          <TextInput
+            style={{
+              borderWidth: 1,
+              borderColor: '#ddd',
+              borderRadius: 5,
+              padding: 10,
+              marginBottom: 15,
+              fontSize: 16,
+            }}
+            value={callbackPhone}
+            onChangeText={setCallbackPhone}
+            placeholder="+7 (___) ___-____"
+            keyboardType="phone-pad"
+          />
+          
+          <Text style={{
+            fontSize: 14,
+            marginBottom: 5,
+          }}>{t('productDetail.commentsLabel')}</Text>
+          
+          <TextInput
+            style={{
+              borderWidth: 1,
+              borderColor: '#ddd',
+              borderRadius: 5,
+              padding: 10,
+              marginBottom: 20,
+              fontSize: 16,
+              height: 100,
+              textAlignVertical: 'top',
+            }}
+            value={callbackComments}
+            onChangeText={setCallbackComments}
+            placeholder={t('productDetail.commentsPlaceholder')}
+            multiline={true}
+            numberOfLines={4}
+          />
+          
+          <View style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}>
+            <TouchableOpacity 
+              style={{
+                backgroundColor: '#f2f2f2',
+                paddingVertical: 10,
+                paddingHorizontal: 20,
+                borderRadius: 5,
+                flex: 1,
+                marginRight: 10,
+                alignItems: 'center',
+              }} 
+              onPress={onClose}
+              disabled={sendingCallbackRequest}
+            >
+              <Text style={{
+                color: '#333',
+                fontWeight: 'bold',
+              }}>{t('common.cancel')}</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={{
+                backgroundColor: '#FF3B30',
+                paddingVertical: 10,
+                paddingHorizontal: 20,
+                borderRadius: 5,
+                flex: 1,
+                alignItems: 'center',
+                opacity: sendingCallbackRequest ? 0.7 : 1,
+              }} 
+              onPress={handleSubmitCallback}
+              disabled={sendingCallbackRequest}
+            >
+              {sendingCallbackRequest ? (
+                <ActivityIndicator size="small" color="white" />
+              ) : (
+                <Text style={{
+                  color: 'white',
+                  fontWeight: 'bold',
+                }}>{t('common.submit')}</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    );
+  };
+  
+  // Handler for request callback button
+  const handleRequestCallback = () => {
+    setShowCallbackForm(true);
+  };
+  
   return (
     <SafeAreaView style={styles.safeArea}>
       <Header onCatalogPress={handleCatalogPress} />
@@ -519,8 +797,7 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
         data={sections}
         keyExtractor={item => item.id}
         renderItem={renderSection}
-
-        contentContainerStyle={{ paddingBottom: 120 }} // Bottom padding
+        contentContainerStyle={{ paddingBottom: 120 }}
         showsVerticalScrollIndicator={true}
         onScrollToIndexFailed={info => {
           const wait = new Promise(resolve => setTimeout(resolve, 500));
@@ -531,6 +808,18 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
             });
           });
         }}
+      />
+      
+      {/* Add Phone Popup */}
+      <PhonePopup 
+        visible={showPhonePopup}
+        onClose={() => setShowPhonePopup(false)}
+      />
+      
+      {/* Add Callback Request Form */}
+      <CallbackRequestForm 
+        visible={showCallbackForm}
+        onClose={() => setShowCallbackForm(false)}
       />
     </SafeAreaView>
   );

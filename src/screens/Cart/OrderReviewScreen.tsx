@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Image,
-  ActivityIndicator
+  ActivityIndicator,
+  Platform,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -19,6 +20,7 @@ import { useCart } from '../../context/cart/CartContext';
 import { useUser } from '../../context/UserContext';
 import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAlert } from '../../context/AlertContext';
+import emailService from '../../services/EmailService'; // Import the email service
 
 const OrderReviewScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
@@ -28,10 +30,20 @@ const OrderReviewScreen = () => {
   const { user } = useUser();
   const { alert } = useAlert();
   const [loading, setLoading] = useState(false);
+  const [sendingEmail, setSendingEmail] = useState(false);
   
   // Get customer info from route params
   const { customerInfo } = route.params;
   const db = getFirestore();
+  
+  // Initialize email service on web platforms
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      emailService.initialize().catch(err => 
+        console.error("Failed to initialize email service:", err)
+      );
+    }
+  }, []);
   
   const handlePlaceOrder = async () => {
     if (items.length === 0) {
@@ -79,6 +91,24 @@ const OrderReviewScreen = () => {
       
       // Save order to Firestore
       const orderRef = await addDoc(collection(db, 'orders'), order);
+      
+      // Attempt to send confirmation email on web platform
+      if (Platform.OS === 'web') {
+        setSendingEmail(true);
+        try {
+          await emailService.sendOrderConfirmation({
+            customer: order.customer,
+            items: order.items,
+            totalAmount: order.totalAmount,
+            address: order.address
+          });
+        } catch (emailError) {
+          console.error("Failed to send confirmation email:", emailError);
+          // We don't want to show this error to the user as the order was still placed successfully
+        } finally {
+          setSendingEmail(false);
+        }
+      }
       
       // Clear cart
       clearCart();
@@ -224,12 +254,17 @@ const OrderReviewScreen = () => {
           
           {/* Place Order Button */}
           <TouchableOpacity 
-            style={[styles.placeOrderButton, loading && styles.disabledButton]}
+            style={[styles.placeOrderButton, (loading || sendingEmail) && styles.disabledButton]}
             onPress={handlePlaceOrder}
-            disabled={loading}
+            disabled={loading || sendingEmail}
           >
             {loading ? (
               <ActivityIndicator color="white" size="small" />
+            ) : sendingEmail ? (
+              <View style={styles.buttonContentRow}>
+                <ActivityIndicator color="white" size="small" style={styles.buttonLoader} />
+                <Text style={styles.placeOrderButtonText}>{t('orderReview.sendingConfirmation')}</Text>
+              </View>
             ) : (
               <Text style={styles.placeOrderButtonText}>{t('orderReview.placeOrder')}</Text>
             )}
@@ -421,6 +456,14 @@ const styles = StyleSheet.create({
     color: '#888',
     textAlign: 'center',
     marginBottom: 30,
+  },
+  buttonContentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonLoader: {
+    marginRight: 10,
   },
 });
 

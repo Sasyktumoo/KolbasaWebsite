@@ -37,9 +37,7 @@ const CartScreen = () => {
   const [emptyCartDialogVisible, setEmptyCartDialogVisible] = useState(false);
   const [successDialogVisible, setSuccessDialogVisible] = useState(false);
 
-  const handleCatalogPress = () => {
-    navigation.navigate('Home', { locale: currentLanguage });
-  };
+
 
   const handleCheckout = () => {
     if (items.length === 0) {
@@ -111,7 +109,16 @@ const CartScreen = () => {
   return (
     <PaperProvider>
       <SafeAreaView style={styles.container}>
-        <Header onCatalogPress={handleCatalogPress} />
+        <Header
+          onCatalogPress={() =>
+            navigation.navigate('CategoryPage', {
+              categoryId: 'someId',
+              categoryPath: ['somePath'],
+              categoryName: 'Catalog',
+              locale: 'en', // or whichever locale you need
+            })
+          }
+        />
         
         <View style={styles.titleContainer}>
           <Text style={styles.title}>{t('cart.title')}</Text>
