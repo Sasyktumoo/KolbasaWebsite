@@ -105,7 +105,10 @@
       "confirm": "Confirm",
       "continue": "Continue",
       "ok": "OK",
-      "delete": "Delete"
+      "delete": "Delete",
+      "send": "Send",
+      "submit": "Submit",
+      "close": "Close"
     },
     "aboutUs": {
       "title": "About Us",
@@ -163,7 +166,35 @@
         "countryOfOrigin": "Country of Origin",
         "soyMeat": "Soy Meat",
         "belarus": "Belarus"
-      }
+      },
+      "phoneNumber": "Phone Number",
+      "callbackRequestTitle": "Request Callback",
+      "callbackRequestMessage": "Your callback request has been sent to the supplier. They will contact you shortly.",
+      "callbackErrorTitle": "Request Failed",
+      "callbackErrorMessage": "We encountered an error sending your request. Please try again later.",
+      "phoneNumberLabel": "Phone Number",
+      "commentsLabel": "Comments (optional)",
+      "commentsPlaceholder": "Any specific questions or preferred time to call",
+      "invalidPhoneTitle": "Invalid Phone",
+      "invalidPhoneMessage": "Please enter a valid phone number.",
+      
+      "contactOptionsTitle": "Contact Options",
+      "sendEmail": "Send Email",
+      "whatsAppChat": "WhatsApp Chat",
+      "yourNameLabel": "Your Name",
+      "yourNamePlaceholder": "Enter your name",
+      "yourEmailLabel": "Your Email",
+      "yourEmailPlaceholder": "Enter your email",
+      "messageLabel": "Message",
+      "messagePlaceholder": "Enter your message",
+      "invalidFormTitle": "Incomplete Form",
+      "invalidFormMessage": "Please fill in all required fields.",
+      "invalidEmailTitle": "Invalid Email",
+      "invalidEmailMessage": "Please enter a valid email address.",
+      "messageSentTitle": "Message Sent",
+      "messageSentMessage": "Your message has been sent to the supplier. They will contact you soon.",
+      "messageErrorTitle": "Message Failed",
+      "messageErrorMessage": "We encountered an error sending your message. Please try again later."
     },
     "addressBook": {
       "error": "Error",
@@ -249,6 +280,48 @@
       "orderSuccessMessage": "Thank you for your order! Your order has been placed and is being processed.",
       "orderErrorTitle": "Order Error",
       "orderErrorMessage": "There was an error processing your order. Please try again later."
+    },
+    "emails": {
+      "orderConfirmation": {
+        "title": "Order Confirmation",
+        "greeting": "Dear {name},",
+        "thankYouMessage": "Thank you for your order from Meat Store! We're processing your order and will contact you back.",
+        "orderSummary": "Order Summary",
+        "product": "Product",
+        "quantity": "Quantity",
+        "price": "Price",
+        "total": "Total",
+        "shippingInfo": "Shipping Information",
+        "questionsContact": "If you have any questions, please contact our customer service team.",
+        "thankYouClosing": "Thank you for shopping with us!",
+        "sincerely": "Sincerely,",
+        "teamName": "Meat Store Team"
+      },
+      "callbackRequest": {
+        "title": "Callback Request Confirmation",
+        "greeting": "Dear Customer,",
+        "thankYouMessage": "Thank you for requesting a callback about product: {productName}.",
+        "weWillContact": "Our team will contact you shortly at the phone number you provided: {phone}.",
+        "additionalInfo": "Additional Information",
+        "comments": "Your comments",
+        "noComments": "No additional comments provided.",
+        "questionsContact": "If you have any questions, feel free to contact our customer service team.",
+        "sincerely": "Sincerely,",
+        "teamName": "Meat Store Team"
+      },
+      "messageConfirmation": {
+        "title": "Message Confirmation",
+        "greeting": "Dear {name},",
+        "thankYouMessage": "Thank you for your message about product: {productName}.",
+        "weWillContact": "Our team will review your message and contact you soon.",
+        "messageCopy": "Your Message",
+        "questionsContact": "If you have any questions, feel free to contact our customer service team.",
+        "sincerely": "Sincerely,",
+        "teamName": "Meat Store Team"
+      },
+      "common": {
+        "copyright": "© {year} Meat Store. All rights reserved."
+      }
     }
   }
 }

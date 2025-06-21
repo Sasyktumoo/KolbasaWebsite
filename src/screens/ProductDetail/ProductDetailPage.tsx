@@ -11,7 +11,8 @@ import {
   Dimensions,
   Platform,
   FlatList,
-  ActivityIndicator
+  ActivityIndicator,
+  Linking
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import BreadcrumbNavigation from '../../components/BreadcrumbNavigation';
@@ -105,6 +106,14 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
   const [callbackPhone, setCallbackPhone] = useState('');
   const [callbackComments, setCallbackComments] = useState('');
   const [sendingCallbackRequest, setSendingCallbackRequest] = useState(false);
+  
+  // Add new states for write to supplier functionality
+  const [showWriteOptions, setShowWriteOptions] = useState(false);
+  const [showEmailForm, setShowEmailForm] = useState(false);
+  const [emailMessage, setEmailMessage] = useState('');
+  const [emailSenderName, setEmailSenderName] = useState('');
+  const [emailSenderEmail, setEmailSenderEmail] = useState('');
+  const [sendingEmail, setSendingEmail] = useState(false);
   
   // Create refs for scrolling to sections
   const flatListRef = useRef<FlatList>(null);
@@ -403,7 +412,10 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
               </View>
               
               {/* Keep the write to supplier button */}
-              <TouchableOpacity style={styles.writeToSupplierButton}>
+              <TouchableOpacity 
+                style={styles.writeToSupplierButton}
+                onPress={handleWriteToSupplier} // Update with the new handler
+              >
                 <Ionicons name="mail-outline" size={18} color="#FF3B30" />
                 <Text style={styles.writeToSupplierText}>{t('productDetail.writeToSupplier')}</Text>
               </TouchableOpacity>
@@ -601,11 +613,18 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
       try {
         // Create callback request data
         const callbackRequest = {
-          productId: product.id,
-          productName: firebaseProduct?.translations?.[currentLanguage]?.name || product.name,
-          phone: callbackPhone,
+          type: 'callback' as const,
+          product: {
+            id: product.id,
+            name: firebaseProduct?.translations?.[currentLanguage]?.name || product.name,
+          },
+          customer: {
+            name: 'Customer', // We don't collect name for callbacks
+            email: 'supplier@example.com', // Send to supplier email
+            phone: callbackPhone,
+          },
           comments: callbackComments,
-          requestedAt: new Date().toISOString(),
+          language: currentLanguage // Add the language parameter
         };
         
         // Save to Firestore
@@ -617,23 +636,8 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
           try {
             await emailService.initialize();
             
-            // Prepare callback email data
-            const callbackEmailData = {
-              type: 'callback' as 'callback', // Use type assertion to ensure it's the literal type
-              customer: {
-                name: 'Customer', // We don't collect name for callbacks
-                email: 'sasyktumoo@gmail.com', // Send to supplier email
-                phone: callbackPhone,
-              },
-              product: {
-                id: product.id,
-                name: firebaseProduct?.translations?.[currentLanguage]?.name || product.name,
-              },
-              comments: callbackComments,
-            };
-            
-            // Send callback request email
-            await emailService.sendCallbackRequest(callbackEmailData);
+            // Send callback request email with language parameter
+            await emailService.sendCallbackRequest(callbackRequest);
           } catch (emailError) {
             console.error("Failed to send callback request email:", emailError);
             // Don't show error to user as the request was still saved
@@ -788,6 +792,363 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
     setShowCallbackForm(true);
   };
   
+  // Constants
+  const supplierPhoneNumber = "+34652346651"; // Number without spaces for WhatsApp link
+  const displayPhoneNumber = "+34 652 346 651"; // Formatted for display
+  
+  // Handle write to supplier button click
+  const handleWriteToSupplier = () => {
+    setShowWriteOptions(true);
+  };
+  
+  // Handle WhatsApp option
+  const handleWhatsAppChat = () => {
+    // Close the options modal
+    setShowWriteOptions(false);
+    
+    // Create WhatsApp URL
+    const whatsappUrl = `https://wa.me/${supplierPhoneNumber}`;
+    
+    // Open WhatsApp in a new tab/window (for web)
+    if (Platform.OS === 'web') {
+      window.open(whatsappUrl, '_blank');
+    } else {
+      // For mobile, we can use Linking
+      Linking.openURL(whatsappUrl);
+    }
+  };
+  
+  // Handle Email option
+  const handleEmailOption = () => {
+    setShowWriteOptions(false);
+    setShowEmailForm(true);
+  };
+  
+  // Handle sending email
+  const handleSendEmail = async () => {
+    // Validate form
+    if (!emailSenderName.trim() || !emailSenderEmail.trim() || !emailMessage.trim()) {
+      alert(
+        t('productDetail.invalidFormTitle') || 'Incomplete Form',
+        t('productDetail.invalidFormMessage') || 'Please fill in all required fields.',
+        [{ text: t('common.ok') || 'OK', style: 'default' }]
+      );
+      return;
+    }
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailSenderEmail)) {
+      alert(
+        t('productDetail.invalidEmailTitle') || 'Invalid Email',
+        t('productDetail.invalidEmailMessage') || 'Please enter a valid email address.',
+        [{ text: t('common.ok') || 'OK', style: 'default' }]
+      );
+      return;
+    }
+    
+    setSendingEmail(true);
+    
+    try {
+      // Create email data
+      const messageData = {
+        type: 'message' as const,
+        sender: {
+          name: emailSenderName,
+          email: emailSenderEmail,
+        },
+        supplier: {
+          email: 'sasyktumoo@gmail.com',
+          phoneNumber: displayPhoneNumber,
+        },
+        product: {
+          id: product.id,
+          name: firebaseProduct?.translations?.[currentLanguage]?.name || product.name,
+        },
+        message: emailMessage,
+        language: currentLanguage // Add the language parameter
+      };
+      
+      // Save to Firestore
+      const db = getFirestore();
+      await addDoc(collection(db, 'supplierMessages'), {
+        ...messageData,
+        sentAt: new Date().toISOString(),
+      });
+      
+      // Send email notification if on web platform
+      if (Platform.OS === 'web') {
+        try {
+          await emailService.initialize();
+          
+          // Send email using EmailService with language parameter
+          await emailService.sendSupplierMessage(messageData);
+        } catch (emailError) {
+          console.error("Failed to send supplier message email:", emailError);
+          // Don't show error to user as the message was still saved to Firestore
+        }
+      }
+      
+      // Show success message and close form
+      alert(
+        t('productDetail.messageSentTitle') || 'Message Sent',
+        t('productDetail.messageSentMessage') || 'Your message has been sent to the supplier. They will contact you soon.',
+        [{ text: t('common.ok') || 'OK', onPress: () => setShowEmailForm(false) }]
+      );
+      
+      // Reset form
+      setEmailSenderName('');
+      setEmailSenderEmail('');
+      setEmailMessage('');
+      
+    } catch (error) {
+      console.error('Error sending message to supplier:', error);
+      alert(
+        t('productDetail.messageErrorTitle') || 'Message Failed',
+        t('productDetail.messageErrorMessage') || 'We encountered an error sending your message. Please try again later.',
+        [{ text: t('common.ok') || 'OK', style: 'default' }]
+      );
+    } finally {
+      setSendingEmail(false);
+    }
+  };
+  
+  // Write Options Modal component
+  const WriteOptionsModal = ({ visible, onClose }) => {
+    if (!visible) return null;
+    
+    return (
+      <View style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000,
+      }}>
+        <View style={{
+          backgroundColor: 'white',
+          borderRadius: 10,
+          padding: 20,
+          width: '80%',
+          maxWidth: 400,
+        }}>
+          <Text style={{
+            fontSize: 18,
+            fontWeight: 'bold',
+            marginBottom: 20,
+            textAlign: 'center',
+          }}>{t('productDetail.contactOptionsTitle') || 'Contact Options'}</Text>
+          
+          <TouchableOpacity 
+            style={{
+              backgroundColor: '#FF3B30',
+              paddingVertical: 12,
+              paddingHorizontal: 20,
+              borderRadius: 5,
+              marginBottom: 15,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }} 
+            onPress={handleEmailOption}
+          >
+            <Ionicons name="mail-outline" size={20} color="white" style={{ marginRight: 10 }} />
+            <Text style={{
+              color: 'white',
+              fontWeight: 'bold',
+              fontSize: 16,
+            }}>{t('productDetail.sendEmail') || 'Send Email'}</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={{
+              backgroundColor: '#25D366', // WhatsApp green
+              paddingVertical: 12,
+              paddingHorizontal: 20,
+              borderRadius: 5,
+              marginBottom: 20,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }} 
+            onPress={handleWhatsAppChat}
+          >
+            <Ionicons name="logo-whatsapp" size={20} color="white" style={{ marginRight: 10 }} />
+            <Text style={{
+              color: 'white',
+              fontWeight: 'bold',
+              fontSize: 16,
+            }}>{t('productDetail.whatsAppChat') || 'WhatsApp Chat'}</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={{
+              backgroundColor: '#f2f2f2',
+              paddingVertical: 10,
+              paddingHorizontal: 20,
+              borderRadius: 5,
+              alignItems: 'center',
+            }} 
+            onPress={onClose}
+          >
+            <Text style={{
+              color: '#333',
+              fontWeight: 'bold',
+            }}>{t('common.cancel') || 'Cancel'}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+  
+  // Email Form Modal component
+  const EmailFormModal = ({ visible, onClose }) => {
+    if (!visible) return null;
+    
+    return (
+      <View style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000,
+      }}>
+        <View style={{
+          backgroundColor: 'white',
+          borderRadius: 10,
+          padding: 20,
+          width: '80%',
+          maxWidth: 500,
+        }}>
+          <Text style={{
+            fontSize: 18,
+            fontWeight: 'bold',
+            marginBottom: 20,
+            textAlign: 'center',
+          }}>{t('productDetail.writeToSupplier')}</Text>
+          
+          <Text style={{
+            fontSize: 14,
+            marginBottom: 5,
+          }}>{t('productDetail.yourNameLabel') || 'Your Name'}*</Text>
+          
+          <TextInput
+            style={{
+              borderWidth: 1,
+              borderColor: '#ddd',
+              borderRadius: 5,
+              padding: 10,
+              marginBottom: 15,
+              fontSize: 16,
+            }}
+            value={emailSenderName}
+            onChangeText={setEmailSenderName}
+            placeholder={t('productDetail.yourNamePlaceholder') || 'Enter your name'}
+          />
+          
+          <Text style={{
+            fontSize: 14,
+            marginBottom: 5,
+          }}>{t('productDetail.yourEmailLabel') || 'Your Email'}*</Text>
+          
+          <TextInput
+            style={{
+              borderWidth: 1,
+              borderColor: '#ddd',
+              borderRadius: 5,
+              padding: 10,
+              marginBottom: 15,
+              fontSize: 16,
+            }}
+            value={emailSenderEmail}
+            onChangeText={setEmailSenderEmail}
+            placeholder={t('productDetail.yourEmailPlaceholder') || 'Enter your email'}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+          
+          <Text style={{
+            fontSize: 14,
+            marginBottom: 5,
+          }}>{t('productDetail.messageLabel') || 'Message'}*</Text>
+          
+          <TextInput
+            style={{
+              borderWidth: 1,
+              borderColor: '#ddd',
+              borderRadius: 5,
+              padding: 10,
+              marginBottom: 20,
+              fontSize: 16,
+              height: 120,
+              textAlignVertical: 'top',
+            }}
+            value={emailMessage}
+            onChangeText={setEmailMessage}
+            placeholder={t('productDetail.messagePlaceholder') || 'Enter your message'}
+            multiline={true}
+            numberOfLines={6}
+          />
+          
+          <View style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}>
+            <TouchableOpacity 
+              style={{
+                backgroundColor: '#f2f2f2',
+                paddingVertical: 10,
+                paddingHorizontal: 20,
+                borderRadius: 5,
+                flex: 1,
+                marginRight: 10,
+                alignItems: 'center',
+              }} 
+              onPress={onClose}
+              disabled={sendingEmail}
+            >
+              <Text style={{
+                color: '#333',
+                fontWeight: 'bold',
+              }}>{t('common.cancel') || 'Cancel'}</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={{
+                backgroundColor: '#FF3B30',
+                paddingVertical: 10,
+                paddingHorizontal: 20,
+                borderRadius: 5,
+                flex: 1,
+                alignItems: 'center',
+                opacity: sendingEmail ? 0.7 : 1,
+              }} 
+              onPress={handleSendEmail}
+              disabled={sendingEmail}
+            >
+              {sendingEmail ? (
+                <ActivityIndicator size="small" color="white" />
+              ) : (
+                <Text style={{
+                  color: 'white',
+                  fontWeight: 'bold',
+                }}>{t('common.send') || 'Send'}</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    );
+  };
+  
   return (
     <SafeAreaView style={styles.safeArea}>
       <Header onCatalogPress={handleCatalogPress} />
@@ -820,6 +1181,18 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
       <CallbackRequestForm 
         visible={showCallbackForm}
         onClose={() => setShowCallbackForm(false)}
+      />
+      
+      {/* Add Write Options Modal */}
+      <WriteOptionsModal
+        visible={showWriteOptions}
+        onClose={() => setShowWriteOptions(false)}
+      />
+      
+      {/* Add Email Form Modal */}
+      <EmailFormModal
+        visible={showEmailForm}
+        onClose={() => setShowEmailForm(false)}
       />
     </SafeAreaView>
   );

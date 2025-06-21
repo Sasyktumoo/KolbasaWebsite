@@ -100,7 +100,8 @@ const OrderReviewScreen = () => {
             customer: order.customer,
             items: order.items,
             totalAmount: order.totalAmount,
-            address: order.address
+            address: order.address,
+            language: currentLanguage // Pass the current language
           });
         } catch (emailError) {
           console.error("Failed to send confirmation email:", emailError);
