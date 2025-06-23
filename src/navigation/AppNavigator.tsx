@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import * as Linking from 'expo-linking';
 import { LinkingOptions, useNavigation, useRoute, NavigationProp } from '@react-navigation/native';
 
-import ProductDetailPage from '../screens/ProductDetail/ProductDetailPage';
+import ProductDetailPage from '../screens/ProductDetail/ProductDetailScreen';
 import CategoryPage from '../screens/CategoryPage';
 import HomePage from '../screens/HomePage';
 // Import the new screens
