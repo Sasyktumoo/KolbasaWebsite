@@ -12,7 +12,8 @@ import {
   Platform,
   FlatList,
   ActivityIndicator,
-  Linking
+  Linking,
+  TouchableWithoutFeedback
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import BreadcrumbNavigation from '../../components/BreadcrumbNavigation';
@@ -27,7 +28,7 @@ import { useCart } from '../../context/cart/CartContext';
 import { useAlert } from '../../context/AlertContext'; // Add this import
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import emailService from '../../services/EmailService';
-
+ 
 // Product type definition for navigation
 interface Product {
   id: string;
@@ -130,7 +131,7 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
       name: 'Default Product',
       price: 100,
       minOrder: 50,
-      image: {}
+      image: {} 
     },
     breadcrumbPath: ['product_catalog', 'default_product']
   };
@@ -470,20 +471,20 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
             value: `${firebaseProduct.netWeight?.value || 0} ${firebaseProduct.netWeight?.unit || 'g'}` 
           },
           { 
-            name: 'Packaging', 
+            name: t('productDetail.characteristics.packaging'), 
             value: firebaseProduct.translations?.[currentLanguage]?.packaging || firebaseProduct.packaging 
           },
           { 
-            name: 'Processing Type', 
+            name: t('productDetail.characteristics.processingType'), 
             value: firebaseProduct.translations?.[currentLanguage]?.processingType?.join(', ') || 
                   firebaseProduct.processingType?.join(', ') || 'N/A'
           },
           { 
-            name: 'Storage Temperature', 
+            name: t('productDetail.characteristics.storageTemperature'), 
             value: `${firebaseProduct.storageTemperature?.min || 0}°C to ${firebaseProduct.storageTemperature?.max || 0}°C` 
           },
           { 
-            name: 'Shelf Life', 
+            name: t('productDetail.characteristics.shelfLife'), 
             value: firebaseProduct.shelfLife ? 
                   `${firebaseProduct.shelfLife.value} ${firebaseProduct.shelfLife.unit}` : 
                   'N/A' 
@@ -540,8 +541,8 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
     if (!visible) return null;
     
     // Sample phone number - you can replace with actual data from supplier
-    const phoneNumber = "+34 652 346 651";
-    
+    const phoneNumber = "+34 652 34 66 51";
+
     return (
       <View style={{
         position: 'absolute',
@@ -595,6 +596,10 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
   
   // Callback Request Form component
   const CallbackRequestForm = ({ visible, onClose }) => {
+    // Add refs for maintaining focus
+    const phoneInputRef = useRef(null);
+    const commentsInputRef = useRef(null);
+    
     if (!visible) return null;
     
     const handleSubmitCallback = async () => {
@@ -679,6 +684,7 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
         alignItems: 'center',
         zIndex: 1000,
       }}>
+      <TouchableWithoutFeedback>
         <View style={{
           backgroundColor: 'white',
           borderRadius: 10,
@@ -699,6 +705,7 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
           }}>{t('productDetail.phoneNumberLabel')}*</Text>
           
           <TextInput
+            ref={phoneInputRef}
             style={{
               borderWidth: 1,
               borderColor: '#ddd',
@@ -711,6 +718,7 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
             onChangeText={setCallbackPhone}
             placeholder="+7 (___) ___-____"
             keyboardType="phone-pad"
+            autoFocus={true}
           />
           
           <Text style={{
@@ -719,6 +727,7 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
           }}>{t('productDetail.commentsLabel')}</Text>
           
           <TextInput
+            ref={commentsInputRef}
             style={{
               borderWidth: 1,
               borderColor: '#ddd',
@@ -783,7 +792,8 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
             </TouchableOpacity>
           </View>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
+    </View>
     );
   };
   
@@ -1007,6 +1017,11 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
   
   // Email Form Modal component
   const EmailFormModal = ({ visible, onClose }) => {
+    // Add refs for maintaining focus
+    const nameInputRef = useRef(null);
+    const emailInputRef = useRef(null);
+    const messageInputRef = useRef(null);
+    
     if (!visible) return null;
     
     return (
@@ -1041,6 +1056,7 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
           }}>{t('productDetail.yourNameLabel') || 'Your Name'}*</Text>
           
           <TextInput
+            ref={nameInputRef}
             style={{
               borderWidth: 1,
               borderColor: '#ddd',
@@ -1060,6 +1076,7 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
           }}>{t('productDetail.yourEmailLabel') || 'Your Email'}*</Text>
           
           <TextInput
+            ref={emailInputRef}
             style={{
               borderWidth: 1,
               borderColor: '#ddd',
@@ -1081,6 +1098,7 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
           }}>{t('productDetail.messageLabel') || 'Message'}*</Text>
           
           <TextInput
+            ref={messageInputRef}
             style={{
               borderWidth: 1,
               borderColor: '#ddd',

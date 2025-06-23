@@ -1,8 +1,8 @@
 {
   "translation": {
     "header": {
-      "storeName": "Магазин Колбасы",
-      "phoneNumber": "+7 (999) 123-45-67",
+      "storeName": "Десятка",
+      "phoneNumber": "+34 652 34 65 51",
       "email": "info@b2b.trade"
     },
     "navigation": {
@@ -146,13 +146,17 @@
         "reviews": "Отзывы"
       },
       "characteristics": {
-        "manufacturerArticle": "Артикул производителя",
-        "weight": "Вес (Кг)",
-        "productType": "Вид продукта",
-        "supplyUnit": "Единица кванта поставки",
-        "countryOfOrigin": "Страна изготовитель",
-        "soyMeat": "Мясо соевое",
-        "belarus": "Беларусь"
+        "manufacturerArticle": "Manufacturer Article",
+        "weight": "Weight (Kg)",
+        "productType": "Product Type",
+        "supplyUnit": "Supply Unit",
+        "countryOfOrigin": "Country of Origin",
+        "soyMeat": "Soy Meat",
+        "belarus": "Belarus",
+        "packaging": "Packaging",
+        "processingType": "Processing Type",
+        "storageTemperature": "Storage Temperature",
+        "shelfLife": "Shelf Life"
       },
       "phoneNumber": "Номер телефона",
       "callbackRequestTitle": "Запрос обратного звонка",
