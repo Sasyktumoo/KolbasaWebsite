@@ -1,6 +1,9 @@
 import { Platform } from 'react-native';
 import i18n from 'i18next';
 
+// Firebase function URL - replace with your actual deployed function URL
+const EMAIL_FUNCTION_URL = 'https://us-central1-foodshoppingwebsite.cloudfunctions.net/sendMail';
+
 // Types for order email data
 type OrderEmailData = {
   customer: {
@@ -24,10 +27,10 @@ type OrderEmailData = {
     country: string;
     phoneNumber: string;
   };
-  language?: string; // Add language parameter
+  language?: string;
 };
 
-// Add type for callback request data
+// Type for callback request data
 type CallbackRequestData = {
   type: 'callback';
   customer: {
@@ -40,10 +43,10 @@ type CallbackRequestData = {
     name: string;
   };
   comments?: string;
-  language?: string; // Add language parameter
+  language?: string;
 };
 
-// Add this type at the top with other types
+// Type for supplier message data
 type SupplierMessageData = {
   type: 'message';
   sender: {
@@ -59,148 +62,10 @@ type SupplierMessageData = {
     name: string;
   };
   message: string;
-  language?: string; // Add language parameter
+  language?: string;
 };
 
 class EmailService {
-  private isInitialized = false;
-  private tokenClient: any = null;
-  private accessToken: string | null = null;
-  private tokenExpiry: number | null = null;
-  private CLIENT_ID = "663465018429-i64u55mqo79qr3t7eusfb1h979onjhgk.apps.googleusercontent.com";
-  private API_KEY = ""; // Add your API key if needed for Gmail API
-  private SCOPES = "https://www.googleapis.com/auth/gmail.send";
-  
-  // Initialize the Google API client with new Identity Services
-  async initialize(): Promise<boolean> {
-    if (Platform.OS !== 'web') {
-      console.log('Email service is only available on web platform');
-      return false;
-    }
-
-    try {
-      return new Promise((resolve) => {
-        // Load the Google API script
-        const gapiScript = document.createElement("script");
-        gapiScript.src = "https://apis.google.com/js/api.js";
-        gapiScript.onload = () => this.loadGapiModules(resolve);
-        document.head.appendChild(gapiScript);
-        
-        // Load the Google Identity Services script
-        const gisScript = document.createElement("script");
-        gisScript.src = "https://accounts.google.com/gsi/client";
-        document.head.appendChild(gisScript);
-      });
-    } catch (error) {
-      console.error("Error loading Google API scripts:", error);
-      return false;
-    }
-  }
-
-  private async loadGapiModules(resolve: (value: boolean) => void): Promise<void> {
-    window.gapi.load('client', async () => {
-      try {
-        await window.gapi.client.init({
-          apiKey: this.API_KEY,
-          discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest"],
-        });
-        
-        // Initialize GIS token client after GAPI is loaded
-        this.initTokenClient();
-        this.isInitialized = true;
-        resolve(true);
-      } catch (error) {
-        console.error("Error initializing GAPI client:", error);
-        resolve(false);
-      }
-    });
-  }
-
-  private initTokenClient(): void {
-    // Try to load token from localStorage
-    const storedToken = localStorage.getItem('gmail_access_token');
-    const storedExpiry = localStorage.getItem('gmail_token_expiry');
-    
-    if (storedToken && storedExpiry && Number(storedExpiry) > Date.now()) {
-      this.accessToken = storedToken;
-      this.tokenExpiry = Number(storedExpiry);
-      window.gapi.client.setToken({ access_token: this.accessToken });
-      console.log('Using stored token');
-      return;
-    }
-    
-    this.tokenClient = window.google.accounts.oauth2.initTokenClient({
-      client_id: this.CLIENT_ID,
-      scope: this.SCOPES,
-      callback: (tokenResponse: any) => {
-        if (tokenResponse && tokenResponse.access_token) {
-          this.accessToken = tokenResponse.access_token;
-          // Store token with expiry (default expiry is 1 hour)
-          const expiresIn = tokenResponse.expires_in || 3600;
-          this.tokenExpiry = Date.now() + (expiresIn * 1000);
-          localStorage.setItem('gmail_access_token', this.accessToken);
-          localStorage.setItem('gmail_token_expiry', this.tokenExpiry.toString());
-          window.gapi.client.setToken({ access_token: this.accessToken });
-        }
-      },
-      error_callback: (error: any) => {
-        console.error("Error getting access token:", error);
-        this.accessToken = null;
-        localStorage.removeItem('gmail_access_token');
-        localStorage.removeItem('gmail_token_expiry');
-      }
-    });
-  }
-
-  // Get authorization and access token
-  async authorize(): Promise<boolean> {
-    if (!this.isInitialized) {
-      const initialized = await this.initialize();
-      if (!initialized) return false;
-    }
-
-    // Check if we already have a valid token
-    if (this.accessToken && this.tokenExpiry && this.tokenExpiry > Date.now()) {
-      console.log('Using existing token');
-      return true;
-    }
-
-    if (!this.tokenClient) {
-      console.error("Token client not initialized");
-      return false;
-    }
-
-    return new Promise((resolve) => {
-      try {
-        // Request access token with 'none' prompt if possible
-        const hasToken = !!localStorage.getItem('gmail_access_token');
-        this.tokenClient.requestAccessToken({
-          prompt: hasToken ? 'none' : 'consent'
-        });
-        
-        // We'll resolve in the callback after token is received
-        const checkToken = setInterval(() => {
-          if (this.accessToken) {
-            clearInterval(checkToken);
-            resolve(true);
-          }
-        }, 500);
-        
-        // Timeout after 1 minute
-        setTimeout(() => {
-          clearInterval(checkToken);
-          if (!this.accessToken) {
-            console.error("Timeout waiting for authorization");
-            resolve(false);
-          }
-        }, 60000);
-      } catch (error) {
-        console.error("Error requesting access token:", error);
-        resolve(false);
-      }
-    });
-  }
-
   // Helper method to get translation
   private getTranslation(key: string, language: string, replacements: Record<string, string> = {}): string {
     // Set language for i18n
@@ -221,17 +86,57 @@ class EmailService {
     return translation;
   }
 
-  // Send order confirmation email - updated to send to both customer and supplier
-  async sendOrderConfirmation(orderData: OrderEmailData): Promise<boolean> {
+  // New method to send emails via Cloud Function
+  private async sendEmail(to: string, subject: string, html: string, options: {
+    from?: string;
+    cc?: string;
+    replyTo?: string;
+  } = {}): Promise<boolean> {
     if (Platform.OS !== 'web') {
       console.log('Email sending is only available on web platform');
       return false;
     }
 
-    // Make sure we're authorized
-    const isAuthorized = await this.authorize();
-    if (!isAuthorized) {
-      console.log('User not authorized for Gmail');
+    try {
+      const response = await fetch(EMAIL_FUNCTION_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to,
+          subject,
+          html,
+          from: options.from || 'Магазин Колбасы <noreply@kolbasa-shop.com>',
+          cc: options.cc,
+          replyTo: options.replyTo
+        }),
+      });
+
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to send email');
+      }
+      
+      console.log('Email sent successfully');
+      return true;
+    } catch (error) {
+      console.error('Error sending email:', error);
+      return false;
+    }
+  }
+
+  // Initialization is simplified - no need for OAuth setup
+  async initialize(): Promise<boolean> {
+    // Nothing to initialize with the server approach
+    return true;
+  }
+
+  // Send order confirmation email - updated to use Cloud Function
+  async sendOrderConfirmation(orderData: OrderEmailData): Promise<boolean> {
+    if (Platform.OS !== 'web') {
+      console.log('Email sending is only available on web platform');
       return false;
     }
 
@@ -243,54 +148,25 @@ class EmailService {
       const customerSubject = this.getTranslation('emails.orderConfirmation.title', language);
       const customerEmailBody = this.createCustomerOrderConfirmationBody(orderData, language);
       
-      // Create RFC 822 formatted message for customer
-      const customerMessage =
-        `From: Магазин Колбасы <me@example.com>\r\n` +
-        `To: ${orderData.customer.email}\r\n` +
-        `Subject: ${customerSubject}\r\n` +
-        `Content-Type: text/html; charset=UTF-8\r\n\r\n` +
-        customerEmailBody;
-
-      // Base64url encode the customer message
-      const encodedCustomerMessage = btoa(unescape(encodeURIComponent(customerMessage)))
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=+$/, '');
-
-      // Send the email to customer using Gmail API
-      await window.gapi.client.gmail.users.messages.send({
-        'userId': 'me',
-        'resource': {
-          'raw': encodedCustomerMessage
-        }
-      });
+      // Send customer email via Cloud Function
+      await this.sendEmail(
+        orderData.customer.email,
+        customerSubject,
+        customerEmailBody
+      );
       
-      // Send email to supplier - ALWAYS IN RUSSIAN regardless of user language
+      // Send email to supplier - ALWAYS IN RUSSIAN
       const supplierEmail = "sasyktumoo@gmail.com";
       const supplierSubject = `Новый заказ от ${orderData.customer.name}`;
       const supplierEmailBody = this.createSupplierOrderNotificationBody(orderData);
       
-      // Create RFC 822 formatted message for supplier
-      const supplierMessage =
-        `From: Магазин Колбасы <me@example.com>\r\n` +
-        `To: ${supplierEmail}\r\n` +
-        `Subject: ${supplierSubject}\r\n` +
-        `Content-Type: text/html; charset=UTF-8\r\n\r\n` +
-        supplierEmailBody;
-
-      // Base64url encode the supplier message
-      const encodedSupplierMessage = btoa(unescape(encodeURIComponent(supplierMessage)))
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=+$/, '');
-
-      // Send the email to supplier using Gmail API
-      await window.gapi.client.gmail.users.messages.send({
-        'userId': 'me',
-        'resource': {
-          'raw': encodedSupplierMessage
-        }
-      });
+      // Send supplier email via Cloud Function
+      await this.sendEmail(
+        supplierEmail,
+        supplierSubject,
+        supplierEmailBody,
+        { replyTo: orderData.customer.email }
+      );
       
       console.log('Order confirmation emails sent successfully to customer and supplier');
       return true;
@@ -330,6 +206,7 @@ class EmailService {
     const teamName = this.getTranslation('emails.orderConfirmation.teamName', language);
     const copyright = this.getTranslation('emails.common.copyright', language, { year: new Date().getFullYear().toString() });
 
+    // HTML template remains the same
     return `
       <html>
         <head>
@@ -408,6 +285,7 @@ class EmailService {
       `;
     });
 
+    // HTML template remains the same
     return `
       <html>
         <head>
@@ -496,45 +374,22 @@ class EmailService {
       return false;
     }
 
-    // Make sure we're authorized
-    const isAuthorized = await this.authorize();
-    if (!isAuthorized) {
-      console.log('User not authorized for Gmail');
-      return false;
-    }
-
     try {
       // Determine language to use - default to English if not specified
       const language = requestData.language || 'en';
       
       // Create the customer confirmation email
       const customerEmail = requestData.customer.email;
-      const customerSubject = this.getTranslation('emails.callbackRequest.title', language);
-      const customerEmailBody = this.createCallbackCustomerConfirmation(requestData, language);
-      
-      // Create and send customer confirmation if an email is provided
       if (customerEmail) {
-        // Create RFC 822 formatted message
-        const customerMessage =
-          `From: Магазин Колбасы <me@example.com>\r\n` +
-          `To: ${customerEmail}\r\n` +
-          `Subject: ${customerSubject}\r\n` +
-          `Content-Type: text/html; charset=UTF-8\r\n\r\n` +
-          customerEmailBody;
-
-        // Base64url encode the message
-        const encodedCustomerMessage = btoa(unescape(encodeURIComponent(customerMessage)))
-          .replace(/\+/g, '-')
-          .replace(/\//g, '_')
-          .replace(/=+$/, '');
-
-        // Send the email using Gmail API
-        await window.gapi.client.gmail.users.messages.send({
-          'userId': 'me',
-          'resource': {
-            'raw': encodedCustomerMessage
-          }
-        });
+        const customerSubject = this.getTranslation('emails.callbackRequest.title', language);
+        const customerEmailBody = this.createCallbackCustomerConfirmation(requestData, language);
+        
+        // Send customer email via Cloud Function
+        await this.sendEmail(
+          customerEmail,
+          customerSubject,
+          customerEmailBody
+        );
       }
       
       // Create the supplier notification email - ALWAYS IN RUSSIAN
@@ -542,27 +397,12 @@ class EmailService {
       const supplierSubject = "Запрос обратного звонка - Магазин Колбасы";
       const supplierEmailBody = this.createCallbackRequestBody(requestData);
       
-      // Create RFC 822 formatted message
-      const supplierMessage =
-        `From: Магазин Колбасы <me@example.com>\r\n` +
-        `To: ${supplierEmail}\r\n` +
-        `Subject: ${supplierSubject}\r\n` +
-        `Content-Type: text/html; charset=UTF-8\r\n\r\n` +
-        supplierEmailBody;
-
-      // Base64url encode the message
-      const encodedSupplierMessage = btoa(unescape(encodeURIComponent(supplierMessage)))
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=+$/, '');
-
-      // Send the email using Gmail API
-      await window.gapi.client.gmail.users.messages.send({
-        'userId': 'me',
-        'resource': {
-          'raw': encodedSupplierMessage
-        }
-      });
+      // Send supplier email via Cloud Function
+      await this.sendEmail(
+        supplierEmail,
+        supplierSubject,
+        supplierEmailBody
+      );
       
       console.log('Callback request emails sent successfully');
       return true;
@@ -574,6 +414,10 @@ class EmailService {
 
   // Create HTML email body for customer callback confirmation
   private createCallbackCustomerConfirmation(requestData: CallbackRequestData, language: string): string {
+    // HTML template with translations remains the same
+    // ... existing code ...
+    // I'm keeping the same HTML template, but now it's sent via Cloud Function
+    
     // Get translations
     const title = this.getTranslation('emails.callbackRequest.title', language);
     const greeting = this.getTranslation('emails.callbackRequest.greeting', language);
@@ -638,6 +482,7 @@ class EmailService {
   private createCallbackRequestBody(requestData: CallbackRequestData): string {
     const currentDate = new Date().toLocaleString();
     
+    // HTML template remains the same
     return `
       <html>
         <head>
@@ -704,13 +549,6 @@ class EmailService {
       return false;
     }
 
-    // Make sure we're authorized
-    const isAuthorized = await this.authorize();
-    if (!isAuthorized) {
-      console.log('User not authorized for Gmail');
-      return false;
-    }
-
     try {
       // Determine language to use - default to English if not specified
       const language = messageData.language || 'en';
@@ -720,27 +558,12 @@ class EmailService {
         const customerSubject = this.getTranslation('emails.messageConfirmation.title', language);
         const customerEmailBody = this.createMessageCustomerConfirmation(messageData, language);
         
-        // Create RFC 822 formatted message
-        const customerMessage =
-          `From: Магазин Колбасы <me@example.com>\r\n` +
-          `To: ${messageData.sender.email}\r\n` +
-          `Subject: ${customerSubject}\r\n` +
-          `Content-Type: text/html; charset=UTF-8\r\n\r\n` +
-          customerEmailBody;
-
-        // Base64url encode the message
-        const encodedCustomerMessage = btoa(unescape(encodeURIComponent(customerMessage)))
-          .replace(/\+/g, '-')
-          .replace(/\//g, '_')
-          .replace(/=+$/, '');
-
-        // Send the customer confirmation email using Gmail API
-        await window.gapi.client.gmail.users.messages.send({
-          'userId': 'me',
-          'resource': {
-            'raw': encodedCustomerMessage
-          }
-        });
+        // Send customer email via Cloud Function
+        await this.sendEmail(
+          messageData.sender.email,
+          customerSubject,
+          customerEmailBody
+        );
       }
       
       // Create the supplier notification - ALWAYS IN RUSSIAN
@@ -748,28 +571,13 @@ class EmailService {
       const supplierSubject = `Сообщение от клиента о товаре: ${messageData.product.name}`;
       const supplierEmailBody = this.createSupplierMessageBody(messageData);
       
-      // Create RFC 822 formatted message
-      const supplierMessage =
-        `From: Магазин Колбасы <me@example.com>\r\n` +
-        `Reply-To: ${messageData.sender.email}\r\n` +
-        `To: ${supplierEmail}\r\n` +
-        `Subject: ${supplierSubject}\r\n` +
-        `Content-Type: text/html; charset=UTF-8\r\n\r\n` +
-        supplierEmailBody;
-
-      // Base64url encode the message
-      const encodedSupplierMessage = btoa(unescape(encodeURIComponent(supplierMessage)))
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=+$/, '');
-
-      // Send the supplier notification email using Gmail API
-      await window.gapi.client.gmail.users.messages.send({
-        'userId': 'me',
-        'resource': {
-          'raw': encodedSupplierMessage
-        }
-      });
+      // Send supplier email via Cloud Function
+      await this.sendEmail(
+        supplierEmail,
+        supplierSubject,
+        supplierEmailBody,
+        { replyTo: messageData.sender.email }
+      );
       
       console.log('Supplier message emails sent successfully');
       return true;
@@ -794,6 +602,7 @@ class EmailService {
     const teamName = this.getTranslation('emails.messageConfirmation.teamName', language);
     const copyright = this.getTranslation('emails.common.copyright', language, { year: new Date().getFullYear().toString() });
 
+    // HTML template remains the same
     return `
       <html>
         <head>
@@ -838,6 +647,7 @@ class EmailService {
   private createSupplierMessageBody(messageData: SupplierMessageData): string {
     const currentDate = new Date().toLocaleString();
     
+    // HTML template remains the same
     return `
       <html>
         <head>
