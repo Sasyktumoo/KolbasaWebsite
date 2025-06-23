@@ -312,7 +312,7 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
               {/* Display current image from imageUrls if available */}
               {firebaseProduct?.imageUrls && firebaseProduct.imageUrls.length > 0 ? (
                 <Image
-                  source={{ uri: firebaseProduct.imageUrls[0] }}
+                  source={{ uri: firebaseProduct.imageUrls[currentImageIndex] }}
                   style={styles.productImage}
                   resizeMode="contain"
                 />

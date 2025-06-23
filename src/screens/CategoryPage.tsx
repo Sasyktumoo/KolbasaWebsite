@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   StyleSheet, 
   Text, 
@@ -109,13 +109,12 @@ const CategoryPage = ({ route }: CategoryPageProps) => {
   const fetchProducts = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const foodItemsRef = collection(FIREBASE_DB, 'foodItems');
       const querySnapshot = await getDocs(foodItemsRef);
-      
+
       const fetchedProducts: FirebaseProduct[] = [];
-      
       querySnapshot.forEach((doc) => {
         const data = doc.data() as FirebaseProduct;
         fetchedProducts.push({
@@ -123,27 +122,12 @@ const CategoryPage = ({ route }: CategoryPageProps) => {
           id: doc.id,
         });
       });
-      
+
+      // Simply set products; do NOT filter here
       setProducts(fetchedProducts);
-      
-      // Apply search filtering immediately after products are loaded
-      if (products.length > 0) {
-        const queryFromParams = route.params?.searchQuery || '';
-        
-        if (queryFromParams) {
-          const filtered = fetchedProducts.filter(product => {
-            const productName = (product.translations?.[currentLanguage]?.name || product.name || '').toLowerCase();
-            return productName.startsWith(queryFromParams.toLowerCase());
-          });
-          setFilteredProducts(filtered);
-        } else {
-          setFilteredProducts(fetchedProducts);
-        }
-      }
-      
     } catch (err) {
-      console.error("Error fetching products:", err);
-      setError("Failed to load products. Please try again later.");
+      console.error('Error fetching products:', err);
+      setError('Failed to load products. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -154,41 +138,28 @@ const CategoryPage = ({ route }: CategoryPageProps) => {
     fetchProducts();
   }, []);
   
-  // React to changes in route params (including when coming from other screens)
+
+  // Track previous language to only clear when language actually changes
+  const prevLanguageRef = useRef(currentLanguage);
+
+  // Modified: Only clear search when language actually changes, not on initial mount
   useEffect(() => {
-    // Only apply filtering if we have products loaded
-    if (!products.length) return;
-    
-    const queryFromParams = route.params?.searchQuery || '';
-    
-    if (!queryFromParams) {
-      // No search query, show all products
-      setFilteredProducts(products);
-      return;
-    }
-    
-    // Apply search filtering
-    const filtered = products.filter(product => {
-      const productName = (product.translations?.[currentLanguage]?.name || product.name || '').toLowerCase();
-      return productName.startsWith(queryFromParams.toLowerCase());
-    });
-    
-    setFilteredProducts(filtered);
-  }, [route.params?.searchQuery, products, currentLanguage]);
-  
-  // Clear search results when language changes
-  useEffect(() => {
-    if (isSearchMode) {
+    if (isSearchMode && prevLanguageRef.current !== currentLanguage) {
+      // Only clear search when language actually changes (not on initial render)
       navigation.setParams({ searchQuery: '' });
     }
+    // Update ref with current language for next comparison
+    prevLanguageRef.current = currentLanguage;
   }, [currentLanguage]);
 
   // Filter products when search query or language changes
   useEffect(() => {
-    if (!products.length) return; // Skip if no products loaded yet
+    // Skip if no products are loaded yet
+    if (products.length === 0) return;
     
-    // Get the search query from route params
+    // Get search query from route params
     const queryFromParams = route.params?.searchQuery || '';
+    console.log("Processing search query:", queryFromParams);
     
     if (!queryFromParams) {
       // No search query, show all products
@@ -199,9 +170,10 @@ const CategoryPage = ({ route }: CategoryPageProps) => {
     // Apply search filtering
     const filtered = products.filter(product => {
       const productName = (product.translations?.[currentLanguage]?.name || product.name || '').toLowerCase();
-      return productName.startsWith(queryFromParams.toLowerCase());
+      return productName.includes(queryFromParams.toLowerCase());
     });
     
+    console.log(`Filtered products: ${filtered.length} of ${products.length}`);
     setFilteredProducts(filtered);
     
   }, [route.params?.searchQuery, products, currentLanguage]);

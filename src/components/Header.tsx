@@ -122,6 +122,7 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
     console.log('Searching for:', searchQuery);
     
     // Navigate to CategoryPage with search query parameter
+    // The key fix is ensuring we're using a consistent parameter structure
     navigation.navigate('CategoryPage', { 
       categoryId: 'search',
       categoryPath: ['product_catalog', 'search'],
