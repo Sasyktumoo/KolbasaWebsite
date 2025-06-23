@@ -155,17 +155,13 @@
         "reviews": "Opiniones"
       },
       "characteristics": {
-        "manufacturerArticle": "Manufacturer Article",
-        "weight": "Weight (Kg)",
-        "productType": "Product Type",
-        "supplyUnit": "Supply Unit",
-        "countryOfOrigin": "Country of Origin",
-        "soyMeat": "Soy Meat",
-        "belarus": "Belarus",
-        "packaging": "Packaging",
-        "processingType": "Processing Type",
-        "storageTemperature": "Storage Temperature",
-        "shelfLife": "Shelf Life"
+        "manufacturerArticle": "Artículo del Fabricante",
+        "weight": "Peso (Kg)",
+        "productType": "Tipo de Producto",
+        "supplyUnit": "Unidad de Suministro",
+        "countryOfOrigin": "País de Origen",
+        "soyMeat": "Carne de Soja",
+        "belarus": "Bielorrusia"
       }
     },
     "addressBook": {

@@ -544,50 +544,12 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
     const phoneNumber = "+34 652 34 66 51";
 
     return (
-      <View style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 1000,
-      }}>
-        <View style={{
-          backgroundColor: 'white',
-          borderRadius: 10,
-          padding: 20,
-          width: '80%',
-          alignItems: 'center',
-        }}>
-          <Text style={{
-            fontSize: 18,
-            fontWeight: 'bold',
-            marginBottom: 15,
-          }}>{t('productDetail.phoneNumber')}</Text>
-          
-          <Text style={{
-            fontSize: 22,
-            fontWeight: 'bold',
-            marginBottom: 20,
-            color: '#FF3B30',
-          }}>{phoneNumber}</Text>
-          
-          <TouchableOpacity 
-            style={{
-              backgroundColor: '#FF3B30',
-              paddingVertical: 10,
-              paddingHorizontal: 20,
-              borderRadius: 5,
-            }} 
-            onPress={onClose}
-          >
-            <Text style={{
-              color: 'white',
-              fontWeight: 'bold',
-            }}>{t('common.close')}</Text>
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContainer}>
+          <Text style={styles.modalTitle}>{t('productDetail.phoneNumber')}</Text>
+          <Text style={styles.modalPhoneNumber}>{phoneNumber}</Text>
+          <TouchableOpacity style={styles.modalButton} onPress={onClose}>
+            <Text style={styles.modalButtonText}>{t('common.close')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -673,47 +635,14 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
     };
     
     return (
-      <View style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 1000,
-      }}>
-      <TouchableWithoutFeedback>
-        <View style={{
-          backgroundColor: 'white',
-          borderRadius: 10,
-          padding: 20,
-          width: '80%',
-          maxWidth: 400,
-        }}>
-          <Text style={{
-            fontSize: 18,
-            fontWeight: 'bold',
-            marginBottom: 20,
-            textAlign: 'center',
-          }}>{t('productDetail.requestCallbackTitle')}</Text>
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>{t('productDetail.requestCallbackTitle')}</Text>
           
-          <Text style={{
-            fontSize: 14,
-            marginBottom: 5,
-          }}>{t('productDetail.phoneNumberLabel')}*</Text>
-          
+          <Text style={styles.formLabel}>{t('productDetail.phoneNumberLabel')}*</Text>
           <TextInput
             ref={phoneInputRef}
-            style={{
-              borderWidth: 1,
-              borderColor: '#ddd',
-              borderRadius: 5,
-              padding: 10,
-              marginBottom: 15,
-              fontSize: 16,
-            }}
+            style={styles.formInput}
             value={callbackPhone}
             onChangeText={setCallbackPhone}
             placeholder="+7 (___) ___-____"
@@ -721,23 +650,10 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
             autoFocus={true}
           />
           
-          <Text style={{
-            fontSize: 14,
-            marginBottom: 5,
-          }}>{t('productDetail.commentsLabel')}</Text>
-          
+          <Text style={styles.formLabel}>{t('productDetail.commentsLabel')}</Text>
           <TextInput
             ref={commentsInputRef}
-            style={{
-              borderWidth: 1,
-              borderColor: '#ddd',
-              borderRadius: 5,
-              padding: 10,
-              marginBottom: 20,
-              fontSize: 16,
-              height: 100,
-              textAlignVertical: 'top',
-            }}
+            style={styles.formTextArea}
             value={callbackComments}
             onChangeText={setCallbackComments}
             placeholder={t('productDetail.commentsPlaceholder')}
@@ -745,55 +661,29 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
             numberOfLines={4}
           />
           
-          <View style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-          }}>
+          <View style={styles.buttonRow}>
             <TouchableOpacity 
-              style={{
-                backgroundColor: '#f2f2f2',
-                paddingVertical: 10,
-                paddingHorizontal: 20,
-                borderRadius: 5,
-                flex: 1,
-                marginRight: 10,
-                alignItems: 'center',
-              }} 
+              style={styles.cancelButton} 
               onPress={onClose}
               disabled={sendingCallbackRequest}
             >
-              <Text style={{
-                color: '#333',
-                fontWeight: 'bold',
-              }}>{t('common.cancel')}</Text>
+              <Text style={styles.cancelButtonText}>{t('common.cancel')}</Text>
             </TouchableOpacity>
             
             <TouchableOpacity 
-              style={{
-                backgroundColor: '#FF3B30',
-                paddingVertical: 10,
-                paddingHorizontal: 20,
-                borderRadius: 5,
-                flex: 1,
-                alignItems: 'center',
-                opacity: sendingCallbackRequest ? 0.7 : 1,
-              }} 
+              style={[styles.submitButton, { opacity: sendingCallbackRequest ? 0.7 : 1 }]} 
               onPress={handleSubmitCallback}
               disabled={sendingCallbackRequest}
             >
               {sendingCallbackRequest ? (
                 <ActivityIndicator size="small" color="white" />
               ) : (
-                <Text style={{
-                  color: 'white',
-                  fontWeight: 'bold',
-                }}>{t('common.submit')}</Text>
+                <Text style={styles.modalButtonText}>{t('common.submit')}</Text>
               )}
             </TouchableOpacity>
           </View>
         </View>
-      </TouchableWithoutFeedback>
-    </View>
+      </View>
     );
   };
   
@@ -928,87 +818,22 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
     if (!visible) return null;
     
     return (
-      <View style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 1000,
-      }}>
-        <View style={{
-          backgroundColor: 'white',
-          borderRadius: 10,
-          padding: 20,
-          width: '80%',
-          maxWidth: 400,
-        }}>
-          <Text style={{
-            fontSize: 18,
-            fontWeight: 'bold',
-            marginBottom: 20,
-            textAlign: 'center',
-          }}>{t('productDetail.contactOptionsTitle') || 'Contact Options'}</Text>
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>{t('productDetail.contactOptionsTitle') || 'Contact Options'}</Text>
           
-          <TouchableOpacity 
-            style={{
-              backgroundColor: '#FF3B30',
-              paddingVertical: 12,
-              paddingHorizontal: 20,
-              borderRadius: 5,
-              marginBottom: 15,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }} 
-            onPress={handleEmailOption}
-          >
-            <Ionicons name="mail-outline" size={20} color="white" style={{ marginRight: 10 }} />
-            <Text style={{
-              color: 'white',
-              fontWeight: 'bold',
-              fontSize: 16,
-            }}>{t('productDetail.sendEmail') || 'Send Email'}</Text>
+          <TouchableOpacity style={styles.emailButton} onPress={handleEmailOption}>
+            <Ionicons name="mail-outline" size={20} color="white" style={styles.iconMargin} />
+            <Text style={styles.iconButtonText}>{t('productDetail.sendEmail') || 'Send Email'}</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity 
-            style={{
-              backgroundColor: '#25D366', // WhatsApp green
-              paddingVertical: 12,
-              paddingHorizontal: 20,
-              borderRadius: 5,
-              marginBottom: 20,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }} 
-            onPress={handleWhatsAppChat}
-          >
-            <Ionicons name="logo-whatsapp" size={20} color="white" style={{ marginRight: 10 }} />
-            <Text style={{
-              color: 'white',
-              fontWeight: 'bold',
-              fontSize: 16,
-            }}>{t('productDetail.whatsAppChat') || 'WhatsApp Chat'}</Text>
+          <TouchableOpacity style={styles.whatsAppButton} onPress={handleWhatsAppChat}>
+            <Ionicons name="logo-whatsapp" size={20} color="white" style={styles.iconMargin} />
+            <Text style={styles.iconButtonText}>{t('productDetail.whatsAppChat') || 'WhatsApp Chat'}</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity 
-            style={{
-              backgroundColor: '#f2f2f2',
-              paddingVertical: 10,
-              paddingHorizontal: 20,
-              borderRadius: 5,
-              alignItems: 'center',
-            }} 
-            onPress={onClose}
-          >
-            <Text style={{
-              color: '#333',
-              fontWeight: 'bold',
-            }}>{t('common.cancel') || 'Cancel'}</Text>
+          <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
+            <Text style={styles.cancelButtonText}>{t('common.cancel') || 'Cancel'}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -1025,66 +850,23 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
     if (!visible) return null;
     
     return (
-      <View style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 1000,
-      }}>
-        <View style={{
-          backgroundColor: 'white',
-          borderRadius: 10,
-          padding: 20,
-          width: '80%',
-          maxWidth: 500,
-        }}>
-          <Text style={{
-            fontSize: 18,
-            fontWeight: 'bold',
-            marginBottom: 20,
-            textAlign: 'center',
-          }}>{t('productDetail.writeToSupplier')}</Text>
+      <View style={styles.modalOverlay}>
+        <View style={styles.largeModalContent}>
+          <Text style={styles.modalTitle}>{t('productDetail.writeToSupplier')}</Text>
           
-          <Text style={{
-            fontSize: 14,
-            marginBottom: 5,
-          }}>{t('productDetail.yourNameLabel') || 'Your Name'}*</Text>
-          
+          <Text style={styles.formLabel}>{t('productDetail.yourNameLabel') || 'Your Name'}*</Text>
           <TextInput
             ref={nameInputRef}
-            style={{
-              borderWidth: 1,
-              borderColor: '#ddd',
-              borderRadius: 5,
-              padding: 10,
-              marginBottom: 15,
-              fontSize: 16,
-            }}
+            style={styles.formInput}
             value={emailSenderName}
             onChangeText={setEmailSenderName}
             placeholder={t('productDetail.yourNamePlaceholder') || 'Enter your name'}
           />
           
-          <Text style={{
-            fontSize: 14,
-            marginBottom: 5,
-          }}>{t('productDetail.yourEmailLabel') || 'Your Email'}*</Text>
-          
+          <Text style={styles.formLabel}>{t('productDetail.yourEmailLabel') || 'Your Email'}*</Text>
           <TextInput
             ref={emailInputRef}
-            style={{
-              borderWidth: 1,
-              borderColor: '#ddd',
-              borderRadius: 5,
-              padding: 10,
-              marginBottom: 15,
-              fontSize: 16,
-            }}
+            style={styles.formInput}
             value={emailSenderEmail}
             onChangeText={setEmailSenderEmail}
             placeholder={t('productDetail.yourEmailPlaceholder') || 'Enter your email'}
@@ -1092,23 +874,10 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
             autoCapitalize="none"
           />
           
-          <Text style={{
-            fontSize: 14,
-            marginBottom: 5,
-          }}>{t('productDetail.messageLabel') || 'Message'}*</Text>
-          
+          <Text style={styles.formLabel}>{t('productDetail.messageLabel') || 'Message'}*</Text>
           <TextInput
             ref={messageInputRef}
-            style={{
-              borderWidth: 1,
-              borderColor: '#ddd',
-              borderRadius: 5,
-              padding: 10,
-              marginBottom: 20,
-              fontSize: 16,
-              height: 120,
-              textAlignVertical: 'top',
-            }}
+            style={styles.largeTextArea}
             value={emailMessage}
             onChangeText={setEmailMessage}
             placeholder={t('productDetail.messagePlaceholder') || 'Enter your message'}
@@ -1116,49 +885,24 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
             numberOfLines={6}
           />
           
-          <View style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-          }}>
+          <View style={styles.buttonRow}>
             <TouchableOpacity 
-              style={{
-                backgroundColor: '#f2f2f2',
-                paddingVertical: 10,
-                paddingHorizontal: 20,
-                borderRadius: 5,
-                flex: 1,
-                marginRight: 10,
-                alignItems: 'center',
-              }} 
+              style={styles.cancelButton} 
               onPress={onClose}
               disabled={sendingEmail}
             >
-              <Text style={{
-                color: '#333',
-                fontWeight: 'bold',
-              }}>{t('common.cancel') || 'Cancel'}</Text>
+              <Text style={styles.cancelButtonText}>{t('common.cancel') || 'Cancel'}</Text>
             </TouchableOpacity>
             
             <TouchableOpacity 
-              style={{
-                backgroundColor: '#FF3B30',
-                paddingVertical: 10,
-                paddingHorizontal: 20,
-                borderRadius: 5,
-                flex: 1,
-                alignItems: 'center',
-                opacity: sendingEmail ? 0.7 : 1,
-              }} 
+              style={[styles.submitButton, { opacity: sendingEmail ? 0.7 : 1 }]} 
               onPress={handleSendEmail}
               disabled={sendingEmail}
             >
               {sendingEmail ? (
                 <ActivityIndicator size="small" color="white" />
               ) : (
-                <Text style={{
-                  color: 'white',
-                  fontWeight: 'bold',
-                }}>{t('common.send') || 'Send'}</Text>
+                <Text style={styles.modalButtonText}>{t('common.send') || 'Send'}</Text>
               )}
             </TouchableOpacity>
           </View>

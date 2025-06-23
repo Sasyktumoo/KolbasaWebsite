@@ -146,17 +146,17 @@
         "reviews": "Отзывы"
       },
       "characteristics": {
-        "manufacturerArticle": "Manufacturer Article",
-        "weight": "Weight (Kg)",
-        "productType": "Product Type",
-        "supplyUnit": "Supply Unit",
-        "countryOfOrigin": "Country of Origin",
-        "soyMeat": "Soy Meat",
-        "belarus": "Belarus",
-        "packaging": "Packaging",
-        "processingType": "Processing Type",
-        "storageTemperature": "Storage Temperature",
-        "shelfLife": "Shelf Life"
+        "manufacturerArticle": "Артикул производителя",
+        "weight": "Вес (Кг)",
+        "productType": "Вид продукта",
+        "supplyUnit": "Единица кванта поставки",
+        "countryOfOrigin": "Страна изготовитель",
+        "soyMeat": "Мясо соевое",
+        "belarus": "Беларусь",
+        "packaging": "Упаковка",
+        "processingType": "Тип обработки",
+        "storageTemperature": "Температура хранения",
+        "shelfLife": "Срок годности"
       },
       "phoneNumber": "Номер телефона",
       "callbackRequestTitle": "Запрос обратного звонка",

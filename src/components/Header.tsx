@@ -172,8 +172,8 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
             {/* Company Info */}
             <View style={styles.headerCompanyInfo}>
               <Text style={styles.websiteTitle}>{translate('header.storeName')}</Text>
-              <Text style={styles.phoneNumber}>+1 (555) 123-4567</Text>
-              <Text style={styles.emailText}>info@b2b.trade</Text>
+              <Text style={styles.phoneNumber}>+34 652 34 65 51</Text>
+              <Text style={styles.emailText}>post@ulus.cz</Text>
             </View>
           </View>
           
@@ -233,7 +233,7 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
                         toggleLangDropdown();
                       }}
                     >
-                      <Text style={[styles.dropdownText, currentLanguage === 'en' ? styles.activeLanguageText : null]}>English | $</Text>
+                      <Text style={[styles.dropdownText, currentLanguage === 'en' ? styles.activeLanguageText : null]}>English</Text>
                     </TouchableOpacity>
                     
                     <TouchableOpacity 
@@ -243,7 +243,7 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
                         toggleLangDropdown();
                       }}
                     >
-                      <Text style={[styles.dropdownText, currentLanguage === 'ru' ? styles.activeLanguageText : null]}>Русский | ₽</Text>
+                      <Text style={[styles.dropdownText, currentLanguage === 'ru' ? styles.activeLanguageText : null]}>Русский</Text>
                     </TouchableOpacity>
                     
                     <TouchableOpacity 
@@ -253,7 +253,7 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
                         toggleLangDropdown();
                       }}
                     >
-                      <Text style={[styles.dropdownText, currentLanguage === 'es' ? styles.activeLanguageText : null]}>Español | $</Text>
+                      <Text style={[styles.dropdownText, currentLanguage === 'es' ? styles.activeLanguageText : null]}>Español</Text>
                     </TouchableOpacity>
                     
                     <TouchableOpacity 
@@ -263,7 +263,7 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
                         toggleLangDropdown();
                       }}
                     >
-                      <Text style={[styles.dropdownText, currentLanguage === 'uk' ? styles.activeLanguageText : null]}>Українська | ₴</Text>
+                      <Text style={[styles.dropdownText, currentLanguage === 'uk' ? styles.activeLanguageText : null]}>Українська</Text>
                     </TouchableOpacity>
                   </Animated.View>
                 )}
