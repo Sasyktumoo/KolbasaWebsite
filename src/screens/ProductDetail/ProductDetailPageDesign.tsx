@@ -575,7 +575,12 @@ const styles = StyleSheet.create({
   },
   iconMargin: {
     marginRight: 10,
-  }
+  },
+  weightInfo: {
+    fontSize: 14,
+    color: colors.text.secondary,
+    marginBottom: 10,
+  },
 });
 
 export default styles;

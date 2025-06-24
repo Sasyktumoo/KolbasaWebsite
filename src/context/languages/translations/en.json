@@ -160,7 +160,7 @@
       },
       "characteristics": {
         "manufacturerArticle": "Manufacturer Article",
-        "weight": "Weight (Kg)",
+        "weight": "Weight",
         "productType": "Product Type",
         "supplyUnit": "Supply Unit",
         "countryOfOrigin": "Country of Origin",

@@ -99,7 +99,7 @@ const OrderReviewScreen = () => {
           await emailService.sendOrderConfirmation({
             customer: order.customer,
             items: order.items,
-            totalAmount: order.totalAmount,
+            totalAmount: Number(order.totalAmount),
             address: order.address,
             language: currentLanguage // Pass the current language
           });
@@ -161,48 +161,52 @@ const OrderReviewScreen = () => {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t('orderReview.orderItems')}</Text>
             
-            {items.map((item, index) => (
-              <View key={`${item.id}-${index}`} style={styles.orderItem}>
-                {item.imageUrl ? (
-                  <Image 
-                    source={{ uri: item.imageUrl }} 
-                    style={styles.itemImage}
-                    resizeMode="contain"
-                  />
-                ) : (
-                  <View style={[styles.itemImage, styles.placeholderContainer]}>
-                    <Ionicons name="image-outline" size={30} color="#cccccc" />
-                  </View>
-                )}
-                <View style={styles.itemInfo}>
-                  <Text style={styles.itemName}>{item.name}</Text>
-                  <Text style={styles.itemMeta}>
-                    {item.weight?.value} {item.weight?.unit}
-                  </Text>
-                  <View style={styles.itemPriceRow}>
-                    <Text style={styles.itemQuantity}>{t('orderReview.quantity')}: {item.quantity}</Text>
-                    <Text style={styles.itemPrice}>{item.price * item.quantity} ₽</Text>
+            {items.map((item, index) => {
+              const itemTotalPrice = item.price * item.quantity;
+              
+              return (
+                <View key={`${item.id}-${index}`} style={styles.orderItem}>
+                  {item.imageUrl ? (
+                    <Image 
+                      source={{ uri: item.imageUrl }} 
+                      style={styles.itemImage}
+                      resizeMode="contain"
+                    />
+                  ) : (
+                    <View style={[styles.itemImage, styles.placeholderContainer]}>
+                      <Ionicons name="image-outline" size={30} color="#cccccc" />
+                    </View>
+                  )}
+                  <View style={styles.itemInfo}>
+                    <Text style={styles.itemName}>{item.name}</Text>
+                    <Text style={styles.itemMeta}>
+                      {item.weight?.value} {item.weight?.unit}
+                    </Text>
+                    <View style={styles.itemPriceRow}>
+                      <Text style={styles.itemQuantity}>{t('orderReview.quantity')}: {item.quantity}</Text>
+                      <Text style={styles.itemPrice}>{itemTotalPrice}€</Text>
+                    </View>
                   </View>
                 </View>
-              </View>
-            ))}
+              );
+            })}
             
             <View style={styles.summaryContainer}>
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>{t('orderReview.subtotal')}:</Text>
-                <Text style={styles.summaryValue}>{subtotal} ₽</Text>
+                <Text style={styles.summaryValue}>{getTotalPrice()}€</Text>
               </View>
               
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>{t('orderReview.shipping')}:</Text>
                 <Text style={styles.summaryValue}>
-                  {shipping === 0 ? t('orderReview.freeShipping') : `${shipping} ₽`}
+                  {shipping === 0 ? t('orderReview.freeShipping') : `${shipping}€`}
                 </Text>
               </View>
               
               <View style={[styles.summaryRow, styles.totalRow]}>
                 <Text style={styles.totalLabel}>{t('orderReview.total')}:</Text>
-                <Text style={styles.totalValue}>{total} ₽</Text>
+                <Text style={styles.totalValue}>{getTotalPrice()}€</Text>
               </View>
             </View>
           </View>

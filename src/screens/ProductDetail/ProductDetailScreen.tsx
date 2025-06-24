@@ -41,7 +41,8 @@ import { RootStackParamList } from '../../navigation/AppNavigator';
 
 const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-  const [quantity, setQuantity] = useState(50);
+  // Change default quantity from 50 to 1
+  const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
   const { t, currentLanguage } = useLanguage();
   const { addItem } = useCart();
@@ -70,7 +71,7 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
       id: 'default_product',
       name: 'Default Product',
       price: 100,
-      minOrder: 50,
+      minOrder: 1, // Changed from 50 to 1
       image: {} 
     },
     breadcrumbPath: ['product_catalog', 'default_product']
@@ -89,12 +90,16 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
     });
   };
 
-  // Handler for adding to cart
+  // Update the handleAddToCart function
+
   const handleAddToCart = () => {
+    // Fixed price of 10€ per kg
+    const pricePerKg = 10;
+    
     addItem({
       id: product.id,
       name: firebaseProduct?.translations?.[currentLanguage]?.name || product.name,
-      price: product.price,
+      price: pricePerKg, // Store base price per kg
       quantity: quantity,
       imageUrl: firebaseProduct?.imageUrls?.[0],
       weight: {

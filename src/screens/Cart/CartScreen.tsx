@@ -8,7 +8,8 @@ import {
   FlatList,
   SafeAreaView,
   Alert,
-  Platform
+  Platform,
+  TextInput
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -28,7 +29,8 @@ const CartScreen = () => {
     updateQuantity, 
     clearCart, 
     getTotalItems, 
-    getTotalPrice 
+    getTotalPrice,
+    getItemPrice
   } = useCart();
   
   // State for managing dialog visibility
@@ -54,57 +56,79 @@ const CartScreen = () => {
     navigation.navigate('Home', { locale: currentLanguage });
   };
 
-  const renderItem = ({ item }) => (
-    <View style={styles.cartItem}>
-      {/* Replace the cart item image */}
-      {item.imageUrl ? (
-        <Image 
-          source={{ uri: item.imageUrl }} 
-          style={styles.productImage}
-          resizeMode="contain"
-        />
-      ) : (
-        <View style={[styles.productImage, styles.placeholderContainer]}>
-          <Ionicons name="image-outline" size={40} color="#cccccc" />
-        </View>
-      )}
-      
-      <View style={styles.itemDetails}>
-        <Text style={styles.itemName}>{item.name}</Text>
-        {item.weight && (
-          <Text style={styles.itemWeight}>
-            {item.weight.value} {item.weight.unit}
-          </Text>
+  const renderItem = ({ item }) => {
+    // Use the getItemPrice function to get price based on weight
+    const itemPrice = (Number(getItemPrice(item)) / item.quantity).toFixed(2);
+    const totalItemPrice = getItemPrice(item);
+    
+    return (
+      <View style={styles.cartItem}>
+        {/* Replace the cart item image */}
+        {item.imageUrl ? (
+          <Image 
+            source={{ uri: item.imageUrl }} 
+            style={styles.productImage}
+            resizeMode="contain"
+          />
+        ) : (
+          <View style={[styles.productImage, styles.placeholderContainer]}>
+            <Ionicons name="image-outline" size={40} color="#cccccc" />
+          </View>
         )}
-        <Text style={styles.itemPrice}>{item.price} ₽</Text>
-      </View>
-      
-      <View style={styles.quantityControls}>
-        <TouchableOpacity 
-          style={styles.quantityButton}
-          onPress={() => updateQuantity(item.id, item.quantity - 1)}
-        >
-          <Text style={styles.quantityButtonText}>-</Text>
-        </TouchableOpacity>
         
-        <Text style={styles.quantityText}>{item.quantity}</Text>
+        <View style={styles.itemDetails}>
+          <Text style={styles.itemName}>{item.name}</Text>
+          {item.weight && (
+            <Text style={styles.itemWeight}>
+              {item.weight.value} {item.weight.unit}
+            </Text>
+          )}
+          <Text style={styles.itemPrice}>{itemPrice}€</Text>
+        </View>
+        
+        <View style={styles.quantityControls}>
+          <TouchableOpacity 
+            style={styles.quantityButton}
+            onPress={() => updateQuantity(item.id, item.quantity - 1)}
+          >
+            <Text style={styles.quantityButtonText}>-</Text>
+          </TouchableOpacity>
+          
+          {/* Replace the Text component with TextInput */}
+          <TextInput
+            style={styles.quantityInput}
+            value={item.quantity.toString()}
+            keyboardType="numeric"
+            onChangeText={(text) => {
+              const value = parseInt(text);
+              // Only update if it's a valid number and at least 1
+              if (!isNaN(value) && value >= 1) {
+                updateQuantity(item.id, value);
+              } else if (text === '') {
+                // Allow empty field during editing
+                // But don't update quantity yet
+              }
+            }}
+            selectTextOnFocus={true}
+          />
+          
+          <TouchableOpacity 
+            style={styles.quantityButton}
+            onPress={() => updateQuantity(item.id, item.quantity + 1)}
+          >
+            <Text style={styles.quantityButtonText}>+</Text>
+          </TouchableOpacity>
+        </View>
         
         <TouchableOpacity 
-          style={styles.quantityButton}
-          onPress={() => updateQuantity(item.id, item.quantity + 1)}
+          style={styles.removeButton}
+          onPress={() => removeItem(item.id)}
         >
-          <Text style={styles.quantityButtonText}>+</Text>
+          <Ionicons name="trash-outline" size={24} color="#FF3B30" />
         </TouchableOpacity>
       </View>
-      
-      <TouchableOpacity 
-        style={styles.removeButton}
-        onPress={() => removeItem(item.id)}
-      >
-        <Ionicons name="trash-outline" size={20} color="#FF3B30" />
-      </TouchableOpacity>
-    </View>
-  );
+    );
+  };
 
   return (
     <PaperProvider>
@@ -153,7 +177,7 @@ const CartScreen = () => {
               
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>{t('cart.totalPrice')}:</Text>
-                <Text style={styles.summaryValue}>{getTotalPrice()} ₽</Text>
+                <Text style={styles.summaryValue}>{getTotalPrice()}€</Text>
               </View>
               
               <TouchableOpacity 
@@ -498,10 +522,19 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  quantityText: {
+  quantityInput: {
     fontSize: 16,
     fontWeight: 'bold',
+    textAlign: 'center',
+    minWidth: 40,
+    padding: 0, // Remove default padding for cleaner look
     marginHorizontal: 10,
+    width: 50,
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 4,
+    paddingHorizontal: 8,
   },
   removeButton: {
     padding: 5,

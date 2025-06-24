@@ -30,12 +30,54 @@ export default function ProductDetailMain({
   onRequestCallback,
   onWriteSupplier,
 }: Props) {
-  const { t } = useLanguage();
-  const pricePerKg = product.price;
-  const totalPrice = (pricePerKg * quantity).toFixed(2);
+  const { t, currentLanguage } = useLanguage();
+  
+  // Fixed price of 10€ per kg
+  const pricePerKg = 10;
+  
+  // Calculate product weight in kg
+  const getWeightInKg = () => {
+    if (!firebaseProduct?.netWeight) return 1; // Default weight if missing
+    
+    const { value, unit } = firebaseProduct.netWeight;
+    
+    // Convert to kg based on unit
+    switch(unit.toLowerCase()) {
+      case 'kg':
+      case 'кг':
+        return value;
+      case 'g':
+      case 'г':
+        return value / 1000;
+      default:
+        return value; // If unknown unit, just use the value
+    }
+  };
+  
+  // Calculate weight per piece in kg
+  const weightPerPieceInKg = getWeightInKg();
+  
+  // Calculate total weight for ordered quantity
+  const totalWeightInKg = weightPerPieceInKg * quantity;
+  
+  // Calculate total price based on weight
+  const totalPrice = (pricePerKg * totalWeightInKg).toFixed(2);
+  
+  // Get translated weight unit
+  const getTranslatedUnit = (unit: string) => {
+    if (!unit) return '';
+    
+    const unitMap = {
+      'г': { 'en': 'g', 'es': 'g', 'ru': 'г' },
+      'кг': { 'en': 'kg', 'es': 'kg', 'ru': 'кг' },
+      'шт': { 'en': 'pcs', 'es': 'pzs', 'ru': 'шт' }
+    };
+    
+    return unitMap[unit]?.[currentLanguage] || unit;
+  };
 
   const decreaseQuantity = () => {
-    if (quantity > product.minOrder) setQuantity(quantity - 1);
+    if (quantity > 1) setQuantity(quantity - 1);
   };
 
   const increaseQuantity = () => {
@@ -111,19 +153,18 @@ export default function ProductDetailMain({
       <View style={styles.purchasePanel}>
         <View style={styles.priceRow}>
           <Text style={styles.priceLabel}>{t('productDetail.pricePerKg')}:</Text>
-          <Text style={styles.pricePerKg}>{pricePerKg}₽</Text>
+          <Text style={styles.pricePerKg}>{pricePerKg}€</Text>
         </View>
         
+        {/* Display product weight information */}
         <View style={styles.infoBox}>
           <Text style={styles.infoText}>
-            {t('productDetail.priceDisclaimer')}
-            <Text style={styles.highlightText}> {t('productDetail.contactSupplier')}</Text>
+            {t('productDetail.productWeightInfo', {
+              weight: firebaseProduct?.netWeight?.value || 0,
+              unit: getTranslatedUnit(firebaseProduct?.netWeight?.unit || 'g')
+            })}
           </Text>
         </View>
-        
-        <Text style={styles.minOrderText}>
-          {t('productDetail.minOrder')}: {product.minOrder} {t('productDetail.kg')}
-        </Text>
         
         {/* Quantity Selector */}
         <View style={styles.quantitySelector}>
@@ -135,18 +176,28 @@ export default function ProductDetailMain({
             value={quantity.toString()}
             keyboardType="numeric"
             onChangeText={(text) => {
-              const value = parseInt(text) || product.minOrder;
-              setQuantity(value < product.minOrder ? product.minOrder : value);
+              const value = parseInt(text);
+              if (!isNaN(value) && value >= 1) {
+                setQuantity(value);
+              } else if (text === '') {
+                setQuantity(1);
+              }
             }}
+            selectTextOnFocus={true}
           />
           <TouchableOpacity style={styles.quantityButton} onPress={increaseQuantity}>
             <Text style={styles.quantityButtonText}>+</Text>
           </TouchableOpacity>
         </View>
         
+        {/* Display total weight in kg */}
+        <Text style={styles.weightInfo}>
+          {t('productDetail.totalWeight')}: {totalWeightInKg.toFixed(2)} kg
+        </Text>
+        
         <View style={styles.priceRow}>
           <Text style={styles.priceLabel}>{t('productDetail.totalPrice')}:</Text>
-          <Text style={styles.totalPrice}>{totalPrice}₽</Text>
+          <Text style={styles.totalPrice}>{totalPrice}€</Text>
         </View>
         
         <TouchableOpacity 

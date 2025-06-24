@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export interface CartItem {
   id: string;
   name: string;
-  price: number;
+  price: number; // Keep for backward compatibility
   quantity: number;
   imageUrl?: string;
   weight?: {
@@ -20,13 +20,17 @@ interface CartContextType {
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
   getTotalItems: () => number;
-  getTotalPrice: () => number;
+  getTotalPrice: () => string; // Changed return type to string
+  getItemPrice: (item: CartItem) => string; // Added helper function
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
+  
+  // Fixed price per kg in Euros
+  const PRICE_PER_KG = 10;
 
   // Load cart from AsyncStorage on initial render
   useEffect(() => {
@@ -57,10 +61,21 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     saveCart();
   }, [items]);
 
-  // Debug log to track cart items
-  useEffect(() => {
-    console.log('Current cart items:', items.length);
-  }, [items]);
+  // Helper function to calculate weight in kg
+  const getWeightInKg = (item: CartItem) => {
+    if (!item.weight) return 1; // Default weight if missing
+    
+    const { value, unit } = item.weight;
+    
+    // Convert to kg based on unit
+    if (unit.toLowerCase() === 'kg' || unit.toLowerCase() === 'кг') {
+      return value;
+    } else if (unit.toLowerCase() === 'g' || unit.toLowerCase() === 'г') {
+      return value / 1000;
+    } else {
+      return value; // If unknown unit, just use the value
+    }
+  };
 
   // Add item to cart
   const addItem = (item: CartItem) => {
@@ -102,7 +117,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Clear cart
   const clearCart = () => {
     console.log('clearCart function called');
-    // Clear state immediately (use this non-async version first)
+    // Clear state immediately
     setItems([]);
     
     // Then handle the async storage operation
@@ -120,9 +135,22 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return items.reduce((total, item) => total + item.quantity, 0);
   };
 
-  // Get total price of items in cart
+  // Calculate price for a single item based on weight and quantity
+  const getItemPrice = (item: CartItem) => {
+    const weightInKg = getWeightInKg(item);
+    const totalWeight = weightInKg * item.quantity;
+    return (PRICE_PER_KG * totalWeight).toFixed(2);
+  };
+
+  // Get total price of items in cart - updated to use weight-based pricing
   const getTotalPrice = () => {
-    return items.reduce((total, item) => total + (item.price * item.quantity), 0);
+    const total = items.reduce((total, item) => {
+      const weightInKg = getWeightInKg(item);
+      const itemTotal = PRICE_PER_KG * weightInKg * item.quantity;
+      return total + itemTotal;
+    }, 0);
+    
+    return total.toFixed(2);
   };
 
   return (
@@ -133,7 +161,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       updateQuantity,
       clearCart,
       getTotalItems,
-      getTotalPrice
+      getTotalPrice,
+      getItemPrice
     }}>
       {children}
     </CartContext.Provider>

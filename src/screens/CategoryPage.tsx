@@ -9,7 +9,8 @@ import {
   SafeAreaView,
   FlatList,
   ActivityIndicator,
-  Dimensions
+  Dimensions,
+  TextInput
 } from 'react-native';
 import BreadcrumbNavigation from '../components/BreadcrumbNavigation';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
@@ -86,6 +87,37 @@ interface FirebaseProduct {
 interface CategoryPageProps {
   route: RouteProp<RootStackParamList, 'CategoryPage'> | RouteProp<RootStackParamList, 'Home'>;
 }
+
+// Add this function to translate weight units
+const translateWeightUnit = (unit: string, language: string): string => {
+  if (!unit) return '';
+  
+  // Map of Russian units to their translations in different languages
+  const unitTranslations = {
+    'г': {
+      'en': 'g',
+      'es': 'g',
+      'ru': 'г',
+      'uk': 'г'     
+      // Add more languages as needed
+    },
+    'кг': {
+      'en': 'kg',
+      'es': 'kg',
+      'ru': 'кг',
+      'uk': 'кг' 
+    },
+    'шт': {
+      'en': 'pcs',
+      'es': 'pzs',
+      'ru': 'шт',
+      'uk': 'шт' 
+    }
+  };
+  
+  // Return the translated unit or the original if no translation exists
+  return unitTranslations[unit]?.[language] || unit;
+};
 
 const CategoryPage = ({ route }: CategoryPageProps) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
@@ -215,8 +247,7 @@ const CategoryPage = ({ route }: CategoryPageProps) => {
       name: product.translations?.[currentLanguage]?.name || product.name,
       description: product.translations?.[currentLanguage]?.meatContentDescription || '',
       price: product.meatContent?.value || 0,
-      minOrder: 50, // Default value 
-      // Change this
+      minOrder: 1, // Changed from 50 to 1
       image: product.imageUrls && product.imageUrls.length > 0 
         ? { uri: product.imageUrls[0] } 
         : { uri: 'https://via.placeholder.com/150?text=No+Image' } // Use a web placeholder instead
@@ -237,13 +268,10 @@ const CategoryPage = ({ route }: CategoryPageProps) => {
     const description = item.translations?.[currentLanguage]?.meatContentDescription || '';
     const meatType = item.translations?.[currentLanguage]?.meatType || item.meatType;
     
-    // Set minimum order to 50 by default
-    const minOrder = 50;
-    // Now hooks are at component level - correct usage
-    const [quantity, setQuantity] = useState(minOrder);
+    const [quantity, setQuantity] = useState(1);
     
     const decreaseQuantity = () => {
-      if (quantity > minOrder) {
+      if (quantity > 1) {
         setQuantity(quantity - 1);
       }
     };
@@ -258,58 +286,63 @@ const CategoryPage = ({ route }: CategoryPageProps) => {
     };
     
     return (
-      <TouchableOpacity 
-        style={styles.productCard}
-        onPress={() => onPress(item)}
-      >
-        {item.imageUrls && item.imageUrls.length > 0 ? (
-          <Image 
-            source={{ uri: item.imageUrls[0] }}
-            style={styles.productImage}
-            resizeMode="contain"
-          />
-        ) : (
-          <View style={[styles.productImage, styles.placeholderContainer]}>
-            <Ionicons name="image-outline" size={50} color="#cccccc" />
-          </View>
-        )}
-        <Text style={styles.productName} numberOfLines={2}>{name}</Text>
-        <Text style={styles.productDescription} numberOfLines={2}>
-          {description}
-        </Text>
-        <Text style={styles.productDetails}>
-          {t('productDetail.characteristics.productType')}: {meatType}
-        </Text>
-        <Text style={styles.productDetails}>
-          {t('productDetail.characteristics.weight')}: {item.netWeight?.value || 0} {item.netWeight?.unit || 'g'}
-        </Text>
-        
-        {/* Min Order Text */}
-        <Text style={styles.minOrderText}>
-          {t('productDetail.minOrder')}: {minOrder} {t('productDetail.kg')}
-        </Text>
-        
-        {/* Quantity Selector */}
+      <View style={styles.productCard}>
+        {/* Product details area (clickable) */}
+        <TouchableOpacity 
+          style={styles.productDetails}
+          onPress={() => onPress(item)}
+        >
+          {item.imageUrls && item.imageUrls.length > 0 ? (
+            <Image 
+              source={{ uri: item.imageUrls[0] }}
+              style={styles.productImage}
+              resizeMode="contain"
+            />
+          ) : (
+            <View style={[styles.productImage, styles.placeholderContainer]}>
+              <Ionicons name="image-outline" size={50} color="#cccccc" />
+            </View>
+          )}
+          <Text style={styles.productName} numberOfLines={2}>{name}</Text>
+          <Text style={styles.productDescription} numberOfLines={2}>
+            {description}
+          </Text>
+          <Text style={styles.productInfoText}>
+            {t('productDetail.characteristics.productType')}: {meatType}
+          </Text>
+          <Text style={styles.productInfoText}>
+            {t('productDetail.characteristics.weight')}: {item.netWeight?.value || 0} {translateWeightUnit(item.netWeight?.unit, currentLanguage)}
+          </Text>
+        </TouchableOpacity>
+
+        {/* Quantity controls (non-clickable for navigation) */}
         <View style={styles.quantityContainer}>
           <View style={styles.quantitySelector}>
             <TouchableOpacity 
               style={styles.quantityButton} 
-              onPress={(e) => {
-                e.stopPropagation();
-                decreaseQuantity();
-              }}
+              onPress={decreaseQuantity}
             >
               <Text style={styles.quantityButtonText}>-</Text>
             </TouchableOpacity>
             
-            <Text style={styles.quantityText}>{quantity}</Text>
+            <TextInput
+              style={styles.quantityInput}
+              value={quantity.toString()}
+              keyboardType="numeric"
+              onChangeText={(text) => {
+                const value = parseInt(text);
+                if (!isNaN(value) && value >= 1) {
+                  setQuantity(value);
+                } else if (text === '') {
+                  setQuantity(1);
+                }
+              }}
+              selectTextOnFocus={true}
+            />
             
             <TouchableOpacity 
               style={styles.quantityButton} 
-              onPress={(e) => {
-                e.stopPropagation();
-                increaseQuantity();
-              }}
+              onPress={increaseQuantity}
             >
               <Text style={styles.quantityButtonText}>+</Text>
             </TouchableOpacity>
@@ -322,7 +355,7 @@ const CategoryPage = ({ route }: CategoryPageProps) => {
             <Text style={styles.addToCartButtonText}>{t('cart.addToCart')}</Text>
           </TouchableOpacity>
         </View>
-      </TouchableOpacity>
+      </View>
     );
   };
 
@@ -532,7 +565,13 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 1,
-    height: 388, // Increased from 380px to 388px to accommodate taller product names
+    height: 388, // Keep the height
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+  },
+  productDetails: {
+    flex: 1, // Take up available space
   },
   productImage: {
     width: '100%',
@@ -560,19 +599,13 @@ const styles = StyleSheet.create({
     height: 32, // Keep existing fixed height
     overflow: 'hidden', // Hide overflow text
   },
-  productDetails: {
+  productInfoText: {
     fontSize: 12,
     color: '#888',
     marginBottom: 3,
   },
-  minOrderText: {
-    fontSize: 11,
-    color: '#666',
-    marginTop: 5,
-    marginBottom: 5,
-  },
   quantityContainer: {
-    marginTop: 10,
+    marginTop: 'auto', // Push to bottom of flex container
   },
   quantitySelector: {
     flexDirection: 'row',
@@ -613,6 +646,16 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 12,
     fontWeight: 'bold',
+  },
+  // Add or modify styles for TextInput
+  quantityInput: {
+    width: 60,
+    height: 28,
+    textAlign: 'center',
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#333',
+    paddingHorizontal: 8,
   },
 });
 

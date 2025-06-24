@@ -156,7 +156,7 @@
       },
       "characteristics": {
         "manufacturerArticle": "Артикул виробника",
-        "weight": "Вага (Кг)",
+        "weight": "Вага",
         "productType": "Вид продукту",
         "supplyUnit": "Одиниця кванту поставки",
         "countryOfOrigin": "Країна виробник",

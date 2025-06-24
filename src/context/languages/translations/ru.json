@@ -147,7 +147,7 @@
       },
       "characteristics": {
         "manufacturerArticle": "Артикул производителя",
-        "weight": "Вес (Кг)",
+        "weight": "Вес",
         "productType": "Вид продукта",
         "supplyUnit": "Единица кванта поставки",
         "countryOfOrigin": "Страна изготовитель",
