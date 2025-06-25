@@ -6,7 +6,8 @@ import {
   TextInput,
   ActivityIndicator,
   Linking,
-  Platform
+  Platform,
+  StyleSheet
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import styles from './ProductDetailPageDesign';
@@ -15,6 +16,30 @@ import { useAlert } from '../../context/AlertContext';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import emailService from '../../services/EmailService';
 import { CallbackRequestType, SupplierMessageType } from './ProductDetailTypes';
+
+// Create a dedicated overlay style
+const overlayStyle = StyleSheet.create({
+  fullScreenOverlay: {
+    position: 'absolute', // 'absolute' works on both platforms
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: Platform.OS === 'web' ? '100vw' as unknown as number : '100%', // Use viewport width on web
+    height: Platform.OS === 'web' ? '100vh' as unknown as number : '100%', // Use viewport height on web
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 9999,
+    // Reset any margins/paddings that might be inherited
+    margin: 0,
+    padding: 0,
+    // On web, ensure it's fixed to the viewport
+    ...(Platform.OS === 'web' ? {
+      position: 'fixed' as any, // Cast as any to avoid TypeScript error
+    } : {})
+  }
+});
 
 // Phone popup component
 type PhonePopupProps = {
@@ -30,7 +55,7 @@ export const PhonePopup = ({ visible, onClose }: PhonePopupProps) => {
   const phoneNumber = "+34 652 34 66 51";
 
   return (
-    <View style={styles.modalOverlay}>
+    <View style={overlayStyle.fullScreenOverlay}>
       <View style={styles.modalContainer}>
         <Text style={styles.modalTitle}>{t('productDetail.phoneNumber')}</Text>
         <Text style={styles.modalPhoneNumber}>{phoneNumber}</Text>
@@ -139,7 +164,7 @@ export const CallbackRequestForm = ({
   };
   
   return (
-    <View style={styles.modalOverlay}>
+    <View style={overlayStyle.fullScreenOverlay}>
       <View style={styles.modalContent}>
         <Text style={styles.modalTitle}>{t('productDetail.requestCallbackTitle')}</Text>
         
@@ -210,7 +235,7 @@ export const WriteOptionsModal = ({
   if (!visible) return null;
   
   return (
-    <View style={styles.modalOverlay}>
+    <View style={overlayStyle.fullScreenOverlay}>
       <View style={styles.modalContent}>
         <Text style={styles.modalTitle}>{t('productDetail.contactOptionsTitle') || 'Contact Options'}</Text>
         
@@ -352,7 +377,7 @@ export const EmailFormModal = ({
   };
   
   return (
-    <View style={styles.modalOverlay}>
+    <View style={overlayStyle.fullScreenOverlay}>
       <View style={styles.largeModalContent}>
         <Text style={styles.modalTitle}>{t('productDetail.writeToSupplier')}</Text>
         

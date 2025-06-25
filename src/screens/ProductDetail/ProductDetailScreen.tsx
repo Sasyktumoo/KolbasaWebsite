@@ -207,6 +207,11 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
     scrollToSection(6); // Index of reviews section
   };
   
+  // Add this alongside the other scroll functions
+  const scrollToCharacteristics = () => {
+    scrollToSection(5); // Index of characteristics section
+  };
+  
   // Render different sections based on type
   const renderSection = ({ item }) => {
     switch (item.type) {
@@ -234,24 +239,28 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
         return (
           <View style={styles.tabNavigation}>
             <TouchableOpacity 
-              style={[styles.tab, activeTab === 'description' && styles.activeTab]}
+              style={styles.tab}
               onPress={scrollToDescription}
             >
-              <Text style={[
-                styles.tabText, 
-                activeTab === 'description' && styles.activeTabText
-              ]}>
+              <Text style={styles.tabText}>
                 {t('productDetail.tabs.description')}
               </Text>
             </TouchableOpacity>
+            
             <TouchableOpacity 
-              style={[styles.tab, activeTab === 'reviews' && styles.activeTab]}
+              style={styles.tab}
+              onPress={scrollToCharacteristics}
+            >
+              <Text style={styles.tabText}>
+                {t('productDetail.tabs.characteristics')}
+              </Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.tab}
               onPress={scrollToReviews}
             >
-              <Text style={[
-                styles.tabText, 
-                activeTab === 'reviews' && styles.activeTabText
-              ]}>
+              <Text style={styles.tabText}>
                 {t('productDetail.tabs.reviews')}
               </Text>
             </TouchableOpacity>
