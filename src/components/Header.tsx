@@ -154,16 +154,13 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
     <View style={styles.header}>
       <View style={styles.headerMain}>
         {/* Logo aligned to far left */}
-        <TouchableOpacity 
-          style={styles.logoContainer} 
-          onPress={() => navigation.navigate('Home', { locale: currentLanguage })}
-        >
+        <View style={styles.logoContainer}>
           <Image 
             source={require('../../assets/Website_Logo.png')}
             style={styles.logoImage}
             resizeMode="contain"
           />
-        </TouchableOpacity>
+        </View>
         
         {/* Right section with company info and controls */}
         <View style={styles.rightSection}>

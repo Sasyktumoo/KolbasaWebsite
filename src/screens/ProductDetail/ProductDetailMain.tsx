@@ -156,15 +156,7 @@ export default function ProductDetailMain({
           <Text style={styles.pricePerKg}>{pricePerKg}€</Text>
         </View>
         
-        {/* Display product weight information */}
-        <View style={styles.infoBox}>
-          <Text style={styles.infoText}>
-            {t('productDetail.productWeightInfo', {
-              weight: firebaseProduct?.netWeight?.value || 0,
-              unit: getTranslatedUnit(firebaseProduct?.netWeight?.unit || 'g')
-            })}
-          </Text>
-        </View>
+     
         
         {/* Quantity Selector */}
         <View style={styles.quantitySelector}>
@@ -191,9 +183,12 @@ export default function ProductDetailMain({
         </View>
         
         {/* Display total weight in kg */}
-        <Text style={styles.weightInfo}>
-          {t('productDetail.totalWeight')}: {totalWeightInKg.toFixed(2)} kg
-        </Text>
+        <View style={styles.priceRow}>
+          <Text style={styles.priceLabel}>{t('productDetail.totalWeight')}:</Text>
+          <Text style={styles.totalPrice}>
+            {totalWeightInKg.toFixed(2)} {getTranslatedUnit('кг')}
+          </Text>
+        </View>
         
         <View style={styles.priceRow}>
           <Text style={styles.priceLabel}>{t('productDetail.totalPrice')}:</Text>

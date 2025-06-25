@@ -121,6 +121,7 @@
     },
     "productDetail": {
       "productCatalog": "Каталог продукции",
+      "totalWeight": "Общий вес",
       "toOrderBulk": "Для оптового заказа у поставщика,",
       "write": "напишите",
       "or": "или",
