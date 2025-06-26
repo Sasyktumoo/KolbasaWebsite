@@ -12,8 +12,6 @@ import AboutUsScreen from '../screens/AboutUsScreen';
 import OrderProductsScreen from '../screens/OrderProductsScreen';
 import ProductDeliveryScreen from '../screens/ProductDeliveryScreen';
 import OrderPaymentScreen from '../screens/OrderPaymentScreen';
-import FAQScreen from '../screens/FAQScreen';
-import PremiumProgramScreen from '../screens/PremiumProgramScreen';
 import NewsScreen from '../screens/NewsScreen';
 import FeedbackScreen from '../screens/FeedbackScreen';
 import DummyScreen from '../screens/DummyScreen';
@@ -56,8 +54,7 @@ export type RootStackParamList = {
   OrderProducts: undefined;
   ProductDelivery: undefined;
   OrderPayment: undefined;
-  FAQ: undefined;
-  PremiumProgram: undefined;
+
   News: undefined;
   Feedback: undefined;
   Dummy: undefined;
@@ -147,8 +144,7 @@ export const getLinkingConfig = (): LinkingOptions<RootStackParamList> => ({
       OrderProducts: 'order-products',
       ProductDelivery: 'product-delivery',
       OrderPayment: 'order-payment',
-      FAQ: 'faq',
-      PremiumProgram: 'premium-program',
+
       News: 'news',
       Feedback: 'feedback',
       Dummy: 'dummy',
@@ -201,8 +197,6 @@ const AppNavigator = () => {
       <Stack.Screen name="OrderProducts" component={OrderProductsScreen} />
       <Stack.Screen name="ProductDelivery" component={ProductDeliveryScreen} />
       <Stack.Screen name="OrderPayment" component={OrderPaymentScreen} />
-      <Stack.Screen name="FAQ" component={FAQScreen} />
-      <Stack.Screen name="PremiumProgram" component={PremiumProgramScreen} />
       <Stack.Screen name="News" component={NewsScreen} />
       <Stack.Screen name="Feedback" component={FeedbackScreen} />
       <Stack.Screen name="Dummy" component={DummyScreen} />

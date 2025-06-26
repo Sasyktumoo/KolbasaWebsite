@@ -141,8 +141,6 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
     { id: 'order', name: translate('navigation.orderProducts'), route: 'OrderProducts' },
     { id: 'delivery', name: translate('navigation.productDelivery'), route: 'ProductDelivery' },
     { id: 'payment', name: translate('navigation.orderPayment'), route: 'OrderPayment' },
-    { id: 'faq', name: translate('navigation.faq'), route: 'FAQ' },
-    { id: 'premium', name: translate('navigation.premiumProgram'), route: 'PremiumProgram' },
     { id: 'news', name: translate('navigation.news'), route: 'News' },
     { id: 'feedback', name: translate('navigation.feedback'), route: 'Feedback' },
     { id: 'dummy', name: "dummy", route: 'Dummy' }

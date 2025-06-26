@@ -107,11 +107,11 @@ const translateWeightUnit = (unit: string, language: string): string => {
       'ru': 'кг',
       'uk': 'кг' 
     },
-    'шт': {
-      'en': 'pcs',
-      'es': 'pzs',
-      'ru': 'шт',
-      'uk': 'шт' 
+    'шт.': {
+      'en': 'kg',
+      'es': 'kg',
+      'ru': 'кг',
+      'uk': 'кг' 
     }
   };
   
