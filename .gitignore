@@ -38,4 +38,5 @@ yarn-error.*
 
 
 !/dist/
+
 !/dist/**/assets/node_modules/
