@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "predeploy": "expo export --platform web --output-dir dist/KolbasaWebsite && rm dist/KolbasaWebsite/.gitignore",
+    "predeploy": "expo export --platform web --output-dir dist/KolbasaWebsite",
     "deploy": "gh-pages --nojekyll -d dist/KolbasaWebsite",
     "start": "expo start",
     "android": "expo run:android",
