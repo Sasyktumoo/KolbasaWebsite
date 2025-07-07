@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "predeploy": "expo export --platform web --output-dir dist/KolbasaWebsite && node scripts/fix-font-paths.js", 
-    "deploy": "gh-pages --nojekyll -d dist/KolbasaWebsite",
+    "deploy": "gh-pages --nojekyll --gitignore false -d dist/KolbasaWebsite",
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
