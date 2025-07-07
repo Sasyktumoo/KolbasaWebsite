@@ -194,7 +194,7 @@ export default function App() {
                     }}
                   >
                     <Stack.Screen 
-                      name="KolbasaWebsite",
+                      name="KolbasaWebsite"
                       component={AppNavigator} 
                       initialParams={user ? undefined : { initialRoute: 'Login' }}
                     />
