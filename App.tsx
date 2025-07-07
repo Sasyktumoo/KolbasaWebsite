@@ -18,7 +18,7 @@ import { AlertProvider } from './src/context/AlertContext'; // Add this import
 
 // Extend the RootStackParamList to include 'Main'
 type RootStackParamList = AppNavigatorParamList & {
-  Main: { initialRoute?: string } | undefined;
+  KolbasaWebsite: { initialRoute?: string } | undefined;
 };
 
 // const Stack = createStackNavigator<AuthStackParamList>();
@@ -139,7 +139,7 @@ export default function App() {
                     formatter: (options, route) => {
                       if (!route) return 'Магазин Колбасы - Meat Products';
                       
-                      if (route.name === 'Main') {
+                      if (route.name === 'KolbasaWebsite') {
                         // Let the main navigator handle title formatting
                         return 'Магазин Колбасы';
                       }
@@ -194,7 +194,7 @@ export default function App() {
                     }}
                   >
                     <Stack.Screen 
-                      name="KolbasaWebsite" 
+                      name="KolbasaWebsite",
                       component={AppNavigator} 
                       initialParams={user ? undefined : { initialRoute: 'Login' }}
                     />
