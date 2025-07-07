@@ -1,7 +1,6 @@
 {
   "expo": {
     "name": "KolbasaWebsite",
-    "assetUrlOverride": "./KolbasaWebsite/assets",
     "experiments": {
       "baseUrl": "/KolbasaWebsite"   
     },
