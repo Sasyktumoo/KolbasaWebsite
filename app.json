@@ -2,13 +2,13 @@
   "expo": {
     "name": "KolbasaWebsite",
     "experiments": {
-      "baseUrl": "/KolbasaWebsite"   
+      "baseUrl": "/KolbasaWebsite"
     },
     "slug": "KolbasaWebsite",
     "assetBundlePatterns": [
       "**/*",
       "node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/*.ttf"
-    ], 
+    ],
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
@@ -18,14 +18,14 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.borsok.KolbasaWebsite"
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#ffffff"
       }
     },
-    "web": {
-    }
+    "web": {}
   }
 }

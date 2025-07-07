@@ -67,21 +67,6 @@ export default function App() {
   // Get the linking configuration from AppNavigator
   const linking = getLinkingConfig();
 
-  // Redirect to / on first load instead of /en/product_catalog
-  useEffect(() => {
-    if (Platform.OS === 'web') {
-      try {
-        const currentUrl = window.location.pathname;
-        if (currentUrl === '/en/product_catalog') {
-          console.log('Redirecting to /');
-          window.history.replaceState({}, '', '/');
-        }
-      } catch (e) {
-        console.error('Navigation error:', e);
-      }
-    }
-  }, []);
-
   useEffect(() => {
     try {
       console.log("App initializing, setting up auth listener");

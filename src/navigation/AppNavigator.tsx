@@ -83,16 +83,20 @@ export const getLinkingConfig = (): LinkingOptions<RootStackParamList> => ({
     initialRouteName: 'Home',
     screens: {
       Home: {
-        path: ':locale?',
+        // Remove :locale? from path
+        path: '',
         parse: {
-          locale: (locale: string) => locale || 'en'
+          // Still parse locale internally but don't expose in URL
+          locale: () => 'en'
         },
         stringify: {
-          locale: (locale: string) => locale || 'en'
+          // Don't include locale in URL
+          locale: () => ''
         }
       },
       CategoryPage: {
-        path: ':locale/product_catalog/:categoryPath*',
+        // Remove :locale from path
+        path: 'product_catalog/:categoryPath*',
         parse: {
           categoryId: (value: string) => {
             if (!value || value === '') return 'catalog';
@@ -112,18 +116,21 @@ export const getLinkingConfig = (): LinkingOptions<RootStackParamList> => ({
               .map(word => word.charAt(0).toUpperCase() + word.slice(1))
               .join(' ');
           },
-          locale: (locale: string) => locale || 'en'
+          // Still handle locale internally
+          locale: () => 'en'
         },
         stringify: {
           categoryPath: (path: string[]) => {
             if (path.length <= 1) return '';
             return path.slice(1).join('/');
           },
-          locale: (locale: string) => locale || 'en'
+          // Don't include locale in URL
+          locale: () => ''
         }
       },
       ProductDetailPage: {
-        path: ':locale/products/:productId',
+        // Remove :locale from path
+        path: 'products/:productId',
         parse: {
           product: (value: string) => {
             return {
@@ -136,25 +143,26 @@ export const getLinkingConfig = (): LinkingOptions<RootStackParamList> => ({
             };
           },
           breadcrumbPath: (value: string) => ['product_catalog', 'product'],
-          locale: (locale: string) => locale || 'en'
+          // Still handle locale internally
+          locale: () => 'en'
         },
         stringify: {
           productId: (product: any) => product.id,
-          locale: (locale: string) => locale || 'en'
+          // Don't include locale in URL
+          locale: () => ''
         }
       },
-      // Add linking configuration for new screens
+      // Other routes remain the same
       AboutUs: 'about-us',
       OrderProducts: 'order-products',
       ProductDelivery: 'product-delivery',
       OrderPayment: 'order-payment',
-
       News: 'news',
       Feedback: 'feedback',
       Dummy: 'dummy',
-      Cart: 'cart', // Linking configuration for Cart
-      AddressBook: 'address-book', // Linking configuration for AddressBook
-      ImageDownloader: 'image-downloader', // Add this line
+      Cart: 'cart',
+      AddressBook: 'address-book',
+      ImageDownloader: 'image-downloader',
     },
   },
 });
