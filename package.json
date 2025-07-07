@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "predeploy": "expo export --platform web --output-dir dist/KolbasaWebsite",
+    "predeploy": "expo export --platform web --output-dir dist/KolbasaWebsite --public-url https://sasyktumoo.github.io/KolbasaWebsite",
     "deploy": "gh-pages --nojekyll -d dist/KolbasaWebsite",
     "start": "expo start",
     "android": "expo start --android",
