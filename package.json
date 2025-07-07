@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "predeploy": "expo export --platform web --output-dir dist/KolbasaWebsite && node scripts/fix-font-paths.js", 
-    "deploy": "gh-pages --nojekyll --gitignore false -d dist/KolbasaWebsite",
+    "predeploy": "expo export --platform web --output-dir dist/KolbasaWebsite && node scripts/fix-font-paths.js",
+    "deploy":    "gh-pages --nojekyll --no-ignore -d dist/KolbasaWebsite",
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
