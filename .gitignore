@@ -34,5 +34,5 @@ yarn-error.*
 *.tsbuildinfo
 
 # ===== allow the static-site build to be committed =====
-dist/
-!/dist/**
+!/dist/
+!/dist/**/assets/node_modules/**
