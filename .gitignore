@@ -1,16 +1,18 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+# 1) open .gitignore in your editor and REPLACE its contents with lines
+#    (copy-paste the block below verbatim):
 
-# dependencies
+# ───────── dependencies ─────────
 node_modules/
 
-
-# Expo
+# ───────── Expo artefacts ───────
 .expo/
-dist/
 web-build/
 expo-env.d.ts
 
-# Native
+# ───────── caches / outputs ─────
+dist/
+
+# ───────── native signing files ─
 *.orig.*
 *.jks
 *.p8
@@ -18,26 +20,22 @@ expo-env.d.ts
 *.key
 *.mobileprovision
 
-# Metro
+# ───────── Metro ────────────────
 .metro-health-check*
 
-# debug
+# ───────── debug logs ───────────
 npm-debug.*
 yarn-debug.*
 yarn-error.*
 
-# macOS
+# ───────── macOS cruft ──────────
 .DS_Store
 *.pem
 
-# local env files
+# ───────── local env & TS ───────
 .env*.local
-
-# typescript
-
 *.tsbuildinfo
 
-
+# ===== allow the static-site build to be committed =====
 !/dist/
-
 !/dist/**/assets/node_modules/
