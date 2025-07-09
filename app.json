@@ -5,10 +5,7 @@
       "baseUrl": "/KolbasaWebsite"
     },
     "slug": "KolbasaWebsite",
-    "assetBundlePatterns": [
-      "**/*",
-      "node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/*.ttf"
-    ],
+
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
