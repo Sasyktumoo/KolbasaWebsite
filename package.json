@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "predeploy": "expo export --platform web --output-dir dist/KolbasaWebsite",
-    "deploy": "gh-pages --nojekyll -d dist/KolbasaWebsite",
+     "predeploy": "expo export --platform web --output-dir dist",
+    "deploy": "gh-pages --nojekyll -d dist",
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
