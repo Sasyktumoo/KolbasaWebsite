@@ -103,52 +103,9 @@ const DummyScreen = () => {
   const [previewUrls, setPreviewUrls] = useState([]);
   const { translate } = useLanguage();
   
-const productsData = [
-
-  {
-    "name": "Классические берлинцы",
-    "packaging": "вакуум",
-    "netWeight": { "value": 500, "unit": "г", "approximate": false },
-    "storageTemperature": { "min": 2, "max": 6, "unit": "°C" },
-    "processingType": ["пропаривание", "копчение"],
-    "meatType": "свинина",
-    "meatContent": {
-      "value": 71,
-      "unit": "%",
-      "description": "71% мясистость"
-    },
-    "shelfLife": { "value": 30, "unit": "дней" },
-        "translations": {
-      "uk": {
-        "name": "Класичні берлінці",
-        "packaging": "вакуум",
-        "meatType": "свинина",
-        "meatContentDescription": "71% вміст м'яса",
-        "processingType": ["на пару", "копчення"]
-      },
-      "ru": {
-        "name": "Классические берлинцы",
-        "packaging": "вакуум",
-        "meatType": "свинина",
-        "meatContentDescription": "71% мясистость",
-        "processingType": ["пропаривание", "копчение"]
-      },
-      "en": {
-        "name": "Berlinki Classic",
-        "packaging": "vacuum pack",
-        "meatType": "pork",
-        "meatContentDescription": "71% meat content",
-        "processingType": ["steamed", "smoked"]
-      },
-      "es": {
-        "name": "Berlinki Clásicos",
-        "packaging": "vacío",
-        "meatType": "cerdo",
-        "meatContentDescription": "71% de contenido de carne",
-        "processingType": ["al vapor", "ahumado"]
-      }
-    }
-  },
+const productsData = /* ---------------- EXTRA ITEMS ---------------- */
+[
+  /* 1. Охотничья колбаса -------------------------------------------- */
   {
     "name": "Охотничья колбаса",
     "packaging": "карты",
@@ -239,9 +196,8 @@ const productsData = [
       }
     }
   }
-
-
 ]
+
 
   
   // Initialize state for multiple products
