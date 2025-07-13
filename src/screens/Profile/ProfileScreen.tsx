@@ -17,7 +17,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/AppNavigator';
 import { useUser } from '../../context/UserContext';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
-import Header from '../../components/Header';
+import Header from '../../components/Header/Header';
 import { Ionicons } from '@expo/vector-icons';
 import { useLanguage } from '../../context/languages/useLanguage';
 import { useAlert } from '../../context/AlertContext';

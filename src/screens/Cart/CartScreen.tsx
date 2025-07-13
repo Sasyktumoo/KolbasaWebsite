@@ -16,7 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Dialog, Portal, Button, Provider as PaperProvider } from 'react-native-paper';
 import { RootStackParamList } from '../../navigation/AppNavigator';
-import Header from '../../components/Header';
+import Header from '../../components/Header/Header';
 import { useCart } from '../../context/cart/CartContext';
 import { useLanguage } from '../../context/languages/useLanguage';
 

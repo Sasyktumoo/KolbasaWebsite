@@ -12,7 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import BreadcrumbNavigation from '../../components/BreadcrumbNavigation';
-import Header from '../../components/Header';
+import Header from '../../components/Header/Header';
 import styles from './ProductDetailPageDesign';
 import { useLanguage } from '../../context/languages/useLanguage';
 import { useCart } from '../../context/cart/CartContext';

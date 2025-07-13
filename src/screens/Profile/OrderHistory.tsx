@@ -14,7 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/AppNavigator';
 import { Ionicons } from '@expo/vector-icons';
-import Header from '../../components/Header';
+import Header from '../../components/Header/Header';
 import { useLanguage } from '../../context/languages/useLanguage';
 import { useUser } from '../../context/UserContext';
 import { getFirestore, collection, query, where, orderBy, getDocs } from 'firebase/firestore';

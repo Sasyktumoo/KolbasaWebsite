@@ -7,7 +7,7 @@ import {
   Platform,
   Dimensions
 } from 'react-native';
-import Header from './Header';
+import Header from './Header/Header';
 
 
 interface LayoutProps {
