@@ -1,7 +1,7 @@
 {
   "translation": {
     "header": {
-      "storeName": "Desyatka1",
+      "storeName": "Desyatka",
       "phoneNumber": "+34 652 34 65 51",
       "email": "info@b2b.trade"
     },
@@ -326,6 +326,20 @@
       "common": {
         "copyright": "© {year} Meat Store. All rights reserved."
       }
+    },
+    "orderHistory": {
+      "title": "Order History",
+      "orderNumber": "Order #",
+      "status": "Status",
+      "items": "Items",
+      "total": "Total",
+      "loading": "Loading your orders...",
+      "noOrders": "You haven't placed any orders yet",
+      "startShopping": "Start Shopping",
+      "statusCompleted": "Completed",
+      "statusProcessing": "Processing",
+      "statusPending": "Pending",
+      "statusCancelled": "Cancelled"
     }
   }
 }

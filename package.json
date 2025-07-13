@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-     "predeploy": "expo export --platform web --output-dir dist",
+    "predeploy": "expo export --platform web --output-dir dist",
     "deploy": "gh-pages --nojekyll -d dist",
     "start": "expo start",
     "android": "expo run:android",
@@ -16,6 +16,7 @@
     "@react-native-async-storage/async-storage": "^1.24.0",
     "@react-navigation/native": "^7.1.6",
     "@react-navigation/stack": "^7.2.10",
+    "date-fns": "^4.1.0",
     "expo": "~52.0.46",
     "expo-file-system": "~18.0.12",
     "expo-linking": "^7.0.5",

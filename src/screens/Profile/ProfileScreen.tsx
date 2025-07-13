@@ -369,7 +369,10 @@ const ProfileScreen = () => {
           )}
           
           {/* Order History */}
-          <TouchableOpacity style={styles.actionButton} onPress={() => {}}>
+          <TouchableOpacity 
+            style={styles.actionButton} 
+            onPress={() => navigation.navigate('OrderHistory')}
+          >
             <Ionicons name="cart-outline" size={24} color="#333" style={styles.actionIcon} />
             <Text style={styles.actionText}>{translate('profile.orderHistory')}</Text>
           </TouchableOpacity>

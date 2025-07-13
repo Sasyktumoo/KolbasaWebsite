@@ -18,7 +18,7 @@ import Header from '../../components/Header';
 import { useLanguage } from '../../context/languages/useLanguage';
 import { useCart } from '../../context/cart/CartContext';
 import { useUser } from '../../context/UserContext';
-import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, serverTimestamp, query, where, orderBy, limit, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { useAlert } from '../../context/AlertContext';
 import emailService from '../../services/EmailService'; // Import the email service
 
@@ -44,6 +44,57 @@ const OrderReviewScreen = () => {
       );
     }
   }, []);
+
+  // Handle order history management - keep only last 10 orders
+  const manageOrderHistory = async (userId: string, orderData: any) => {
+    try {
+      if (!userId) return; // Skip if no user ID (guest checkout)
+      
+      // Create a summary of the order for history
+      const orderSummary = {
+        orderId: `order-${Date.now()}`, // Generate a timestamp-based ID
+        createdAt: orderData.createdAt,
+        totalAmount: orderData.totalAmount,
+        itemCount: orderData.items.length,
+        items: orderData.items.map((item: any) => ({
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price
+        }))
+      };
+      
+      // Save to user's order history collection
+      await addDoc(collection(db, 'userOrderHistory'), {
+        userId,
+        order: orderSummary,
+        createdAt: serverTimestamp()
+      });
+      
+      // Get all order history for this user, sorted by creation date
+      const historyQuery = query(
+        collection(db, 'userOrderHistory'),
+        where('userId', '==', userId),
+        orderBy('createdAt', 'asc') // Oldest first
+      );
+      
+      const snapshot = await getDocs(historyQuery);
+      const orderHistory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      // If we have more than 10 orders, delete the oldest ones
+      if (orderHistory.length > 10) {
+        const ordersToDelete = orderHistory.slice(0, orderHistory.length - 10);
+        
+        // Delete oldest orders
+        for (const oldOrder of ordersToDelete) {
+          await deleteDoc(doc(db, 'userOrderHistory', oldOrder.id));
+          console.log(`Deleted oldest order from history: ${oldOrder.id}`);
+        }
+      }
+    } catch (error) {
+      console.error('Error managing order history:', error);
+      // Don't throw error here, as we don't want it to affect the main order flow
+    }
+  };
   
   const handlePlaceOrder = async () => {
     if (items.length === 0) {
@@ -85,12 +136,13 @@ const OrderReviewScreen = () => {
         })),
         message: customerInfo.message || '',
         totalAmount: getTotalPrice(),
-        status: 'pending',
         createdAt: serverTimestamp(),
       };
       
-      // Save order to Firestore
-      const orderRef = await addDoc(collection(db, 'orders'), order);
+      // Manage order history for the user
+      if (user?.uid) {
+        await manageOrderHistory(user.uid, order);
+      }
       
       // Attempt to send confirmation email on web platform
       if (Platform.OS === 'web') {

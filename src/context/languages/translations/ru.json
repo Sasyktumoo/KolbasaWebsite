@@ -310,6 +310,20 @@
       "common": {
         "copyright": "© {year} Магазин Колбасы. Все права защищены."
       }
+    },
+    "orderHistory": {
+      "title": "История заказов",
+      "orderNumber": "Заказ №",
+      "status": "Статус",
+      "items": "Товары",
+      "total": "Итого",
+      "loading": "Загрузка ваших заказов...",
+      "noOrders": "У вас еще нет заказов",
+      "startShopping": "Начать покупки",
+      "statusCompleted": "Выполнен",
+      "statusProcessing": "В обработке",
+      "statusPending": "Ожидает",
+      "statusCancelled": "Отменен"
     }
   }
 }

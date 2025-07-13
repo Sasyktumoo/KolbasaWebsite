@@ -12,8 +12,6 @@ import AboutUsScreen from '../screens/AboutUsScreen';
 import OrderProductsScreen from '../screens/OrderProductsScreen';
 import ProductDeliveryScreen from '../screens/ProductDeliveryScreen';
 import OrderPaymentScreen from '../screens/OrderPaymentScreen';
-import NewsScreen from '../screens/NewsScreen';
-import FeedbackScreen from '../screens/FeedbackScreen';
 import DummyScreen from '../screens/DummyScreen';
 import Login from '../screens/Registration/Login';
 import Register from '../screens/Registration/Register';
@@ -23,6 +21,7 @@ import AddressBookScreen from '../screens/Profile/AddressBookScreen'; // Import 
 import { useUser } from '../context/UserContext';
 import CheckoutFormScreen from '../screens/Cart/CheckoutFormScreen';
 import OrderReviewScreen from '../screens/Cart/OrderReviewScreen';
+import OrderHistory from '../screens/Profile/OrderHistory';
 
 // Add this import
 
@@ -58,11 +57,10 @@ export type RootStackParamList = {
   ProductDelivery: undefined;
   OrderPayment: undefined;
 
-  News: undefined;
-  Feedback: undefined;
   Dummy: undefined;
   Cart: undefined; // Include Cart in the param list
   AddressBook: undefined; // Include AddressBook in the param list
+  OrderHistory: undefined; // Include OrderHistory in the param list
   CheckoutForm: undefined;
   OrderReview: {
     customerInfo: {
@@ -157,11 +155,10 @@ export const getLinkingConfig = (): LinkingOptions<RootStackParamList> => ({
       OrderProducts: 'order-products',
       ProductDelivery: 'product-delivery',
       OrderPayment: 'order-payment',
-      News: 'news',
-      Feedback: 'feedback',
       Dummy: 'dummy',
       Cart: 'cart',
       AddressBook: 'address-book',
+      OrderHistory: 'order-history',
       ImageDownloader: 'image-downloader',
     },
   },
@@ -210,10 +207,9 @@ const AppNavigator = () => {
       <Stack.Screen name="OrderProducts" component={OrderProductsScreen} />
       <Stack.Screen name="ProductDelivery" component={ProductDeliveryScreen} />
       <Stack.Screen name="OrderPayment" component={OrderPaymentScreen} />
-      <Stack.Screen name="News" component={NewsScreen} />
-      <Stack.Screen name="Feedback" component={FeedbackScreen} />
       <Stack.Screen name="Dummy" component={DummyScreen} />
       <Stack.Screen name="AddressBook" component={AddressBookScreen} />
+      <Stack.Screen name="OrderHistory" component={OrderHistory} />
       <Stack.Screen name="CheckoutForm" component={CheckoutFormScreen} />
       <Stack.Screen name="OrderReview" component={OrderReviewScreen} />
     </Stack.Navigator>
