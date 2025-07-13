@@ -146,14 +146,23 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
   
 
   
+  // Update the return component to add responsiveness
   return (
     <View style={styles.header}>
-      <View style={styles.headerMain}>
-        {/* Logo aligned to far left */}
-        <View style={styles.logoContainer}>
+      <View style={[
+        styles.headerMain,
+        Dimensions.get('window').width <= 768 && styles.headerMainMobile
+      ]}>
+        {/* Logo */}
+        <View style={[
+          styles.logoContainer,
+          Dimensions.get('window').width <= 768 && styles.logoContainerMobile
+        ]}>
           <Image 
             source={require('../../assets/Website_Logo.png')}
-            style={styles.logoImage}
+            style={[
+              styles.logoImage,
+            ]}
             resizeMode="contain"
           />
         </View>
@@ -164,20 +173,38 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
           <View style={styles.topRow}>
             {/* Company Info */}
             <View style={styles.headerCompanyInfo}>
-              <Text style={styles.websiteTitle}>{translate('header.storeName')}</Text>
+              <Text style={[
+                styles.websiteTitle,
+                Dimensions.get('window').width <= 768 && styles.websiteTitleMobile
+              ]}>{translate('header.storeName')}</Text>
               <Text style={styles.phoneNumber}>+34 652 34 65 51</Text>
               <Text style={styles.emailText}>post@ulus.cz</Text>
             </View>
           </View>
           
           {/* Bottom row with catalog, search and user icons */}
-          <View style={styles.navigationControls}>
-            <TouchableOpacity style={styles.catalogButton} onPress={handleCatalogPress}>
+          <View style={[
+            styles.navigationControls,
+            Dimensions.get('window').width <= 768 && styles.navigationControlsMobile
+          ]}>
+            <TouchableOpacity 
+              style={[
+                styles.catalogButton,
+                Dimensions.get('window').width <= 768 && styles.catalogButtonMobile
+              ]} 
+              onPress={handleCatalogPress}
+            >
               <Text style={styles.catalogButtonText}>{translate('navigation.catalog')}</Text>
             </TouchableOpacity>
             
-            <View style={styles.searchContainer}>
-              <View style={styles.searchBar}>
+            <View style={[
+              styles.searchContainer,
+              Dimensions.get('window').width <= 768 && styles.searchContainerMobile
+            ]}>
+              <View style={[
+                styles.searchBar,
+                Dimensions.get('window').width <= 768 && styles.searchBarMobile
+              ]}>
                 <TextInput 
                   style={styles.searchInput}
                   placeholder={translate('search.placeholder')}
@@ -188,21 +215,25 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
               </View>
               
               <TouchableOpacity style={styles.searchButton} onPress={handleSearchSubmit}>
-                <Ionicons name="search" size={20} color="white" />
+                <Ionicons name="search" size={Dimensions.get('window').width <= 768 ? 16 : 20} color="white" />
               </TouchableOpacity>
             </View>
             
             {/* Cart and user icons moved here */}
-            <View style={styles.headerIcons}>
-              {/* Planet icon only without text */}
+              <View style={[
+                styles.headerIcons,
+                Dimensions.get('window').width <= 768 && styles.headerIconsMobile
+              ]}>
+              {/* Language selector */}
               <View style={styles.languageSelectorContainer}>
                 <TouchableOpacity 
                   style={[styles.icon, styles.languageSelector]}
                   onPress={toggleLangDropdown}
                 >
-                  <Ionicons name="globe-outline" size={22} color="#333" />
+                  <Ionicons name="globe-outline" size={Dimensions.get('window').width <= 768 ? 18 : 22} color="#333" />
                 </TouchableOpacity>
                 
+                {/* Language dropdown */}
                 {isLangDropdownVisible && (
                   <Animated.View 
                     style={[
@@ -262,11 +293,12 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
                 )}
               </View>
               
+              {/* Cart icon */}
               <TouchableOpacity 
                 style={styles.icon}
                 onPress={() => navigation.navigate('Cart')}
               >
-                <Ionicons name="cart-outline" size={24} color="#333" />
+                <Ionicons name="cart-outline" size={Dimensions.get('window').width <= 768 ? 20 : 24} color="#333" />
                 {getTotalItems() > 0 && (
                   <View style={[
                     styles.cartBadge,
@@ -279,14 +311,16 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
                 )}
               </TouchableOpacity>
               
+              {/* User profile/login */}
               {user ? (
-                // User is logged in - show profile and logout options
+                // User is logged in - show profile icon
                 <TouchableOpacity 
                   style={styles.icon}
                   onPress={toggleDropdown}
                 >
-                  <Ionicons name="person-circle-outline" size={24} color="#FF3B30" />
+                  <Ionicons name="person-circle-outline" size={Dimensions.get('window').width <= 768 ? 20 : 24} color="#FF3B30" />
                   
+                  {/* User dropdown menu */}
                   {isDropdownVisible && (
                     <Animated.View 
                       style={[
@@ -329,7 +363,11 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
                   style={styles.icon}
                   onPress={() => navigation.navigate('Login')}
                 >
-                  <Text style={styles.loginText}>{translate('auth.loginRegister')}</Text>
+                  {Dimensions.get('window').width <= 768 ? (
+                    <Ionicons name="log-in-outline" size={20} color="#FF3B30" />
+                  ) : (
+                    <Text style={styles.loginText}>{translate('auth.loginRegister')}</Text>
+                  )}
                 </TouchableOpacity>
               )}
             </View>
@@ -347,10 +385,16 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
         {navigationOptions.map((option) => (
           <TouchableOpacity
             key={option.id}
-            style={styles.navOption}
+            style={[
+              styles.navOption,
+              Dimensions.get('window').width <= 768 && styles.navOptionMobile
+            ]}
             onPress={() => navigation.navigate(option.route as never)}
           >
-            <Text style={styles.navOptionText}>{option.name}</Text>
+            <Text style={[
+              styles.navOptionText,
+              Dimensions.get('window').width <= 768 && styles.navOptionTextMobile
+            ]}>{option.name}</Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
@@ -388,9 +432,14 @@ const styles = StyleSheet.create({
   
   rightSection: {
     alignItems: 'flex-end',
-    zIndex: 30, // Higher than headerMain
+    zIndex: 30,
+    width: Dimensions.get('window').width <= 768 ? '100%' : 'auto',
   },
-  
+  // Add style for mobile right alignment
+  headerIconsMobile: {
+    marginLeft: 'auto', // Push to the right
+    paddingRight: 0,
+  },
   topRow: {
     flexDirection: 'row',
     marginBottom: 15,
@@ -465,6 +514,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 15,
     zIndex: 50, // Higher than navigationControls
+    paddingRight: 0, // Remove right padding
   },
   icon: {
     marginHorizontal: 8,
@@ -500,17 +550,6 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 5,
     marginLeft: 5,
-  },
-  // Existing styles...
-  navOptionsBar: {
-    marginTop: 10,
-    backgroundColor: '#fff',
-    zIndex: 5, // Lower than everything else
-  },
-  navOptionsContainer: {
-    flexDirection: 'row',
-    paddingVertical: 8,
-    paddingHorizontal: 5,
   },
   navOption: {
     paddingHorizontal: 15,
@@ -573,6 +612,61 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  // Responsive styles
+  headerMainMobile: {
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  logoContainerMobile: {
+    marginBottom: 10,
+  },
+  logoImageMobile: {
+    height: Dimensions.get('window').width * 0.08,
+    width: Dimensions.get('window').width * 0.12
+  },
+  websiteTitleMobile: {
+    fontSize: 24,
+  },
+  navigationControlsMobile: {
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 10,
+    paddingRight: 0, // Remove padding
+  },
+  catalogButtonMobile: {
+    width: '30%',
+    marginBottom: 10,
+  },
+  searchContainerMobile: {
+    width: '100%',
+    flexDirection: 'row',
+    marginBottom: 10,
+  },
+  searchBarMobile: {
+    width: '80%',
+  },
+  navOptionsBar: {
+    marginTop: 10,
+    backgroundColor: '#fff',
+    zIndex: 5, // Lower than everything else
+  },
+  navOptionsContainer: {
+    flexDirection: 'row',
+    paddingVertical: 8,
+    paddingHorizontal: 5,
+  },
+  navOptionMobile: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    marginHorizontal: 3,
+    borderRadius: 5,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  navOptionTextMobile: {
+    fontSize: 12,
   },
 });
 
