@@ -141,7 +141,7 @@ const Header = ({ onCatalogPress }: HeaderProps) => {
     { id: 'order', name: translate('navigation.orderProducts'), route: 'OrderProducts' },
     { id: 'delivery', name: translate('navigation.productDelivery'), route: 'ProductDelivery' },
     { id: 'payment', name: translate('navigation.orderPayment'), route: 'OrderPayment' },
-    { id: 'dummy', name: "dummy", route: 'Dummy' }
+    //{ id: 'dummy', name: "dummy", route: 'Dummy' }
   ];
   
 

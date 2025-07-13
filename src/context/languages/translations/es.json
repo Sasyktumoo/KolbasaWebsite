@@ -102,7 +102,10 @@
       "confirm": "Confirmar",
       "continue": "Continuar",
       "ok": "Aceptar",
-      "delete": "Eliminar"
+      "delete": "Eliminar",
+      "send": "Enviar",
+      "submit": "Enviar",
+      "close": "Cerrar"
     },
     "aboutUs": {
       "title": "Sobre Nosotros",
@@ -128,6 +131,7 @@
     },
     "productDetail": {
       "productCatalog": "Catálogo de Productos",
+      "totalWeight": "Peso Total",
       "toOrderBulk": "Para realizar un pedido al por mayor al proveedor,",
       "write": "escribe",
       "or": "o",
@@ -159,8 +163,39 @@
         "supplyUnit": "Unidad de Suministro",
         "countryOfOrigin": "País de Origen",
         "soyMeat": "Carne de Soja",
-        "belarus": "Bielorrusia"
-      }
+        "belarus": "Bielorrusia",
+        "packaging": "Embalaje",
+        "processingType": "Tipo de Procesamiento",
+        "storageTemperature": "Temperatura de Almacenamiento",
+        "shelfLife": "Vida Útil"
+      },
+      "phoneNumber": "Número de Teléfono",
+      "callbackRequestTitle": "Solicitar Devolución de Llamada",
+      "callbackRequestMessage": "Tu solicitud de devolución de llamada ha sido enviada al proveedor. Se pondrán en contacto contigo en breve.",
+      "callbackErrorTitle": "Solicitud Fallida",
+      "callbackErrorMessage": "Hemos encontrado un error al enviar tu solicitud. Por favor, inténtalo de nuevo más tarde.",
+      "phoneNumberLabel": "Número de Teléfono",
+      "commentsLabel": "Comentarios (opcional)",
+      "commentsPlaceholder": "Cualquier pregunta específica o horario preferido para llamar",
+      "invalidPhoneTitle": "Teléfono Inválido",
+      "invalidPhoneMessage": "Por favor, introduce un número de teléfono válido.",
+      "contactOptionsTitle": "Opciones de Contacto",
+      "sendEmail": "Enviar Email",
+      "whatsAppChat": "Chat de WhatsApp",
+      "yourNameLabel": "Tu Nombre",
+      "yourNamePlaceholder": "Introduce tu nombre",
+      "yourEmailLabel": "Tu Email",
+      "yourEmailPlaceholder": "Introduce tu email",
+      "messageLabel": "Mensaje",
+      "messagePlaceholder": "Introduce tu mensaje",
+      "invalidFormTitle": "Formulario Incompleto",
+      "invalidFormMessage": "Por favor, completa todos los campos requeridos.",
+      "invalidEmailTitle": "Email Inválido",
+      "invalidEmailMessage": "Por favor, introduce una dirección de email válida.",
+      "messageSentTitle": "Mensaje Enviado",
+      "messageSentMessage": "Tu mensaje ha sido enviado al proveedor. Se pondrán en contacto contigo en breve.",
+      "messageErrorTitle": "Error de Mensaje",
+      "messageErrorMessage": "Hemos encontrado un error al enviar tu mensaje. Por favor, inténtalo de nuevo más tarde."
     },
     "addressBook": {
       "error": "Error",
@@ -244,7 +279,64 @@
       "orderSuccessTitle": "Pedido Realizado con Éxito",
       "orderSuccessMessage": "¡Gracias por tu pedido! Tu pedido ha sido realizado y está siendo procesado.",
       "orderErrorTitle": "Error en el Pedido",
-      "orderErrorMessage": "Hubo un error al procesar tu pedido. Por favor, inténtalo de nuevo más tarde."
+      "orderErrorMessage": "Hubo un error al procesar tu pedido. Por favor, inténtalo de nuevo más tarde.",
+      "sendingConfirmation": "Enviando confirmación..."
+    },
+    "emails": {
+      "orderConfirmation": {
+        "title": "Confirmación de Pedido",
+        "greeting": "Estimado/a {name},",
+        "thankYouMessage": "¡Gracias por tu pedido en Meat Store! Estamos procesando tu pedido y nos pondremos en contacto contigo.",
+        "orderSummary": "Resumen del Pedido",
+        "product": "Producto",
+        "quantity": "Cantidad",
+        "price": "Precio",
+        "total": "Total",
+        "shippingInfo": "Información de Envío",
+        "questionsContact": "Si tienes alguna pregunta, por favor contacta a nuestro equipo de atención al cliente.",
+        "thankYouClosing": "¡Gracias por comprar con nosotros!",
+        "sincerely": "Atentamente,",
+        "teamName": "Equipo de Meat Store"
+      },
+      "callbackRequest": {
+        "title": "Confirmación de Solicitud de Devolución de Llamada",
+        "greeting": "Estimado/a Cliente,",
+        "thankYouMessage": "Gracias por solicitar una devolución de llamada sobre el producto: {productName}.",
+        "weWillContact": "Nuestro equipo se pondrá en contacto contigo en breve al número de teléfono proporcionado: {phone}.",
+        "additionalInfo": "Información Adicional",
+        "comments": "Tus comentarios",
+        "noComments": "No se proporcionaron comentarios adicionales.",
+        "questionsContact": "Si tienes alguna pregunta, no dudes en contactar a nuestro equipo de atención al cliente.",
+        "sincerely": "Atentamente,",
+        "teamName": "Equipo de Meat Store"
+      },
+      "messageConfirmation": {
+        "title": "Confirmación de Mensaje",
+        "greeting": "Estimado/a {name},",
+        "thankYouMessage": "Gracias por tu mensaje sobre el producto: {productName}.",
+        "weWillContact": "Nuestro equipo revisará tu mensaje y se pondrá en contacto contigo pronto.",
+        "messageCopy": "Tu Mensaje",
+        "questionsContact": "Si tienes alguna pregunta, no dudes en contactar a nuestro equipo de atención al cliente.",
+        "sincerely": "Atentamente,",
+        "teamName": "Equipo de Meat Store"
+      },
+      "common": {
+        "copyright": "© {year} Meat Store. Todos los derechos reservados."
+      }
+    },
+    "orderHistory": {
+      "title": "Historial de Pedidos",
+      "orderNumber": "Pedido #",
+      "status": "Estado",
+      "items": "Artículos",
+      "total": "Total",
+      "loading": "Cargando tus pedidos...",
+      "noOrders": "Aún no has realizado ningún pedido",
+      "startShopping": "Comenzar a Comprar",
+      "statusCompleted": "Completado",
+      "statusProcessing": "En Proceso",
+      "statusPending": "Pendiente",
+      "statusCancelled": "Cancelado"
     }
   }
 }

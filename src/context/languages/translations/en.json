@@ -11,7 +11,6 @@
       "orderProducts": "Order Products",
       "productDelivery": "Product Delivery",
       "orderPayment": "Order Payment",
-
       "news": "News",
       "feedback": "Feedback"
     },
@@ -65,7 +64,6 @@
       "errorEmailInUse": "This email is already in use by another account",
       "recentLoginRequired": "Recent Login Required",
       "pleaseRelogin": "For security reasons, please log out and log back in before changing your credentials",
-      
       "verifyYourEmail": "Verify Your Email",
       "checkYourEmail": "Check Your Email",
       "verificationEmailSentTo": "We've sent a verification email to:",
@@ -180,8 +178,7 @@
       "commentsLabel": "Comments (optional)",
       "commentsPlaceholder": "Any specific questions or preferred time to call",
       "invalidPhoneTitle": "Invalid Phone",
-      "invalidPhoneMessage": "Please enter a valid phone number.",
-      
+      "invalidPhoneMessage": "Please enter a valid phone number.",      
       "contactOptionsTitle": "Contact Options",
       "sendEmail": "Send Email",
       "whatsAppChat": "WhatsApp Chat",
@@ -263,8 +260,7 @@
       "errorInvalidEmail": "Please enter a valid email",
       "errorPhone": "Phone number is required",
       "errorAddress": "Please select a delivery address"
-    },
-    
+    },    
     "orderReview": {
       "title": "Order Review",
       "orderItems": "Order Items",
@@ -283,7 +279,8 @@
       "orderSuccessTitle": "Order Placed Successfully",
       "orderSuccessMessage": "Thank you for your order! Your order has been placed and is being processed.",
       "orderErrorTitle": "Order Error",
-      "orderErrorMessage": "There was an error processing your order. Please try again later."
+      "orderErrorMessage": "There was an error processing your order. Please try again later.",
+      "sendingConfirmation": "Sending confirmation..."
     },
     "emails": {
       "orderConfirmation": {

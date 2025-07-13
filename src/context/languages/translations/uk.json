@@ -102,7 +102,10 @@
       "confirm": "Підтвердити",
       "continue": "Продовжити",
       "ok": "OK",
-      "delete": "Видалити"
+      "delete": "Видалити",
+      "send": "Надіслати",
+      "submit": "Надіслати",
+      "close": "Закрити"
     },
     "aboutUs": {
       "title": "Про нас",
@@ -128,6 +131,7 @@
     },
     "productDetail": {
       "productCatalog": "Каталог продукції",
+      "totalWeight": "Загальна вага",
       "toOrderBulk": "Для оптового замовлення у постачальника,",
       "write": "напишіть",
       "or": "або",
@@ -159,8 +163,39 @@
         "supplyUnit": "Одиниця кванту поставки",
         "countryOfOrigin": "Країна виробник",
         "soyMeat": "М'ясо соєве",
-        "belarus": "Білорусь"
-      }
+        "belarus": "Білорусь",
+        "packaging": "Упаковка",
+        "processingType": "Тип обробки",
+        "storageTemperature": "Температура зберігання",
+        "shelfLife": "Термін придатності"
+      },
+      "phoneNumber": "Номер телефону",
+      "callbackRequestTitle": "Запит зворотнього дзвінка",
+      "callbackRequestMessage": "Ваш запит на зворотній дзвінок надіслано постачальнику. Вони зв'яжуться з вами найближчим часом.",
+      "callbackErrorTitle": "Помилка запиту",
+      "callbackErrorMessage": "Сталася помилка при надсиланні запиту. Будь ласка, спробуйте пізніше.",
+      "phoneNumberLabel": "Номер телефону",
+      "commentsLabel": "Коментарі (необов'язково)",
+      "commentsPlaceholder": "Будь-які конкретні питання або бажаний час для дзвінка",
+      "invalidPhoneTitle": "Невірний номер",
+      "invalidPhoneMessage": "Будь ласка, введіть дійсний номер телефону.",
+      "contactOptionsTitle": "Варіанти зв'язку",
+      "sendEmail": "Надіслати Email",
+      "whatsAppChat": "Чат WhatsApp",
+      "yourNameLabel": "Ваше ім'я",
+      "yourNamePlaceholder": "Введіть ваше ім'я",
+      "yourEmailLabel": "Ваш Email",
+      "yourEmailPlaceholder": "Введіть ваш email",
+      "messageLabel": "Повідомлення",
+      "messagePlaceholder": "Введіть ваше повідомлення",
+      "invalidFormTitle": "Неповна форма",
+      "invalidFormMessage": "Будь ласка, заповніть усі обов'язкові поля.",
+      "invalidEmailTitle": "Невірний Email",
+      "invalidEmailMessage": "Будь ласка, введіть коректну адресу email.",
+      "messageSentTitle": "Повідомлення надіслано",
+      "messageSentMessage": "Ваше повідомлення надіслано постачальнику. Вони зв'яжуться з вами найближчим часом.",
+      "messageErrorTitle": "Помилка відправки",
+      "messageErrorMessage": "Сталася помилка при надсиланні повідомлення. Будь ласка, спробуйте пізніше."
     },
     "addressBook": {
       "error": "Помилка",
@@ -244,7 +279,64 @@
       "orderSuccessTitle": "Замовлення успішно оформлено",
       "orderSuccessMessage": "Дякуємо за ваше замовлення! Ваше замовлення розміщено та обробляється.",
       "orderErrorTitle": "Помилка замовлення",
-      "orderErrorMessage": "Сталася помилка при обробці вашого замовлення. Будь ласка, спробуйте пізніше."
+      "orderErrorMessage": "Сталася помилка при обробці вашого замовлення. Будь ласка, спробуйте пізніше.",
+      "sendingConfirmation": "Надсилання підтвердження..."
+    },
+    "emails": {
+      "orderConfirmation": {
+        "title": "Підтвердження замовлення",
+        "greeting": "Шановний(а) {name},",
+        "thankYouMessage": "Дякуємо за ваше замовлення в Магазині М'яса! Ми обробляємо ваше замовлення та зв'яжемося з вами.",
+        "orderSummary": "Інформація про замовлення",
+        "product": "Товар",
+        "quantity": "Кількість",
+        "price": "Ціна",
+        "total": "Разом",
+        "shippingInfo": "Інформація про доставку",
+        "questionsContact": "Якщо у вас є питання, будь ласка, зверніться до нашої служби підтримки клієнтів.",
+        "thankYouClosing": "Дякуємо за покупку!",
+        "sincerely": "З повагою,",
+        "teamName": "Команда Магазину М'яса"
+      },
+      "callbackRequest": {
+        "title": "Підтвердження запиту зворотнього дзвінка",
+        "greeting": "Шановний клієнт,",
+        "thankYouMessage": "Дякуємо за запит зворотнього дзвінка щодо товару: {productName}.",
+        "weWillContact": "Наша команда зв'яжеться з вами найближчим часом за вказаним номером телефону: {phone}.",
+        "additionalInfo": "Додаткова інформація",
+        "comments": "Ваші коментарі",
+        "noComments": "Додаткові коментарі не вказані.",
+        "questionsContact": "Якщо у вас є питання, будь ласка, зверніться до нашої служби підтримки клієнтів.",
+        "sincerely": "З повагою,",
+        "teamName": "Команда Магазину М'яса"
+      },
+      "messageConfirmation": {
+        "title": "Підтвердження повідомлення",
+        "greeting": "Шановний(а) {name},",
+        "thankYouMessage": "Дякуємо за ваше повідомлення щодо товару: {productName}.",
+        "weWillContact": "Наша команда розгляне ваше повідомлення та зв'яжеться з вами найближчим часом.",
+        "messageCopy": "Ваше повідомлення",
+        "questionsContact": "Якщо у вас є питання, будь ласка, зверніться до нашої служби підтримки клієнтів.",
+        "sincerely": "З повагою,",
+        "teamName": "Команда Магазину М'яса"
+      },
+      "common": {
+        "copyright": "© {year} Магазин М'яса. Всі права захищені."
+      }
+    },
+    "orderHistory": {
+      "title": "Історія замовлень",
+      "orderNumber": "Замовлення №",
+      "status": "Статус",
+      "items": "Товари",
+      "total": "Разом",
+      "loading": "Завантаження ваших замовлень...",
+      "noOrders": "Ви ще не робили замовлень",
+      "startShopping": "Почати покупки",
+      "statusCompleted": "Виконано",
+      "statusProcessing": "В обробці",
+      "statusPending": "Очікує",
+      "statusCancelled": "Скасовано"
     }
   }
 }
