@@ -173,7 +173,7 @@ export default function App() {
                       headerShown: false,
                       cardStyle: { 
                         flex: 1,
-                        paddingHorizontal: Dimensions.get('window').width * 0.2,
+                        paddingHorizontal: Dimensions.get('window').width > 768 ? Dimensions.get('window').width * 0.2 : 0,
                         backgroundColor: '#fff', // Explicitly set background color
                       } 
                     }}
