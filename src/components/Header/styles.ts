@@ -294,8 +294,7 @@ export const styles = StyleSheet.create({
   mobileSearchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: '50%',
-    paddingRight: 270,
+    width: '75%',
   },
   mobileSearchInput: {
     flex: 1,
@@ -319,6 +318,6 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    paddingRight: 50,
+
   },
 });
