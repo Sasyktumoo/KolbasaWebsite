@@ -88,7 +88,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginLeft: 15,
-    zIndex: 50,
+    zIndex: 8000,
     paddingRight: 0,
   },
   icon: {
@@ -158,7 +158,7 @@ export const styles = StyleSheet.create({
   },
   languageSelectorContainer: {
     position: 'relative',
-    zIndex: 1500,
+    zIndex: 9000,
   },
   dropdown: {
     position: 'absolute',
@@ -175,14 +175,14 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 8,
-    zIndex: 2000,
+    zIndex: 9999,
   },
   langDropdown: {
     position: 'absolute',
     right: 0,
     minWidth: 120,
     top: 35,
-    zIndex: 2000,
+    zIndex: 9999,
     elevation: 8,
   },
   dropdownItem: {
