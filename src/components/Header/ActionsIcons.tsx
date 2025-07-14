@@ -27,6 +27,8 @@ const ActionIcons: React.FC = () => {
   const [isLangDropdownVisible, setIsLangDropdownVisible] = useState(false);
   const [langDropdownAnimation] = useState(new Animated.Value(0));
   
+  const isMobile = Dimensions.get('window').width <= 768;
+  
   // Debug whenever currentLanguage changes
   useEffect(() => {
     console.log('Header language updated:', currentLanguage);
@@ -87,7 +89,7 @@ const ActionIcons: React.FC = () => {
   return (
     <View style={[
       styles.headerIcons,
-      Dimensions.get('window').width <= 768 && styles.headerIconsMobile
+      isMobile && styles.headerIconsMobile
     ]}>
       {/* Language selector */}
       <View style={styles.languageSelectorContainer}>
@@ -97,7 +99,7 @@ const ActionIcons: React.FC = () => {
         >
           <Ionicons 
             name="globe-outline" 
-            size={Dimensions.get('window').width <= 768 ? 18 : 22} 
+            size={isMobile ? 18 : 22} 
             color="#333" 
           />
         </TouchableOpacity>
@@ -169,7 +171,7 @@ const ActionIcons: React.FC = () => {
       >
         <Ionicons 
           name="cart-outline" 
-          size={Dimensions.get('window').width <= 768 ? 20 : 24} 
+          size={isMobile ? 20 : 24} 
           color="#333" 
         />
         {getTotalItems() > 0 && (
@@ -193,7 +195,7 @@ const ActionIcons: React.FC = () => {
         >
           <Ionicons 
             name="person-circle-outline" 
-            size={Dimensions.get('window').width <= 768 ? 20 : 24} 
+            size={isMobile ? 20 : 24} 
             color="#FF3B30" 
           />
           
@@ -240,7 +242,7 @@ const ActionIcons: React.FC = () => {
           style={styles.icon}
           onPress={() => navigation.navigate('Login')}
         >
-          {Dimensions.get('window').width <= 768 ? (
+          {isMobile ? (
             <Ionicons name="log-in-outline" size={20} color="#FF3B30" />
           ) : (
             <Text style={styles.loginText}>{translate('auth.loginRegister')}</Text>

@@ -23,6 +23,7 @@ const HeaderTop: React.FC<HeaderTopProps> = ({ onCatalogPress }) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [searchQuery, setSearchQuery] = useState('');
   const { translate, currentLanguage } = useLanguage();
+  const isMobile = Dimensions.get('window').width <= 768;
   
   // Reset search query when language changes
   useEffect(() => {
@@ -63,16 +64,51 @@ const HeaderTop: React.FC<HeaderTopProps> = ({ onCatalogPress }) => {
     setSearchQuery('');
   };
 
-  return (
-    <View style={[
-      styles.headerMain,
-      Dimensions.get('window').width <= 768 && styles.headerMainMobile
-    ]}>
+  // Mobile layout component
+  const MobileHeaderLayout = () => (
+    <View style={styles.mobileHeaderContainer}>
+      {/* Company Info (moved to left) */}
+      <View style={styles.mobileCompanyInfo}>
+        <Text style={styles.mobileWebsiteTitle}>{translate('header.storeName')}</Text>
+        <Text style={styles.mobilePhoneNumber}>+34 652 34 65 51</Text>
+        <Text style={styles.mobileEmailText}>post@ulus.cz</Text>
+      </View>
+
+      {/* First row: Catalog and Search */}
+      <View style={styles.mobileFirstRow}>
+        <TouchableOpacity 
+          style={styles.mobileCatalogButton} 
+          onPress={handleCatalogPress}
+        >
+          <Text style={styles.catalogButtonText}>{translate('navigation.catalog')}</Text>
+        </TouchableOpacity>
+        
+        <View style={styles.mobileSearchContainer}>
+          <TextInput 
+            style={styles.mobileSearchInput}
+            placeholder={translate('search.placeholder')}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            onSubmitEditing={handleSearchSubmit}
+          />
+          <TouchableOpacity style={styles.mobileSearchButton} onPress={handleSearchSubmit}>
+            <Ionicons name="search" size={16} color="white" />
+          </TouchableOpacity>
+        </View>
+      </View>
+      
+      {/* Second row: Action Icons */}
+      <View style={styles.mobileSecondRow}>
+        <ActionIcons />
+      </View>
+    </View>
+  );
+
+  // Desktop layout
+  const DesktopHeaderLayout = () => (
+    <View style={styles.headerMain}>
       {/* Logo */}
-      <View style={[
-        styles.logoContainer,
-        Dimensions.get('window').width <= 768 && styles.logoContainerMobile
-      ]}>
+      <View style={styles.logoContainer}>
         <Image 
           source={require('../../../assets/Website_Logo.png')}
           style={styles.logoImage}
@@ -86,38 +122,23 @@ const HeaderTop: React.FC<HeaderTopProps> = ({ onCatalogPress }) => {
         <View style={styles.topRow}>
           {/* Company Info */}
           <View style={styles.headerCompanyInfo}>
-            <Text style={[
-              styles.websiteTitle,
-              Dimensions.get('window').width <= 768 && styles.websiteTitleMobile
-            ]}>{translate('header.storeName')}</Text>
+            <Text style={styles.websiteTitle}>{translate('header.storeName')}</Text>
             <Text style={styles.phoneNumber}>+34 652 34 65 51</Text>
             <Text style={styles.emailText}>post@ulus.cz</Text>
           </View>
         </View>
         
         {/* Bottom row with catalog, search and user icons */}
-        <View style={[
-          styles.navigationControls,
-          Dimensions.get('window').width <= 768 && styles.navigationControlsMobile
-        ]}>
+        <View style={styles.navigationControls}>
           <TouchableOpacity 
-            style={[
-              styles.catalogButton,
-              Dimensions.get('window').width <= 768 && styles.catalogButtonMobile
-            ]} 
+            style={styles.catalogButton} 
             onPress={handleCatalogPress}
           >
             <Text style={styles.catalogButtonText}>{translate('navigation.catalog')}</Text>
           </TouchableOpacity>
           
-          <View style={[
-            styles.searchContainer,
-            Dimensions.get('window').width <= 768 && styles.searchContainerMobile
-          ]}>
-            <View style={[
-              styles.searchBar,
-              Dimensions.get('window').width <= 768 && styles.searchBarMobile
-            ]}>
+          <View style={styles.searchContainer}>
+            <View style={styles.searchBar}>
               <TextInput 
                 style={styles.searchInput}
                 placeholder={translate('search.placeholder')}
@@ -128,11 +149,7 @@ const HeaderTop: React.FC<HeaderTopProps> = ({ onCatalogPress }) => {
             </View>
             
             <TouchableOpacity style={styles.searchButton} onPress={handleSearchSubmit}>
-              <Ionicons 
-                name="search" 
-                size={Dimensions.get('window').width <= 768 ? 16 : 20} 
-                color="white" 
-              />
+              <Ionicons name="search" size={20} color="white" />
             </TouchableOpacity>
           </View>
           
@@ -142,6 +159,8 @@ const HeaderTop: React.FC<HeaderTopProps> = ({ onCatalogPress }) => {
       </View>
     </View>
   );
+
+  return isMobile ? <MobileHeaderLayout /> : <DesktopHeaderLayout />;
 };
 
 export default HeaderTop;

@@ -1,11 +1,16 @@
 import React, { useState, useRef } from 'react';
 import { 
   StyleSheet, 
+  Dimensions,
 } from 'react-native';
 // Import shared styles
 import layouts from '../../designs/layouts';
 import components from '../../designs/components';
 import colors from '../../designs/colors';
+
+// Get screen width for responsive design
+const windowWidth = Dimensions.get('window').width;
+const isSmallScreen = windowWidth < 768;
 
 const styles = StyleSheet.create({
   // Use shared styles from layouts and components
@@ -156,14 +161,14 @@ const styles = StyleSheet.create({
   },
   
   mainProductSection: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: isSmallScreen ? 'column' : 'row',
+    flexWrap: isSmallScreen ? 'nowrap' : 'wrap',
     padding: 10,
     backgroundColor: colors.background.main,
     justifyContent: 'space-between',
   },
   productImageContainer: {
-    width: '40%',
+    width: isSmallScreen ? '100%' : '40%',
     aspectRatio: 1,
     backgroundColor: colors.background.main,
     elevation: 2,
@@ -217,12 +222,13 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   purchasePanel: {
-    width: '35%',
+    width: isSmallScreen ? '100%' : '35%',
     padding: 10,
     backgroundColor: colors.background.secondary,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: colors.border.light,
+    marginBottom: isSmallScreen ? 10 : 0,
   },
   priceRow: {
     flexDirection: 'row',
@@ -235,7 +241,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   pricePerKg: {
-    fontSize: 28,
+    fontSize: isSmallScreen ? 14 : 28,
     fontWeight: 'bold',
   },
   infoBox: {
@@ -279,7 +285,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   totalPrice: {
-    fontSize: 24,
+    fontSize: isSmallScreen ? 12 : 24,
     fontWeight: 'bold',
   },
   orderButton: {
@@ -288,7 +294,7 @@ const styles = StyleSheet.create({
   },
   orderButtonText: components.buttonText,
   supplierCard: {
-    width: '20%',
+    width: isSmallScreen ? '100%' : '20%',
     padding: 10,
     backgroundColor: colors.background.main,
     borderRadius: 8,

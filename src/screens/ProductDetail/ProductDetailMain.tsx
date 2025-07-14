@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction } from 'react';
-import { View, Text, Image, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, Image, TouchableOpacity, TextInput, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Product, FirebaseProduct } from './ProductDetailTypes';
 import styles from './ProductDetailPageDesign';
@@ -32,6 +32,8 @@ export default function ProductDetailMain({
   onWriteSupplier,
 }: Props) {
   const { t, currentLanguage } = useLanguage();
+  const { width } = useWindowDimensions();
+  const isSmallScreen = width < 768;
   
   // Fixed price of 10€ per kg
   const pricePerKg = 10;
@@ -101,10 +103,34 @@ export default function ProductDetailMain({
     }
   };
   
+  // Responsive styles for small screens
+  const responsiveStyles = {
+    mainProductSection: {
+      flexDirection: isSmallScreen ? 'column' as const : 'row' as const,
+      flexWrap: isSmallScreen ? 'nowrap' as const : 'wrap' as const,
+    },
+    productImageContainer: {
+      width: isSmallScreen ? '100%' as const  : '40%' as const ,
+    },
+    purchasePanel: {
+      width: isSmallScreen ? '100%' as const  : '35%' as const ,
+      marginBottom: isSmallScreen ? 10 : 0,
+    },
+    supplierCard: {
+      width: isSmallScreen ? '100%' as const  : '20%' as const ,
+    },
+    pricePerKg: {
+      fontSize: isSmallScreen ? 14 : 28,
+    },
+    totalPrice: {
+      fontSize: isSmallScreen ? 12 : 24,
+    },
+  };
+  
   return (
-    <View style={styles.mainProductSection}>
+    <View style={[styles.mainProductSection, responsiveStyles.mainProductSection]}>
       {/* Product Image */}
-      <View style={styles.productImageContainer}>
+      <View style={[styles.productImageContainer, responsiveStyles.productImageContainer]}>
         {/* Use resolveImage here */}
         {firebaseProduct?.imageUrls && firebaseProduct.imageUrls.length > 0 ? (
           <Image
@@ -151,10 +177,10 @@ export default function ProductDetailMain({
       </View>
       
       {/* Purchase Panel */}
-      <View style={styles.purchasePanel}>
+      <View style={[styles.purchasePanel, responsiveStyles.purchasePanel]}>
         <View style={styles.priceRow}>
           <Text style={styles.priceLabel}>{t('productDetail.pricePerKg')}:</Text>
-          <Text style={styles.pricePerKg}>{pricePerKg}€</Text>
+          <Text style={[styles.pricePerKg, responsiveStyles.pricePerKg]}>{pricePerKg}€</Text>
         </View>
         
      
@@ -186,14 +212,14 @@ export default function ProductDetailMain({
         {/* Display total weight in kg */}
         <View style={styles.priceRow}>
           <Text style={styles.priceLabel}>{t('productDetail.totalWeight')}:</Text>
-          <Text style={styles.totalPrice}>
+          <Text style={[styles.totalPrice, responsiveStyles.totalPrice]}>
             {totalWeightInKg.toFixed(2)} {getTranslatedUnit('кг')}
           </Text>
         </View>
         
         <View style={styles.priceRow}>
           <Text style={styles.priceLabel}>{t('productDetail.totalPrice')}:</Text>
-          <Text style={styles.totalPrice}>{totalPrice}€</Text>
+          <Text style={[styles.totalPrice, responsiveStyles.totalPrice]}>{totalPrice}€</Text>
         </View>
         
         <TouchableOpacity 
@@ -205,7 +231,7 @@ export default function ProductDetailMain({
       </View>
       
       {/* Supplier Card */}
-      <View style={styles.supplierCard}>
+      <View style={[styles.supplierCard, responsiveStyles.supplierCard]}>
         <Text style={styles.supplierName}>Vyacheslav Nikolaevich Tyulenev</Text>
         <View style={styles.supplierBadge}>
           <Text style={styles.supplierBadgeText}>{t('productDetail.producer')}</Text>

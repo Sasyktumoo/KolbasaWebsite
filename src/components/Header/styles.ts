@@ -41,8 +41,9 @@ export const styles = StyleSheet.create({
     width: Dimensions.get('window').width <= 768 ? '100%' : 'auto',
   },
   headerIconsMobile: {
-    marginLeft: 'auto',
-    paddingRight: 0,
+    marginLeft: 0,
+    justifyContent: 'flex-end',
+    width: '100%',
   },
   topRow: {
     flexDirection: 'row',
@@ -243,10 +244,6 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     marginHorizontal: 3,
-    borderRadius: 5,
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
   },
   navOptionText: {
     fontSize: 14,
@@ -254,5 +251,74 @@ export const styles = StyleSheet.create({
   },
   navOptionTextMobile: {
     fontSize: 12,
+  },
+  // New mobile layout styles
+  mobileHeaderContainer: {
+    width: '100%',
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    backgroundColor: '#fff',
+  },
+  mobileCompanyInfo: {
+    alignItems: 'flex-start',
+    marginBottom: 10,
+    width: '100%',
+  },
+  mobileWebsiteTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  mobilePhoneNumber: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#555',
+  },
+  mobileEmailText: {
+    fontSize: 10,
+    color: '#555',
+  },
+  mobileFirstRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    marginBottom: 10,
+  },
+  mobileCatalogButton: {
+    backgroundColor: '#FF3B30',
+    padding: 8,
+    borderRadius: 5,
+    width: '25%',
+  },
+  mobileSearchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '50%',
+    paddingRight: 270,
+  },
+  mobileSearchInput: {
+    flex: 1,
+    padding: 6,
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    borderRadius: 5,
+    height: 34,
+  },
+  mobileSearchButton: {
+    backgroundColor: '#FF3B30',
+    padding: 8,
+    borderRadius: 5,
+    marginLeft: 5,
+    height: 34,
+    justifyContent: 'center',
+  },
+  mobileSecondRow: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingRight: 50,
   },
 });
