@@ -1,31 +1,28 @@
-// functions/index.ts
 import {onRequest} from "firebase-functions/v2/https";
-import {SESClient, SendEmailCommand} from "@aws-sdk/client-ses";
+import {google} from "googleapis";
 import type {Request, Response} from "express";
-
-// One SES client reused by all invocations
-const ses = new SESClient({
-  region: process.env.AWS_REGION!,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  },
-});
 
 export const sendMail = onRequest(
   {
     cors: [
-      "http://localhost:8081",
-      "https://<your-github-user>.github.io",
-      "*",
+      "http://localhost:8081", // dev origin
+      "https://YOURNAME.github.io", // prod origin - replace with real domain
     ],
-    secrets: ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION"],
+    secrets: ["CLIENT_ID", "CLIENT_SECRET", "REFRESH_TOKEN"],
   },
   async (req: Request, res: Response): Promise<void> => {
+    // Preflight
     if (req.method === "OPTIONS") {
       res.status(204).send();
       return;
     }
+
+    // Create OAuth client AFTER secrets are injected
+    const auth = new google.auth.OAuth2(
+      process.env.CLIENT_ID!,
+      process.env.CLIENT_SECRET!
+    );
+    auth.setCredentials({refresh_token: process.env.REFRESH_TOKEN});
 
     const {to, subject, html, from, cc, replyTo} = req.body as {
       to: string;
@@ -36,29 +33,37 @@ export const sendMail = onRequest(
       replyTo?: string;
     };
 
-    if (!to || !subject || !html) {
-      res.status(400).json({error: "Missing required fields"});
-      return;
-    }
-
     try {
-      const cmd = new SendEmailCommand({
-        Destination: {
-          ToAddresses: [to],
-          CcAddresses: cc ? [cc] : undefined,
-        },
-        Message: {
-          Subject: {Data: subject, Charset: "UTF-8"},
-          Body: {Html: {Data: html, Charset: "UTF-8"}},
-        },
-        Source: from ?? "Your App <no-reply@yourdomain.com>",
-        ReplyToAddresses: replyTo ? [replyTo] : undefined,
+      const gmail = google.gmail({version: "v1", auth});
+
+      // Create a properly encoded email
+      const str = [
+        `From: ${from || "Магазин Колбасы <noreply@kolbasa-shop.com>"}`,
+        `To: ${to}`,
+        `Subject: =?UTF-8?B?${Buffer.from(subject).toString("base64")}?=`,
+        cc ? `Cc: ${cc}` : "",
+        replyTo ? `Reply-To: ${replyTo}` : "",
+        "MIME-Version: 1.0",
+        "Content-Type: text/html; charset=utf-8",
+        "",
+        html,
+      ].filter(Boolean).join("\r\n");
+
+      // Base64URL encode
+      const encodedMessage = Buffer.from(str)
+        .toString("base64")
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=+$/, "");
+
+      await gmail.users.messages.send({
+        userId: "me",
+        requestBody: {raw: encodedMessage},
       });
 
-      await ses.send(cmd);
-      res.json({success: true});
+      res.json({ok: true, message: "Email sent successfully"});
     } catch (err) {
-      console.error(err);
+      console.error("Error sending email:", err);
       res.status(500).json({error: (err as Error).message});
     }
   }

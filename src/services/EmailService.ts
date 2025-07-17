@@ -2,7 +2,7 @@ import { Platform } from 'react-native';
 import i18n from 'i18next';
 
 // Firebase function URL - replace with your actual deployed function URL
-const EMAIL_FUNCTION_URL = 'https://us-central1-foodshoppingwebsite.cloudfunctions.net/sendMail';
+const EMAIL_FUNCTION_URL = 'https://sendmail-fegyr7vchq-uc.a.run.app';
 
 // Types for order email data
 type OrderEmailData = {
