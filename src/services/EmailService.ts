@@ -156,7 +156,7 @@ class EmailService {
       );
       
       // Send email to supplier - ALWAYS IN RUSSIAN
-      const supplierEmail = "post@ulus.cz@gmail.com";
+      const supplierEmail = "post@ulus.cz";
       const supplierSubject = `Новый заказ от ${orderData.customer.name}`;
       const supplierEmailBody = this.createSupplierOrderNotificationBody(orderData);
       
@@ -393,7 +393,7 @@ class EmailService {
       }
       
       // Create the supplier notification email - ALWAYS IN RUSSIAN
-      const supplierEmail = "post@ulus.cz@gmail.com";
+      const supplierEmail = "post@ulus.cz";
       const supplierSubject = "Запрос обратного звонка - Магазин Колбасы";
       const supplierEmailBody = this.createCallbackRequestBody(requestData);
       
@@ -567,7 +567,7 @@ class EmailService {
       }
       
       // Create the supplier notification - ALWAYS IN RUSSIAN
-      const supplierEmail = "post@ulus.cz@gmail.com";
+      const supplierEmail = "post@ulus.cz";
       const supplierSubject = `Сообщение от клиента о товаре: ${messageData.product.name}`;
       const supplierEmailBody = this.createSupplierMessageBody(messageData);
       
