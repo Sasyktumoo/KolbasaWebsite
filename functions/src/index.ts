@@ -6,7 +6,7 @@ export const sendMail = onRequest(
   {
     cors: [
       "http://localhost:8081", // dev origin
-      "https://YOURNAME.github.io", // prod origin - replace with real domain
+      "https://desyatka.site",
     ],
     secrets: ["CLIENT_ID", "CLIENT_SECRET", "REFRESH_TOKEN"],
   },
