@@ -321,7 +321,7 @@ export const EmailFormModal = ({
           email: emailSenderEmail,
         },
         supplier: {
-          email: 'sasyktumoo@gmail.com',
+          email: 'post@ulus.cz@gmail.com',
           phoneNumber: displayPhoneNumber,
         },
         product: {
