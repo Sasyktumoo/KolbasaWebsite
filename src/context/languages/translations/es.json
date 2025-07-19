@@ -107,17 +107,20 @@
       "submit": "Enviar",
       "close": "Cerrar"
     },
-    "aboutUs": {
-      "title": "Sobre Nosotros",
-      "paragraph1": "La empresa Prima Porte lleva trabajando en el mercado alimentario de San Petersburgo desde hace 20 años...",
-      "advantages": "Nuestras ventajas:",
-      "advantage1": "1. En primer lugar - productos de alta calidad.",
-      "advantage2": "2. Disponibilidad de productos de varias categorías de precio en un mismo segmento.",
-      "advantage3": "3. Condiciones flexibles de pedido y entrega.",
-      "advantage4": "4. Precios razonables correspondientes a la situación actual del mercado...",
-      "advantage5": "5. Surtido en constante crecimiento.",
-      "advantage6": "6. Programa de asociación atractivo."
-    },
+  "aboutUs": {
+    "title": "Sobre nosotros",
+    "paragraph1": "Desyatka es un proveedor de productos cárnicos premium que opera en toda España. Nos centramos en entregar carne de alta calidad directamente a tu hogar u oficina.",
+    "advantages": "Nuestras ventajas:",
+    "advantage1": "1. Productos de alta calidad de proveedores de confianza.",
+    "advantage2": "2. Condiciones de pedido y entrega flexibles.",
+    "advantage3": "3. Surtido de productos cárnicos en constante crecimiento.",
+    "invitation": "Invitamos a empresas de catering y a particulares a colaborar con nosotros. Pruébanos y haremos todo lo posible para ofrecerte el máximo beneficio y comodidad.",
+    "contactsTitle": "Nuestros contactos:",
+    "companyName": "Desyatka",
+    "address": "Dirección: España, Barcelona",
+    "phone": "Teléfono: +34 652 34 65 51",
+    "email": "Email: post@ulus.cz"
+  },
     "reviews": {
       "title": "Opiniones de Clientes",
       "writeReview": "Escribir Opinión",
@@ -337,6 +340,34 @@
       "statusProcessing": "En Proceso",
       "statusPending": "Pendiente",
       "statusCancelled": "Cancelado"
+    },
+    "orderProducts": {
+      "title": "Cómo pedir",
+      "introduction": "Elige los productos en el catálogo y pulsa «Añadir al carrito».",
+      "cartProcess": "Revisa tu carrito y pulsa «Finalizar compra».",
+      "checkoutProcess": "Introduce tus datos de contacto y dirección; añade comentarios si lo deseas.",
+      "afterOrder": "Tras confirmar, recibirás un email y nuestro equipo te llamará para los detalles.",
+      "contactImportance": "Por favor, facilita un teléfono válido; sin confirmación no podremos entregar tu pedido.",
+      "orderMethods": "Haz pedidos 24/7 online o llama al +34 652 34 65 51 (09:00‑20:00).",
+      "holidays": "Los horarios festivos se publican en la sección «Noticias»."
+    },
+    "homepage": {
+      "title": "¡Bienvenido a Desyatka, tu tienda online de carne fresca!",
+      "introduction": "Pide carnes de primera calidad con entrega directa a tu hogar u oficina en cualquier punto de España. Una vez realizado el pedido, un miembro de nuestro equipo se pondrá en contacto contigo para confirmar la hora y la dirección de entrega. Ofrecemos descuentos flexibles en el envío y un programa de fidelidad premium para clientes habituales.",
+      "advantagesTitle": "¿Por qué comprar con nosotros?",
+      "advantage1": "Ahorra tiempo y esfuerzo. Evita el viaje al supermercado y las largas colas — nosotros lo llevamos todo a tu puerta.",
+      "advantage2": "Frescura y calidad. Nos abastecemos directamente de granjas y procesadores de carne de confianza, garantizando productos de primera.",
+      "advantage3": "Precios justos. Cadenas de suministro independientes nos permiten mantener precios razonables sin recargos artificiales.",
+      "advantage4": "Selección flexible. ¿No encuentras el corte que buscas? Usa nuestro formulario de contacto y lo localizaremos para ti; aparecerá en el catálogo en tu próximo pedido.",
+      "conclusion": "¡Disfruta de tus compras y de tus deliciosas comidas!"
+    },
+    "productDelivery": {
+      "title": "Condiciones de entrega",
+      "contactSection": "Tras el pedido, te llamaremos para acordar hora y dirección.",
+      "feesSection": "El coste depende del importe y la distancia: cuanto mayor el pedido, menor la tarifa; los pedidos grandes son gratuitos.",
+      "stairsSection": "En edificios sin ascensor puede aplicarse un cargo por subir paquetes pesados.",
+      "phoneSection": "Mantén tu teléfono operativo; sin confirmación no se enviará el pedido.",
+      "conclusion": "¡Entregamos carne fresca en toda España de forma rápida y fiable!"
     }
   }
 }
