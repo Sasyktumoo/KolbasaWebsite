@@ -20,7 +20,7 @@ const NavBar: React.FC = () => {
     { id: 'about', name: translate('navigation.aboutUs'), route: 'AboutUs' },
     { id: 'order', name: translate('navigation.orderProducts'), route: 'OrderProducts' },
     { id: 'delivery', name: translate('navigation.productDelivery'), route: 'ProductDelivery' },
-    { id: 'payment', name: translate('navigation.orderPayment'), route: 'OrderPayment' },
+    //{ id: 'payment', name: translate('navigation.orderPayment'), route: 'OrderPayment' },
     //{ id: 'dummy', name: "dummy", route: 'Dummy' }
   ];
 

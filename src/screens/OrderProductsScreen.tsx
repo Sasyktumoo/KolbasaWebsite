@@ -1,28 +1,43 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import TextPagesLayout from '../components/TestPagesLayout';
+import { useLanguage } from '../context/languages/useLanguage';
 
-const OrderPaymentScreen = () => {
+const OrderProductsScreen = () => {
+  const { t } = useLanguage();
+  
   return (
     <TextPagesLayout>
       <ScrollView style={styles.scrollView}>
         <View style={styles.content}>
-          <Text style={styles.title}>Заказ продуктов</Text>
+          <Text style={styles.title}>{t('orderProducts.title')}</Text>
           
           <Text style={styles.paragraph}>
-            В нашем магазине покупатели могут заказать любой товар, представленный в каталоге. Для этого необходимо выбрать тот или иной продукт, указать его количество и нажать на кнопку "Купить", после чего продукты отправляются в виртуальную корзину. Набрав необходимое количество продуктов, покупатель заходит в корзину, перепроверяет количество выбранного и не забыто ли что-то еще, и затем приступает к непосредственному оформлению заказа. Процедура оформления предельно проста: на каждом шаге Вы видите интерактивное меню, где указываете адрес доставки, свои контактные данные, способ оплаты а в комментариях - дополнительные пожелания по исполнению заявки. Оплатить можно либо сразу с помощью доступных платежных систем, либо по факту наличными. Завершается процедура путем нажатия кнопки "оформить заказ". Если заказ оформлен правильно, Вам на электронную почту приходит подтверждающее письмо. Через некоторое время оператор перезвонит и уточнит детали заказа.
+            {t('orderProducts.introduction')}
+          </Text>
+          
+          <Text style={styles.paragraph}>
+            {t('orderProducts.cartProcess')}
+          </Text>
+          
+          <Text style={styles.paragraph}>
+            {t('orderProducts.checkoutProcess')}
+          </Text>
+          
+          <Text style={styles.paragraph}>
+            {t('orderProducts.afterOrder')}
           </Text>
           
           <Text style={styles.boldParagraph}>
-            Просим в обязательном порядке указывать корректный адрес доставки и номер телефона. Оператор перед отправкой обязательно созвонится с Вами. Если номер некорректен или недоступен в течение длительного времени, мы к сожалению не сможем отправить Вам заказ.
+            {t('orderProducts.contactImportance')}
           </Text>
           
           <Text style={styles.paragraph}>
-            Заказ продуктов Вы можете сделать круглосуточно как через онлайн-сервис магазина, а также непосредственно позвонив по тел. (812) 965-55-81 с 9 до 20 часов. Доставка возможна на следующий рабочий день с даты заказа.
+            {t('orderProducts.orderMethods')}
           </Text>
           
           <Text style={styles.paragraph}>
-            В праздничные и выходные дни график работы устанавливается дополнительно, он отражается в разделе Новости.
+            {t('orderProducts.holidays')}
           </Text>
         </View>
       </ScrollView>
@@ -59,4 +74,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default OrderPaymentScreen;
+export default OrderProductsScreen;

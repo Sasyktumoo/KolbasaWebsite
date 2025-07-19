@@ -3,7 +3,7 @@
     "header": {
       "storeName": "Desyatka",
       "phoneNumber": "+34 652 34 65 51",
-      "email": "info@b2b.trade"
+      "email": "post@ulus.cz"
     },
     "navigation": {
       "catalog": "Catalog",
@@ -109,14 +109,17 @@
     },
     "aboutUs": {
       "title": "About Us",
-      "paragraph1": "Prima Porte company has been working in the food market of St. Petersburg for 20 years...",
+      "paragraph1": "Desyatka is a premium meat product supplier operating throughout Spain. We focus on delivering high-quality meat products directly to your home or office.",
       "advantages": "Our advantages:",
-      "advantage1": "1. First of all - high quality products.",
-      "advantage2": "2. Availability of goods of various price categories in one product segment.",
-      "advantage3": "3. Flexible ordering and delivery conditions.",
-      "advantage4": "4. Reasonable prices corresponding to the current market situation...",
-      "advantage5": "5. Constantly growing assortment.",
-      "advantage6": "6. Attractive partnership program."
+      "advantage1": "1. High quality products from trusted suppliers.",
+      "advantage2": "2. Flexible ordering and delivery conditions.",
+      "advantage3": "3. Constantly growing assortment of meat products.",
+      "invitation": "We invite all catering businesses and individuals to cooperate with our company. Give us a try, and we will do our best to provide maximum benefit and comfort for you.",
+      "contactsTitle": "Our contacts:",
+      "companyName": "Desyatka",
+      "address": "Address: Spain, Barcelona",
+      "phone": "Phone: +34 652 34 65 51",
+      "email": "Email: post@ulus.cz"
     },
     "reviews": {
       "title": "Customer Reviews",
@@ -337,6 +340,34 @@
       "statusProcessing": "Processing",
       "statusPending": "Pending",
       "statusCancelled": "Cancelled"
+    },
+    "orderProducts": {
+      "title": "Ordering Products",
+      "introduction": "At our Desyatka store, you can order any meat products presented in our catalog. To do this, select the product you're interested in, specify the quantity, and click the 'Add to Cart' button.",
+      "cartProcess": "After selecting all the products you need, go to your cart, check the selected items and their quantities, then click the 'Checkout' button.",
+      "checkoutProcess": "The checkout process is very simple: provide your contact information, select or add a delivery address, and optionally leave additional comments for your order. On the order review page, you can verify all information before submission.",
+      "afterOrder": "After clicking the 'Place Order' button, you will receive a confirmation email. Shortly after, our staff will contact you to confirm the details of your order and provide delivery information.",
+      "contactImportance": "Please make sure to provide a correct delivery address and phone number. If the phone number is incorrect or unavailable for an extended period, we unfortunately will not be able to deliver your order.",
+      "orderMethods": "You can order meat products 24/7 through our online store, or by calling directly at +34 652 34 65 51 from 9:00 to 20:00. Delivery is typically available on the next business day after placing your order.",
+      "holidays": "During holidays and weekends, our working hours may change. Updated information is published in the News section."
+    },
+    "homepage": {
+      "title": "Welcome to Desyatka — your online store for fresh meat products!",
+      "introduction": "Order premium‑quality meats delivered straight to your home or office anywhere in Spain. Once you place an order, a member of our team will contact you to confirm the delivery time and address. We offer flexible delivery discounts and a premium loyalty program for regular customers.",
+      "advantagesTitle": "Why shop with us?",
+      "advantage1": "Save time and effort. Skip the trip to the supermarket and long queues — we bring everything to you.",
+      "advantage2": "Freshness and quality. We source directly from trusted farms and meat processors, ensuring top‑grade products.",
+      "advantage3": "Fair pricing. Independent supply chains let us keep prices reasonable without artificial mark-ups.",
+      "advantage4": "Flexible selection. Can't find a particular cut? Use our feedback form, and we'll locate it for you; it will appear in the catalog for your next order.",
+      "conclusion": "Enjoy your shopping and delicious meals!"
+    },
+    "productDelivery": {
+      "title": "Delivery Terms",
+      "contactSection": "Customer contact. A member of our team will reach out to confirm the delivery time and address.",
+      "feesSection": "Fees. Delivery cost depends on your order total and distance — the larger the order, the lower the fee, and large orders are delivered free of charge. Rates for remote areas are set individually.",
+      "stairsSection": "Stair carry. In buildings without elevators, an additional fee may apply for carrying heavy orders upstairs; it is calculated based on weight and number of floors.",
+      "phoneSection": "Phone number. Please provide a valid phone number and keep it available; without confirmation, the order will not be dispatched.",
+      "conclusion": "We deliver fresh meat products across all of Spain quickly and reliably!"
     }
   }
 }
