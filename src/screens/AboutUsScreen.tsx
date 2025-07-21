@@ -20,9 +20,16 @@ const AboutUsScreen = () => {
             <Text style={styles.advantageItem}>{t('aboutUs.advantage2')}</Text>
             <Text style={styles.advantageItem}>{t('aboutUs.advantage3')}</Text>
           </View>
+          
+          <Text style={styles.sectionTitle}>{t('aboutUs.suitableForTitle')}</Text>
+          <View style={styles.advantagesList}>
+            <Text style={styles.advantageItem}>{t('aboutUs.suitableFor1')}</Text>
+            <Text style={styles.advantageItem}>{t('aboutUs.suitableFor2')}</Text>
+            <Text style={styles.advantageItem}>{t('aboutUs.suitableFor3')}</Text>
+          </View>
             
           <Text style={styles.paragraph}>
-            {t('aboutUs.invitation')}
+            {t('aboutUs.conclusion')}
           </Text>
 
           <View style={styles.divider} />
