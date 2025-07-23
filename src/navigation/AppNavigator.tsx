@@ -76,7 +76,7 @@ export type RootStackParamList = {
 
 // Export the linking configuration to use in App.tsx
 export const getLinkingConfig = (): LinkingOptions<RootStackParamList> => ({
-  prefixes: [Linking.createURL('/')],
+  prefixes: ['https://desyatka.site', 'http://desyatka.site'],
   config: {
     initialRouteName: 'Home',
     screens: {

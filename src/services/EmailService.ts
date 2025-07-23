@@ -185,7 +185,7 @@ class EmailService {
         <tr>
           <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.name}</td>
           <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.quantity}</td>
-          <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.price * item.quantity} ₽</td>
+          <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.price * item.quantity}€</td>
         </tr>
       `;
     });
@@ -197,7 +197,7 @@ class EmailService {
     const orderSummary = this.getTranslation('emails.orderConfirmation.orderSummary', language);
     const product = this.getTranslation('emails.orderConfirmation.product', language);
     const quantity = this.getTranslation('emails.orderConfirmation.quantity', language);
-    const price = this.getTranslation('emails.orderConfirmation.price', language);
+    const price = this.getTranslation('productDetail.pricePerKg', language);
     const total = this.getTranslation('emails.orderConfirmation.total', language);
     const shippingInfo = this.getTranslation('emails.orderConfirmation.shippingInfo', language);
     const questionsContact = this.getTranslation('emails.orderConfirmation.questionsContact', language);
@@ -241,7 +241,7 @@ class EmailService {
                 ${itemsHtml}
                 <tr class="total-row">
                   <td colspan="2" style="padding: 10px; text-align: right; font-weight: bold;">${total}:</td>
-                  <td style="padding: 10px; font-weight: bold;">${orderData.totalAmount} ₽</td>
+                  <td style="padding: 10px; font-weight: bold;">${orderData.totalAmount}€</td>
                 </tr>
               </table>
               
@@ -280,7 +280,7 @@ class EmailService {
         <tr>
           <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.name}</td>
           <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.quantity}</td>
-          <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.price * item.quantity} ₽</td>
+          <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.price * item.quantity}€</td>
         </tr>
       `;
     });
@@ -351,7 +351,7 @@ class EmailService {
                 ${itemsHtml}
                 <tr class="total-row">
                   <td colspan="2" style="padding: 10px; text-align: right; font-weight: bold;">Итого:</td>
-                  <td style="padding: 10px; font-weight: bold;">${orderData.totalAmount} ₽</td>
+                  <td style="padding: 10px; font-weight: bold;">${orderData.totalAmount}€</td>
                 </tr>
               </table>
               
