@@ -4,7 +4,7 @@ import { Product, FirebaseProduct } from './ProductDetailTypes';
 import styles from './ProductDetailPageDesign';
 import { useLanguage } from '../../context/languages/useLanguage';
 import ReviewsSection from '../../components/ReviewsSection';
-
+import { translateWeightUnit } from '../CategoryPage'
 // Description Section
 type DescriptionSectionProps = {
   product: Product;
@@ -53,7 +53,7 @@ export const CharacteristicsSection = ({
     },
     { 
       name: t('productDetail.characteristics.weight'), 
-      value: `${firebaseProduct.netWeight?.value || 0} ${firebaseProduct.netWeight?.unit || 'g'}` 
+      value: `${firebaseProduct.netWeight?.value || 0} ${translateWeightUnit(firebaseProduct.netWeight?.unit, currentLanguage)}` 
     },
     { 
       name: t('productDetail.characteristics.packaging'), 

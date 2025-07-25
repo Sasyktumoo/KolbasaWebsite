@@ -291,6 +291,7 @@
     },
     "emails": {
       "orderConfirmation": {
+        "totalItemPrice": "Precio tota",
         "title": "Confirmación de Pedido",
         "greeting": "Estimado/a {name},",
         "thankYouMessage": "¡Gracias por tu pedido en Meat Store! Estamos procesando tu pedido y nos pondremos en contacto contigo.",

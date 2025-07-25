@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getItemTotalPrice } from '../../utils/priceUtils';
 
 export interface CartItem {
   id: string;
@@ -21,7 +22,7 @@ interface CartContextType {
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => string; // Changed return type to string
-  getItemPrice: (item: CartItem) => string; // Added helper function
+  getItemTotalPrice: (item: CartItem) => string; // Added helper function
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -29,9 +30,6 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
   
-  // Fixed price per kg in Euros
-  const PRICE_PER_KG = 10;
-
   // Load cart from AsyncStorage on initial render
   useEffect(() => {
     const loadCart = async () => {
@@ -60,22 +58,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     saveCart();
   }, [items]);
-
-  // Helper function to calculate weight in kg
-  const getWeightInKg = (item: CartItem) => {
-    if (!item.weight) return 1; // Default weight if missing
-    
-    const { value, unit } = item.weight;
-    
-    // Convert to kg based on unit
-    if (unit.toLowerCase() === 'kg' || unit.toLowerCase() === 'кг') {
-      return value;
-    } else if (unit.toLowerCase() === 'g' || unit.toLowerCase() === 'г') {
-      return value / 1000;
-    } else {
-      return value; // If unknown unit, just use the value
-    }
-  };
 
   // Add item to cart
   const addItem = (item: CartItem) => {
@@ -135,19 +117,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return items.reduce((total, item) => total + item.quantity, 0);
   };
 
-  // Calculate price for a single item based on weight and quantity
-  const getItemPrice = (item: CartItem) => {
-    const weightInKg = getWeightInKg(item);
-    const totalWeight = weightInKg * item.quantity;
-    return (PRICE_PER_KG * totalWeight).toFixed(2);
-  };
-
   // Get total price of items in cart - updated to use weight-based pricing
   const getTotalPrice = () => {
     const total = items.reduce((total, item) => {
-      const weightInKg = getWeightInKg(item);
-      const itemTotal = PRICE_PER_KG * weightInKg * item.quantity;
-      return total + itemTotal;
+      const itemPrice = Number(getItemTotalPrice(item));
+      return total + itemPrice;
     }, 0);
     
     return total.toFixed(2);
@@ -162,7 +136,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       clearCart,
       getTotalItems,
       getTotalPrice,
-      getItemPrice
+      getItemTotalPrice
     }}>
       {children}
     </CartContext.Provider>

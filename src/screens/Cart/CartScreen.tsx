@@ -19,6 +19,8 @@ import { RootStackParamList } from '../../navigation/AppNavigator';
 import Header from '../../components/Header/Header';
 import { useCart } from '../../context/cart/CartContext';
 import { useLanguage } from '../../context/languages/useLanguage';
+// Import the translateWeightUnit function
+import { translateWeightUnit } from '../CategoryPage';
 
 const CartScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
@@ -30,7 +32,7 @@ const CartScreen = () => {
     clearCart, 
     getTotalItems, 
     getTotalPrice,
-    getItemPrice
+    getItemTotalPrice
   } = useCart();
   
   // State for managing dialog visibility
@@ -57,9 +59,12 @@ const CartScreen = () => {
   };
 
   const renderItem = ({ item }) => {
-    // Use the getItemPrice function to get price based on weight
-    const itemPrice = (Number(getItemPrice(item)) / item.quantity).toFixed(2);
-    const totalItemPrice = getItemPrice(item);
+    // Use the getItemTotalPrice function to get price based on weight
+    const itemPrice = (Number(getItemTotalPrice(item)) / item.quantity).toFixed(2);
+    const totalItemPrice = getItemTotalPrice(item);
+    
+    // Translate the weight unit based on current language
+    const translatedUnit = item.weight ? translateWeightUnit(item.weight.unit, currentLanguage) : '';
     
     return (
       <View style={styles.cartItem}>
@@ -80,7 +85,7 @@ const CartScreen = () => {
           <Text style={styles.itemName}>{item.name}</Text>
           {item.weight && (
             <Text style={styles.itemWeight}>
-              {item.weight.value} {item.weight.unit}
+              {item.weight.value} {translatedUnit}
             </Text>
           )}
           <Text style={styles.itemPrice}>{itemPrice}€</Text>

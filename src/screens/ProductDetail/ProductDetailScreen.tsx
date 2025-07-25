@@ -19,6 +19,7 @@ import { useCart } from '../../context/cart/CartContext';
 import { useAlert } from '../../context/AlertContext';
 import { resolveImage } from '../../utils/storage';
 import { PRICE_PER_KG } from '../../utils/constants';
+import { translateWeightUnit } from '../CategoryPage';
 
 // Import the refactored components
 import {
@@ -106,7 +107,7 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
       imageUrl: resolveImage(firebaseProduct?.imageUrls?.[0]),
       weight: {
         value: firebaseProduct?.netWeight?.value || 0,
-        unit: firebaseProduct?.netWeight?.unit || 'g'
+        unit: translateWeightUnit(firebaseProduct?.netWeight?.unit, currentLanguage)
       }
     });
     

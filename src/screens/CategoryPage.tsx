@@ -90,7 +90,7 @@ interface CategoryPageProps {
 }
 
 // Add this function to translate weight units
-const translateWeightUnit = (unit: string, language: string): string => {
+export const translateWeightUnit = (unit: string, language: string): string => {
   if (!unit) return '';
   
   // Map of Russian units to their translations in different languages

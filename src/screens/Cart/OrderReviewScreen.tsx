@@ -22,6 +22,8 @@ import { getFirestore, collection, addDoc, serverTimestamp, query, where, orderB
 import { useAlert } from '../../context/AlertContext';
 import emailService from '../../services/EmailService';
 import { PRICE_PER_KG } from '../../utils/constants';
+import { getItemTotalPrice, getWeightInKg } from '../../utils/priceUtils';
+import {translateWeightUnit} from '../CategoryPage'; 
 
 const OrderReviewScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
@@ -60,7 +62,7 @@ const OrderReviewScreen = () => {
         items: orderData.items.map((item: any) => ({
           name: item.name,
           quantity: item.quantity,
-          price: PRICE_PER_KG * item.weight
+          price: getItemTotalPrice(item) // Use shared utility function
         }))
       };
       
@@ -130,7 +132,7 @@ const OrderReviewScreen = () => {
         items: items.map(item => ({
           id: item.id,
           name: item.name,
-          price: 10,
+          price: PRICE_PER_KG, // Base price per kg
           quantity: item.quantity,
           imageUrl: item.imageUrl,
           weight: item.weight
@@ -191,7 +193,6 @@ const OrderReviewScreen = () => {
   
   // Calculate order summary - removed shipping calculation
   const subtotal = getTotalPrice();
-  // Removed shipping variable
   // Use subtotal directly as total
   const total = subtotal;
   
@@ -216,14 +217,10 @@ const OrderReviewScreen = () => {
             <Text style={styles.sectionTitle}>{t('orderReview.orderItems')}</Text>
             
             {items.map((item, index) => {
-              // Calculate price based on weight
-              const weightInKg = item.weight ? 
-                (item.weight.unit.toLowerCase() === 'kg' || item.weight.unit.toLowerCase() === 'кг') ? 
-                  item.weight.value : item.weight.value / 1000 
-                : 1;
+              // Use the shared utility function to calculate item price
+              const itemTotalPrice = getItemTotalPrice(item);
               
-              // Use the global constant instead of hardcoded value
-              const itemTotalPrice = (PRICE_PER_KG * weightInKg * item.quantity).toFixed(2);
+              const translatedUnit = item.weight ? translateWeightUnit(item.weight.unit, currentLanguage) : '';
               
               return (
                 <View key={`${item.id}-${index}`} style={styles.orderItem}>
@@ -241,7 +238,7 @@ const OrderReviewScreen = () => {
                   <View style={styles.itemInfo}>
                     <Text style={styles.itemName}>{item.name}</Text>
                     <Text style={styles.itemMeta}>
-                      {item.weight?.value} {item.weight?.unit}
+                      {item.weight?.value} {translatedUnit}
                     </Text>
                     <View style={styles.itemPriceRow}>
                       <Text style={styles.itemQuantity}>{t('orderReview.quantity')}: {item.quantity}</Text>
@@ -257,8 +254,6 @@ const OrderReviewScreen = () => {
                 <Text style={styles.summaryLabel}>{t('orderReview.subtotal')}:</Text>
                 <Text style={styles.summaryValue}>{getTotalPrice()}€</Text>
               </View>
-              
-              {/* Removed shipping row */}
               
               <View style={[styles.summaryRow, styles.totalRow]}>
                 <Text style={styles.totalLabel}>{t('orderReview.total')}:</Text>
