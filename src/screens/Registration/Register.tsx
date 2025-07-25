@@ -13,7 +13,8 @@ import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { useAlert } from '../../context/AlertContext'; // Import useAlert
+import { useAlert } from '../../context/AlertContext';
+import { useLanguage } from '../../context/languages/useLanguage';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -22,18 +23,17 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
-  const { alert } = useAlert(); // Add the useAlert hook
+  const { alert } = useAlert();
+  const { t } = useLanguage();
 
   const signUp = async () => {
     if (password !== confirmPassword) {
-      // Replace Alert.alert with custom alert
-      alert('Error', 'Passwords do not match');
+      alert(t('auth.error'), t('auth.passwordsDoNotMatch'));
       return;
     }
     
     if (password.length < 6) {
-      // Replace Alert.alert with custom alert
-      alert('Error', 'Password should be at least 6 characters');
+      alert(t('auth.error'), t('auth.passwordTooShort'));
       return;
     }
 
@@ -41,25 +41,22 @@ const Register = () => {
     try {
       const response = await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
       
-      // Update the user profile with the display name
       if (response.user) {
         await updateProfile(response.user, {
           displayName: name
         });
       }
       
-      // Replace Alert.alert with custom alert and add a success button
-      alert('Success', 'Account created successfully', [
+      alert(t('auth.success'), t('auth.accountCreatedSuccess'), [
         { 
-          text: 'Sign In', 
+          text: t('auth.signIn'), 
           onPress: () => navigation.navigate('Login' as never),
           style: 'default'
         }
       ]);
     } catch (error: any) {
       console.error(error);
-      // Replace Alert.alert with custom alert
-      alert('Sign Up Failed', error.message);
+      alert(t('auth.signUpFailed'), error.message);
     } finally {
       setLoading(false);
     }
@@ -75,19 +72,19 @@ const Register = () => {
           >
             <Ionicons name="chevron-back" size={24} color="#333" />
           </TouchableOpacity>
-          <Text style={styles.logoText}>Магазин Колбасы</Text>
+          <Text style={styles.logoText}>{t('header.storeName')}</Text>
           <View style={styles.placeholder} />
         </View>
         
         <View style={styles.formContainer}>
-          <Text style={styles.title}>Create Account</Text>
-          <Text style={styles.subtitle}>Sign up to start trading</Text>
+          <Text style={styles.title}>{t('auth.createAccountTitle')}</Text>
+          <Text style={styles.subtitle}>{t('auth.signUpToStart')}</Text>
           
           <View style={styles.inputContainer}>
             <Ionicons name="person-outline" size={20} color="#777" style={styles.inputIcon} />
             <TextInput
               style={styles.input}
-              placeholder="Full Name"
+              placeholder={t('auth.fullNamePlaceholder')}
               value={name}
               onChangeText={setName}
             />
@@ -97,7 +94,7 @@ const Register = () => {
             <Ionicons name="mail-outline" size={20} color="#777" style={styles.inputIcon} />
             <TextInput
               style={styles.input}
-              placeholder="Email"
+              placeholder={t('auth.emailPlaceholder')}
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -109,7 +106,7 @@ const Register = () => {
             <Ionicons name="lock-closed-outline" size={20} color="#777" style={styles.inputIcon} />
             <TextInput
               style={styles.input}
-              placeholder="Password"
+              placeholder={t('auth.passwordPlaceholder')}
               value={password}
               onChangeText={setPassword}
               secureTextEntry
@@ -120,7 +117,7 @@ const Register = () => {
             <Ionicons name="lock-closed-outline" size={20} color="#777" style={styles.inputIcon} />
             <TextInput
               style={styles.input}
-              placeholder="Confirm Password"
+              placeholder={t('auth.confirmPasswordPlaceholder')}
               value={confirmPassword}
               onChangeText={setConfirmPassword}
               secureTextEntry
@@ -135,14 +132,14 @@ const Register = () => {
             {loading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.buttonText}>Create Account</Text>
+              <Text style={styles.buttonText}>{t('auth.createAccount')}</Text>
             )}
           </TouchableOpacity>
           
           <View style={styles.loginPrompt}>
-            <Text style={styles.loginText}>Already have an account? </Text>
+            <Text style={styles.loginText}>{t('auth.alreadyHaveAccount')} </Text>
             <TouchableOpacity onPress={() => navigation.navigate('Login' as never)}>
-              <Text style={styles.loginLink}>Sign In</Text>
+              <Text style={styles.loginLink}>{t('auth.signIn')}</Text>
             </TouchableOpacity>
           </View>
         </View>

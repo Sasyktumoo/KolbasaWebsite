@@ -23,7 +23,30 @@
     "auth": {
       "loginRegister": "Login / Register",
       "profile": "My Profile",
-      "logout": "Log Out"
+      "logout": "Log Out",
+      "welcomeBack": "Welcome Back",
+      "signInToAccount": "Sign in to your account",
+      "emailPlaceholder": "Email",
+      "passwordPlaceholder": "Password",
+      "forgotPassword": "Forgot password?",
+      "signIn": "Sign In",
+      "or": "OR",
+      "createAccount": "Create Account",
+      "signInFailed": "Sign In Failed",
+      "resetPassword": "Reset Password",
+      "featureComingSoon": "Feature coming soon!",
+      
+      "createAccountTitle": "Create Account",
+      "signUpToStart": "Sign up to start trading",
+      "fullNamePlaceholder": "Full Name",
+      "confirmPasswordPlaceholder": "Confirm Password",
+      "alreadyHaveAccount": "Already have an account?",
+      "error": "Error",
+      "passwordsDoNotMatch": "Passwords do not match",
+      "passwordTooShort": "Password should be at least 6 characters",
+      "success": "Success",
+      "accountCreatedSuccess": "Account created successfully",
+      "signUpFailed": "Sign Up Failed"
     },
     "profile": {
       "myProfile": "My Profile",

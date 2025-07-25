@@ -15,14 +15,16 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/AppNavigator';
 import { Ionicons } from '@expo/vector-icons';
-import { useAlert } from '../../context/AlertContext'; // Import useAlert
+import { useAlert } from '../../context/AlertContext';
+import { useLanguage } from '../../context/languages/useLanguage';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-  const { alert } = useAlert(); // Add the useAlert hook
+  const { alert } = useAlert();
+  const { t } = useLanguage();
 
   const signIn = async () => {
     setLoading(true);
@@ -36,8 +38,7 @@ const Login = () => {
       });
     } catch (error: any) {
       console.error(error);
-      // Replace Alert.alert with custom alert
-      alert('Sign In Failed', error.message);
+      alert(t('auth.signInFailed'), error.message);
     } finally {
       setLoading(false);
     }
@@ -46,18 +47,18 @@ const Login = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.logoText}>Магазин Колбасы</Text>
+        <Text style={styles.logoText}>{t('header.storeName')}</Text>
       </View>
       
       <View style={styles.formContainer}>
-        <Text style={styles.title}>Welcome Back</Text>
-        <Text style={styles.subtitle}>Sign in to your account</Text>
+        <Text style={styles.title}>{t('auth.welcomeBack')}</Text>
+        <Text style={styles.subtitle}>{t('auth.signInToAccount')}</Text>
         
         <View style={styles.inputContainer}>
           <Ionicons name="mail-outline" size={20} color="#777" style={styles.inputIcon} />
           <TextInput
             style={styles.input}
-            placeholder="Email"
+            placeholder={t('auth.emailPlaceholder')}
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -69,7 +70,7 @@ const Login = () => {
           <Ionicons name="lock-closed-outline" size={20} color="#777" style={styles.inputIcon} />
           <TextInput
             style={styles.input}
-            placeholder="Password"
+            placeholder={t('auth.passwordPlaceholder')}
             value={password}
             onChangeText={setPassword}
             secureTextEntry
@@ -78,10 +79,9 @@ const Login = () => {
         
         <TouchableOpacity 
           style={styles.forgotPassword}
-          // Replace Alert.alert with custom alert
-          onPress={() => alert('Reset Password', 'Feature coming soon!')}
+          onPress={() => alert(t('auth.resetPassword'), t('auth.featureComingSoon'))}
         >
-          <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+          <Text style={styles.forgotPasswordText}>{t('auth.forgotPassword')}</Text>
         </TouchableOpacity>
         
         <TouchableOpacity 
@@ -92,13 +92,13 @@ const Login = () => {
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.buttonText}>Sign In</Text>
+            <Text style={styles.buttonText}>{t('auth.signIn')}</Text>
           )}
         </TouchableOpacity>
         
         <View style={styles.divider}>
           <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>OR</Text>
+          <Text style={styles.dividerText}>{t('auth.or')}</Text>
           <View style={styles.dividerLine} />
         </View>
         
@@ -106,7 +106,7 @@ const Login = () => {
           style={styles.buttonSecondary}
           onPress={() => navigation.navigate('Register' as never)}
         >
-          <Text style={styles.buttonSecondaryText}>Create Account</Text>
+          <Text style={styles.buttonSecondaryText}>{t('auth.createAccount')}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

@@ -12,16 +12,16 @@ import Login from './src/screens/Registration/Login';
 import Register from './src/screens/Registration/Register';
 import AppNavigator, { getLinkingConfig, RootStackParamList as AppNavigatorParamList } from './src/navigation/AppNavigator';
 import { UserProvider } from './src/context/UserContext';
-import { LanguageProvider } from './src/context/languages/LanguageContext'; // Add this import
-import { CartProvider } from './src/context/cart/CartContext'; // Add this import
-import { AlertProvider } from './src/context/AlertContext'; // Add this import
+import { LanguageProvider } from './src/context/languages/LanguageContext'; 
+import { useLanguage } from './src/context/languages/useLanguage'; // Add this import
+import { CartProvider } from './src/context/cart/CartContext';
+import { AlertProvider } from './src/context/AlertContext';
 
 // Extend the RootStackParamList to include 'Main'
 type RootStackParamList = AppNavigatorParamList & {
   KolbasaWebsite: { initialRoute?: string } | undefined;
 };
 
-// const Stack = createStackNavigator<AuthStackParamList>();
 const Stack = createStackNavigator<RootStackParamList>();
 
 // Error boundary component
@@ -59,11 +59,13 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 }
 
-export default function App() {
+// Create a component that wraps the navigation container to use the translation hook
+const AppContent = () => {
   const [user, setUser] = useState<User | null>(null);
   const [initializing, setInitializing] = useState(true);
   const [error, setError] = useState<string | null>(null);
- 
+  const { t } = useLanguage(); // Add translation hook
+  
   // Get the linking configuration from AppNavigator
   const linking = getLinkingConfig();
 
@@ -106,88 +108,96 @@ export default function App() {
     );
   }
 
+  // Get translated store name
+  const storeName = t('header.storeName');
+
+  return (
+    <UserProvider value={{ user, setUser }}>
+      <View style={{ 
+        flex: 1, 
+        height: '100%', 
+        backgroundColor: '#fff'
+      }}>
+        <NavigationContainer 
+          linking={linking}
+          fallback={<Text>Loading Navigation...</Text>}
+          documentTitle={{
+            formatter: (options, route) => {
+              if (!route) return `${storeName} - Meat Products`;
+              
+              if (route.name === 'KolbasaWebsite') {
+                return storeName;
+              }
+              
+              // Auth screens
+              if (route.name === 'Login') return `Sign In - ${storeName}`;
+              if (route.name === 'Register') return `Create Account - ${storeName}`;
+              
+              return `${storeName} - Meat Products`;
+            }
+          }}
+          theme={{
+            colors: {
+              background: '#fff',
+              primary: '#FF3B30',
+              card: '#fff',
+              text: '#333',
+              border: '#e0e0e0',
+              notification: '#FF3B30',
+            },
+            dark: false,
+            fonts: {
+              regular: {
+                fontFamily: 'System',
+                fontWeight: 'normal',
+              },
+              medium: {
+                fontFamily: 'System',
+                fontWeight: '500',
+              },
+              bold: {
+                fontFamily: 'System',
+                fontWeight: 'bold',
+              },
+              heavy: {
+                fontFamily: 'System',
+                fontWeight: '900',
+              },
+            },
+          }}
+        >
+          <Stack.Navigator 
+            id={undefined} 
+            screenOptions={{ 
+              headerShown: false,
+              cardStyle: { 
+                flex: 1,
+                paddingHorizontal: Dimensions.get('window').width > 768 ? Dimensions.get('window').width * 0.2 : 0,
+                backgroundColor: '#fff',
+              } 
+            }}
+          >
+            <Stack.Screen 
+              name="KolbasaWebsite"
+              component={AppNavigator} 
+              initialParams={user ? undefined : { initialRoute: 'Login' }}
+            />
+          </Stack.Navigator>
+          <StatusBar style="auto" />
+        </NavigationContainer>
+      </View>
+    </UserProvider>
+  );
+}
+
+// Main App component to set up providers
+export default function App() {
   return (
     <ErrorBoundary>
       <AlertProvider>
         <LanguageProvider>
           <CartProvider>
-            <UserProvider value={{ user, setUser }}>
-              <View style={{ 
-                flex: 1, 
-                height: '100%', 
-                backgroundColor: '#fff' // Add white background to container
-              }}>
-                <NavigationContainer 
-                  linking={linking}
-                  fallback={<Text>Loading Navigation...</Text>}
-                  documentTitle={{
-                    formatter: (options, route) => {
-                      if (!route) return 'Магазин Колбасы - Meat Products';
-                      
-                      if (route.name === 'KolbasaWebsite') {
-                        // Let the main navigator handle title formatting
-                        return 'Магазин Колбасы';
-                      }
-                      
-                      // Auth screens
-                      if (route.name === 'Login') return 'Sign In - Магазин Колбасы';
-                      if (route.name === 'Register') return 'Create Account - Магазин Колбасы';
-                      
-                      return 'Магазин Колбасы - Meat Products';
-                    }
-                  }}
-                  theme={{
-                    // Add theme with white background
-                    colors: {
-                      background: '#fff',
-                      primary: '#FF3B30',
-                      card: '#fff',
-                      text: '#333',
-                      border: '#e0e0e0',
-                      notification: '#FF3B30',
-                    },
-                    dark: false,
-                    fonts: {
-                      regular: {
-                        fontFamily: 'System',
-                        fontWeight: 'normal',
-                      },
-                      medium: {
-                        fontFamily: 'System',
-                        fontWeight: '500',
-                      },
-                      bold: {
-                        fontFamily: 'System',
-                        fontWeight: 'bold',
-                      },
-                      heavy: {
-                        fontFamily: 'System',
-                        fontWeight: '900',
-                      },
-                    },
-                  }}
-                >
-                  <Stack.Navigator 
-                    id={undefined} 
-                    screenOptions={{ 
-                      headerShown: false,
-                      cardStyle: { 
-                        flex: 1,
-                        paddingHorizontal: Dimensions.get('window').width > 768 ? Dimensions.get('window').width * 0.2 : 0,
-                        backgroundColor: '#fff', // Explicitly set background color
-                      } 
-                    }}
-                  >
-                    <Stack.Screen 
-                      name="KolbasaWebsite"
-                      component={AppNavigator} 
-                      initialParams={user ? undefined : { initialRoute: 'Login' }}
-                    />
-                  </Stack.Navigator>
-                  <StatusBar style="auto" />
-                </NavigationContainer>
-              </View>
-            </UserProvider>
+            <AppContent />
           </CartProvider>
         </LanguageProvider>
       </AlertProvider>

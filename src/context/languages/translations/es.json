@@ -23,7 +23,31 @@
     "auth": {
       "loginRegister": "Iniciar sesión / Registrarse",
       "profile": "Mi Perfil",
-      "logout": "Cerrar sesión"
+      "logout": "Cerrar sesión",
+      
+      "welcomeBack": "Bienvenido de nuevo",
+      "signInToAccount": "Inicia sesión en tu cuenta",
+      "emailPlaceholder": "Correo electrónico",
+      "passwordPlaceholder": "Contraseña",
+      "forgotPassword": "¿Olvidaste la contraseña?",
+      "signIn": "Iniciar sesión",
+      "or": "O",
+      "createAccount": "Crear cuenta",
+      "signInFailed": "Error al iniciar sesión",
+      "resetPassword": "Restablecer contraseña",
+      "featureComingSoon": "¡Función próximamente!",
+      
+      "createAccountTitle": "Crear cuenta",
+      "signUpToStart": "Regístrate para comenzar",
+      "fullNamePlaceholder": "Nombre completo",
+      "confirmPasswordPlaceholder": "Confirmar contraseña",
+      "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+      "error": "Error",
+      "passwordsDoNotMatch": "Las contraseñas no coinciden",
+      "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
+      "success": "Éxito",
+      "accountCreatedSuccess": "Cuenta creada con éxito",
+      "signUpFailed": "Error al registrarse"
     },
     "profile": {
       "myProfile": "Mi Perfil",

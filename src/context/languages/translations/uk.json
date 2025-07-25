@@ -22,8 +22,32 @@
     },
     "auth": {
       "loginRegister": "Вхід / Реєстрація",
-      "profile": "Мій профіль",
-      "logout": "Вийти"
+      "profile": "Мій Профіль",
+      "logout": "Вийти",
+      
+      "welcomeBack": "Ласкаво просимо",
+      "signInToAccount": "Увійдіть у свій обліковий запис",
+      "emailPlaceholder": "Електронна пошта",
+      "passwordPlaceholder": "Пароль",
+      "forgotPassword": "Забули пароль?",
+      "signIn": "Увійти",
+      "or": "АБО",
+      "createAccount": "Створити обліковий запис",
+      "signInFailed": "Помилка входу",
+      "resetPassword": "Скинути пароль",
+      "featureComingSoon": "Функція скоро з'явиться!",
+      
+      "createAccountTitle": "Створити обліковий запис",
+      "signUpToStart": "Зареєструйтеся, щоб почати торгівлю",
+      "fullNamePlaceholder": "Повне ім'я",
+      "confirmPasswordPlaceholder": "Підтвердіть пароль",
+      "alreadyHaveAccount": "Вже є обліковий запис?",
+      "error": "Помилка",
+      "passwordsDoNotMatch": "Паролі не співпадають",
+      "passwordTooShort": "Пароль повинен містити щонайменше 6 символів",
+      "success": "Успіх",
+      "accountCreatedSuccess": "Обліковий запис успішно створено",
+      "signUpFailed": "Помилка реєстрації"
     },
     "profile": {
       "myProfile": "Мій профіль",

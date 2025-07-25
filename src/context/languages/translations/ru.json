@@ -22,8 +22,32 @@
     },
     "auth": {
       "loginRegister": "Вход / Регистрация",
-      "profile": "Мой профиль",
-      "logout": "Выйти"
+      "profile": "Мой Профиль",
+      "logout": "Выйти",
+      
+      "welcomeBack": "С возвращением",
+      "signInToAccount": "Войдите в свой аккаунт",
+      "emailPlaceholder": "Электронная почта",
+      "passwordPlaceholder": "Пароль",
+      "forgotPassword": "Забыли пароль?",
+      "signIn": "Войти",
+      "or": "ИЛИ",
+      "createAccount": "Создать аккаунт",
+      "signInFailed": "Ошибка входа",
+      "resetPassword": "Сбросить пароль",
+      "featureComingSoon": "Функция скоро появится!",
+      
+      "createAccountTitle": "Создать аккаунт",
+      "signUpToStart": "Зарегистрируйтесь, чтобы начать торговать",
+      "fullNamePlaceholder": "Полное имя",
+      "confirmPasswordPlaceholder": "Подтвердите пароль",
+      "alreadyHaveAccount": "Уже есть аккаунт?",
+      "error": "Ошибка",
+      "passwordsDoNotMatch": "Пароли не совпадают",
+      "passwordTooShort": "Пароль должен содержать не менее 6 символов",
+      "success": "Успех",
+      "accountCreatedSuccess": "Аккаунт успешно создан",
+      "signUpFailed": "Ошибка регистрации"
     },
     "profile": {
       "myProfile": "Мой профиль",
