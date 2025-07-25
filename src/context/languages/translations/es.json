@@ -297,7 +297,7 @@
         "orderSummary": "Resumen del Pedido",
         "product": "Producto",
         "quantity": "Cantidad",
-        "price": "Precio",
+        "price": "Precio por unidad",
         "total": "Total",
         "shippingInfo": "Información de Envío",
         "questionsContact": "Si tienes alguna pregunta, por favor contacta a nuestro equipo de atención al cliente.",

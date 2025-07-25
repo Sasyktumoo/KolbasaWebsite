@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 import i18n from 'i18next';
+import { PRICE_PER_KG } from '../utils/constants';
 
 // Firebase function URL - replace with your actual deployed function URL
 const EMAIL_FUNCTION_URL = 'https://sendmail-fegyr7vchq-uc.a.run.app';
@@ -107,7 +108,7 @@ class EmailService {
           to,
           subject,
           html,
-          from: options.from || 'Магазин Колбасы <noreply@kolbasa-shop.com>',
+          from: 'Desyatka <post@desyatka.site>',
           cc: options.cc,
           replyTo: options.replyTo
         }),
@@ -185,7 +186,7 @@ class EmailService {
         <tr>
           <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.name}</td>
           <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.quantity}</td>
-          <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.price * item.quantity}€</td>
+          <td style="padding: 8px; border-bottom: 1px solid #ddd;">${PRICE_PER_KG}€</td>
         </tr>
       `;
     });
@@ -280,7 +281,7 @@ class EmailService {
         <tr>
           <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.name}</td>
           <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.quantity}</td>
-          <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.price * item.quantity}€</td>
+          <td style="padding: 8px; border-bottom: 1px solid #ddd;">${PRICE_PER_KG}€</td>
         </tr>
       `;
     });

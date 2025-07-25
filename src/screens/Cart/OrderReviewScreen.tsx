@@ -20,7 +20,8 @@ import { useCart } from '../../context/cart/CartContext';
 import { useUser } from '../../context/UserContext';
 import { getFirestore, collection, addDoc, serverTimestamp, query, where, orderBy, limit, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { useAlert } from '../../context/AlertContext';
-import emailService from '../../services/EmailService'; // Import the email service
+import emailService from '../../services/EmailService';
+import { PRICE_PER_KG } from '../../utils/constants';
 
 const OrderReviewScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
@@ -59,7 +60,7 @@ const OrderReviewScreen = () => {
         items: orderData.items.map((item: any) => ({
           name: item.name,
           quantity: item.quantity,
-          price: item.price
+          price: PRICE_PER_KG * item.weight
         }))
       };
       
@@ -129,7 +130,7 @@ const OrderReviewScreen = () => {
         items: items.map(item => ({
           id: item.id,
           name: item.name,
-          price: item.price,
+          price: 10,
           quantity: item.quantity,
           imageUrl: item.imageUrl,
           weight: item.weight
@@ -188,10 +189,11 @@ const OrderReviewScreen = () => {
     }
   };
   
-  // Calculate order summary
+  // Calculate order summary - removed shipping calculation
   const subtotal = getTotalPrice();
-  const shipping = 0; // Free shipping
-  const total = subtotal + shipping;
+  // Removed shipping variable
+  // Use subtotal directly as total
+  const total = subtotal;
   
   return (
     <SafeAreaView style={styles.container}>
@@ -214,7 +216,14 @@ const OrderReviewScreen = () => {
             <Text style={styles.sectionTitle}>{t('orderReview.orderItems')}</Text>
             
             {items.map((item, index) => {
-              const itemTotalPrice = item.price * item.quantity;
+              // Calculate price based on weight
+              const weightInKg = item.weight ? 
+                (item.weight.unit.toLowerCase() === 'kg' || item.weight.unit.toLowerCase() === 'кг') ? 
+                  item.weight.value : item.weight.value / 1000 
+                : 1;
+              
+              // Use the global constant instead of hardcoded value
+              const itemTotalPrice = (PRICE_PER_KG * weightInKg * item.quantity).toFixed(2);
               
               return (
                 <View key={`${item.id}-${index}`} style={styles.orderItem}>
@@ -249,12 +258,7 @@ const OrderReviewScreen = () => {
                 <Text style={styles.summaryValue}>{getTotalPrice()}€</Text>
               </View>
               
-              <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>{t('orderReview.shipping')}:</Text>
-                <Text style={styles.summaryValue}>
-                  {shipping === 0 ? t('orderReview.freeShipping') : `${shipping}€`}
-                </Text>
-              </View>
+              {/* Removed shipping row */}
               
               <View style={[styles.summaryRow, styles.totalRow]}>
                 <Text style={styles.totalLabel}>{t('orderReview.total')}:</Text>

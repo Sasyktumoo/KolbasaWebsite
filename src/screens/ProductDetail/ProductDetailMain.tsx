@@ -5,6 +5,7 @@ import { Product, FirebaseProduct } from './ProductDetailTypes';
 import styles from './ProductDetailPageDesign';
 import { useLanguage } from '../../context/languages/useLanguage';
 import { resolveImage } from '../../utils/storage';
+import { PRICE_PER_KG } from '../../utils/constants';
 
 type Props = {
   product: Product;
@@ -35,9 +36,6 @@ export default function ProductDetailMain({
   const { width } = useWindowDimensions();
   const isSmallScreen = width < 768;
   
-  // Fixed price of 10€ per kg
-  const pricePerKg = 10;
-  
   // Calculate product weight in kg
   const getWeightInKg = () => {
     if (!firebaseProduct?.netWeight) return 1; // Default weight if missing
@@ -64,7 +62,7 @@ export default function ProductDetailMain({
   const totalWeightInKg = weightPerPieceInKg * quantity;
   
   // Calculate total price based on weight
-  const totalPrice = (pricePerKg * totalWeightInKg).toFixed(2);
+  const totalPrice = (PRICE_PER_KG * totalWeightInKg).toFixed(2);
   
   // Get translated weight unit
   const getTranslatedUnit = (unit: string) => {
@@ -180,7 +178,7 @@ export default function ProductDetailMain({
       <View style={[styles.purchasePanel, responsiveStyles.purchasePanel]}>
         <View style={styles.priceRow}>
           <Text style={styles.priceLabel}>{t('productDetail.pricePerKg')}:</Text>
-          <Text style={[styles.pricePerKg, responsiveStyles.pricePerKg]}>{pricePerKg}€</Text>
+          <Text style={[styles.pricePerKg, responsiveStyles.pricePerKg]}>{PRICE_PER_KG}€</Text>
         </View>
         
      

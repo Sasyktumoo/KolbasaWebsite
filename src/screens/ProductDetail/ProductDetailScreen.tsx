@@ -18,6 +18,7 @@ import { useLanguage } from '../../context/languages/useLanguage';
 import { useCart } from '../../context/cart/CartContext';
 import { useAlert } from '../../context/AlertContext';
 import { resolveImage } from '../../utils/storage';
+import { PRICE_PER_KG } from '../../utils/constants';
 
 // Import the refactored components
 import {
@@ -94,15 +95,15 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
   // Update the handleAddToCart function
 
   const handleAddToCart = () => {
-    // Fixed price of 10€ per kg
-    const pricePerKg = 10;
+    // Use the global constant instead of hardcoded value
+    // const pricePerKg = 10; <- Remove this line
     
     addItem({
       id: product.id,
       name: firebaseProduct?.translations?.[currentLanguage]?.name || product.name,
-      price: pricePerKg, // Store base price per kg
+      price: PRICE_PER_KG, // Store base price per kg
       quantity: quantity,
-      imageUrl: resolveImage(firebaseProduct?.imageUrls?.[0]), // Updated to use resolveImage
+      imageUrl: resolveImage(firebaseProduct?.imageUrls?.[0]),
       weight: {
         value: firebaseProduct?.netWeight?.value || 0,
         unit: firebaseProduct?.netWeight?.unit || 'g'
