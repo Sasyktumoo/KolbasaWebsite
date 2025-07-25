@@ -81,16 +81,8 @@ export const getLinkingConfig = (): LinkingOptions<RootStackParamList> => ({
     initialRouteName: 'Home',
     screens: {
       Home: {
-        // Remove :locale? from path
         path: '',
-        parse: {
-          // Still parse locale internally but don't expose in URL
-          locale: () => 'en'
-        },
-        stringify: {
-          // Don't include locale in URL
-          locale: () => ''
-        }
+        // Remove the locale parameter completely
       },
       CategoryPage: {
         // Remove :locale from path
