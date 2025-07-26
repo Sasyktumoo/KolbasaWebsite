@@ -7,7 +7,8 @@ import {
   ActivityIndicator,
   Linking,
   Platform,
-  StyleSheet
+  StyleSheet,
+  ScrollView
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import styles from './ProductDetailPageDesign';
@@ -83,15 +84,42 @@ export const CallbackRequestForm = ({
 }: CallbackRequestFormProps) => {
   const { t, currentLanguage } = useLanguage();
   const { alert } = useAlert();
-  const [callbackPhone, setCallbackPhone] = useState('');
+  // Change default to +34 instead of empty string
+  const [callbackPhone, setCallbackPhone] = useState('+34');
   const [callbackComments, setCallbackComments] = useState('');
   const [sendingCallbackRequest, setSendingCallbackRequest] = useState(false);
+  // Add state for country code dropdown
+  const [showCountryCodeDropdown, setShowCountryCodeDropdown] = useState(false);
+  
+  // Add list of common country codes
+  const countryCodes = [
+    { label: '🇪🇸 Spain (+34)', value: '+34' },
+    { label: '🇷🇺 Russia (+7)', value: '+7' },
+    { label: '🇺🇸 USA (+1)', value: '+1' },
+    { label: '🇬🇧 UK (+44)', value: '+44' },
+    { label: '🇩🇪 Germany (+49)', value: '+49' },
+    { label: '🇫🇷 France (+33)', value: '+33' },
+    { label: '🇮🇹 Italy (+39)', value: '+39' },
+    { label: '🇵🇹 Portugal (+351)', value: '+351' },
+    { label: '🇨🇿 Czech Republic (+420)', value: '+420' },
+    { label: '🇵🇱 Poland (+48)', value: '+48' },
+    { label: '🇸🇰 Slovakia (+421)', value: '+421' },
+    { label: '🇧🇬 Bulgaria (+359)', value: '+359' },
+  ];
   
   // Add refs for maintaining focus
   const phoneInputRef = useRef(null);
   const commentsInputRef = useRef(null);
   
   if (!visible) return null;
+  
+  // Function to select country code
+  const selectCountryCode = (code) => {
+    // Extract just the numbers after the + and replace the beginning of the phone number
+    const currentNumberPart = callbackPhone.replace(/^\+\d+/, '');
+    setCallbackPhone(`${code}${currentNumberPart}`);
+    setShowCountryCodeDropdown(false);
+  };
   
   const handleSubmitCallback = async () => {
     // Validate phone number
@@ -148,7 +176,7 @@ export const CallbackRequestForm = ({
       );
       
       // Reset form
-      setCallbackPhone('');
+      setCallbackPhone('+34');
       setCallbackComments('');
       
     } catch (error) {
@@ -169,15 +197,49 @@ export const CallbackRequestForm = ({
         <Text style={styles.modalTitle}>{t('productDetail.requestCallbackTitle')}</Text>
         
         <Text style={styles.formLabel}>{t('productDetail.phoneNumberLabel')}*</Text>
-        <TextInput
-          ref={phoneInputRef}
-          style={styles.formInput}
-          value={callbackPhone}
-          onChangeText={setCallbackPhone}
-          placeholder="+7 (___) ___-____"
-          keyboardType="phone-pad"
-          autoFocus={true}
-        />
+        
+        {/* Replace the single input with a phone input container */}
+        <View style={styles.phoneInputContainer}>
+          {/* Country code selector */}
+          <TouchableOpacity 
+            style={styles.countryCodeSelector} 
+            onPress={() => setShowCountryCodeDropdown(!showCountryCodeDropdown)}
+          >
+            <Text>{callbackPhone.match(/^\+\d+/)?.[0] || '+34'}</Text>
+            <Ionicons name="chevron-down" size={16} color="#666" style={{ marginLeft: 5 }} />
+          </TouchableOpacity>
+          
+          {/* Phone number input */}
+          <TextInput
+            ref={phoneInputRef}
+            style={styles.phoneInput}
+            value={callbackPhone.replace(/^\+\d+/, '')}
+            onChangeText={(text) => {
+              const countryCode = callbackPhone.match(/^\+\d+/)?.[0] || '+34';
+              setCallbackPhone(`${countryCode}${text}`);
+            }}
+            placeholder={t('productDetail.enterPhonePlaceholder') || "Enter your phone number"}
+            keyboardType="phone-pad"
+            autoFocus={true}
+          />
+        </View>
+        
+        {/* Country code dropdown */}
+        {showCountryCodeDropdown && (
+          <View style={styles.countryDropdown}>
+            <ScrollView style={{ maxHeight: 200 }}>
+              {countryCodes.map((country, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.countryOption}
+                  onPress={() => selectCountryCode(country.value)}
+                >
+                  <Text>{country.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        )}
         
         <Text style={styles.formLabel}>{t('productDetail.commentsLabel')}</Text>
         <TextInput

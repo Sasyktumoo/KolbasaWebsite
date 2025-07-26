@@ -5,6 +5,49 @@ import styles from './ProductDetailPageDesign';
 import { useLanguage } from '../../context/languages/useLanguage';
 import ReviewsSection from '../../components/ReviewsSection';
 import { translateWeightUnit } from '../CategoryPage'
+
+// Function to translate time units based on language
+const translateTimeUnit = (unit: string, language: string): string => {
+  // Default to days if no unit is provided
+  if (!unit) return 'days';
+  
+  // Convert unit to lowercase for comparison
+  const lowerUnit = unit.toLowerCase();
+  
+  // If the unit is days or similar
+  if (lowerUnit.includes('day') || lowerUnit.includes('día') || lowerUnit.includes('дн')) {
+    switch (language) {
+      case 'es':
+        return 'días';
+      case 'uk':
+        return 'днів';
+      case 'ru':
+        return 'дней';
+      case 'en':
+      default:
+        return 'days';
+    }
+  }
+  
+  // If the unit is months or similar
+  if (lowerUnit.includes('month') || lowerUnit.includes('mes') || lowerUnit.includes('мес')) {
+    switch (language) {
+      case 'es':
+        return 'meses';
+      case 'uk':
+        return 'місяців';
+      case 'ru':
+        return 'месяцев';
+      case 'en':
+      default:
+        return 'months';
+    }
+  }
+  
+  // Return the original unit if no translation is available
+  return unit;
+};
+
 // Description Section
 type DescriptionSectionProps = {
   product: Product;
@@ -48,7 +91,6 @@ export const CharacteristicsSection = ({
   const characteristicsData = firebaseProduct ? [
     { 
       name: t('productDetail.characteristics.productType'), 
-      // Fix: Use currentLanguage variable directly
       value: firebaseProduct.translations?.[currentLanguage]?.meatType || firebaseProduct.meatType 
     },
     { 
@@ -57,23 +99,21 @@ export const CharacteristicsSection = ({
     },
     { 
       name: t('productDetail.characteristics.packaging'), 
-      // Fix: Use currentLanguage variable directly
       value: firebaseProduct.translations?.[currentLanguage]?.packaging || firebaseProduct.packaging 
     },
     { 
       name: t('productDetail.characteristics.processingType'), 
-      // Fix: Use currentLanguage variable directly
       value: firebaseProduct.translations?.[currentLanguage]?.processingType?.join(', ') || 
             firebaseProduct.processingType?.join(', ') || 'N/A'
     },
     { 
       name: t('productDetail.characteristics.storageTemperature'), 
-      value: `${firebaseProduct.storageTemperature?.min || 0}°C to ${firebaseProduct.storageTemperature?.max || 0}°C` 
+      value: `${firebaseProduct.storageTemperature?.min || 0}°C - ${firebaseProduct.storageTemperature?.max || 0}°C` 
     },
     { 
       name: t('productDetail.characteristics.shelfLife'), 
       value: firebaseProduct.shelfLife ? 
-            `${firebaseProduct.shelfLife.value} ${firebaseProduct.shelfLife.unit}` : 
+            `${firebaseProduct.shelfLife.value} ${translateTimeUnit(firebaseProduct.shelfLife.unit, currentLanguage)}` : 
             'N/A' 
     }
   ] : [

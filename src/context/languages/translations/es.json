@@ -161,6 +161,8 @@
       "noReviews": "¡Aún no hay opiniones. Sé el primero en escribir una!"
     },
     "productDetail": {
+      "enterPhonePlaceholder": "Introduce tu número de teléfono",
+      "requestCallbackTitle": "Solicitar una llamada",
       "productCatalog": "Catálogo de Productos",
       "totalWeight": "Peso Total",
       "toOrderBulk": "Para realizar un pedido al por mayor al proveedor,",

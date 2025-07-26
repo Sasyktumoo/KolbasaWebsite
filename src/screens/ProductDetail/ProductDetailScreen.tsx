@@ -228,12 +228,7 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
               {firebaseProduct?.translations?.[currentLanguage]?.name || product.name}
             </Text>
             <Text style={styles.productDescription}>
-              {t('productDetail.toOrderBulk')}
-              <Text style={styles.highlightText}> {t('productDetail.write')} </Text> 
-              {t('productDetail.or')}
-              <Text style={styles.highlightText}> {t('productDetail.orderCall')} </Text> 
-              {t('productDetail.or')}
-              <Text style={styles.highlightText}> {t('productDetail.call')} </Text>
+              {t('productDetail.toOrderBulk')} {t('productDetail.write')} {t('productDetail.or')} {t('productDetail.orderCall')} {t('productDetail.or')} {t('productDetail.call')}
             </Text>
           </View>
         );

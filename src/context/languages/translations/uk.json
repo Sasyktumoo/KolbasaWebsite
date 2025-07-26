@@ -161,6 +161,8 @@
       "noReviews": "Відгуків поки немає. Будьте першим, хто напише відгук!"
     },
     "productDetail": {
+      "enterPhonePlaceholder": "Введіть ваш номер телефону",
+      "requestCallbackTitle": "Замовити зворотній дзвінок",
       "productCatalog": "Каталог продукції",
       "totalWeight": "Загальна вага",
       "toOrderBulk": "Для оптового замовлення у постачальника,",

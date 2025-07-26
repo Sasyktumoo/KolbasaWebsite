@@ -160,6 +160,8 @@
       "noReviews": "No reviews yet. Be the first to write one!"
     },
     "productDetail": {
+      "enterPhonePlaceholder": "Enter your phone number",
+      "requestCallbackTitle": "Request a Callback",
       "productCatalog": "Product Catalog",
       "totalWeight": "Total Weight",
       "toOrderBulk": "To order in bulk from the supplier,",
