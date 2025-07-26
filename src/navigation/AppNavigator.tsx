@@ -82,7 +82,6 @@ export const getLinkingConfig = (): LinkingOptions<RootStackParamList> => ({
     screens: {
       Home: {
         path: '',
-        // Remove the locale parameter completely
       },
       CategoryPage: {
         // Remove :locale from path
@@ -177,7 +176,6 @@ const AppNavigator = () => {
         name="Home"
         component={HomePage}
         initialParams={{
-          locale: 'en'
         }}
       />
       <Stack.Screen 
