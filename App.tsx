@@ -71,27 +71,10 @@ const AppContent = () => {
 
   // Add this effect to handle page refreshes
   useEffect(() => {
-    if (Platform.OS === 'web') {
-      // This will run when the user refreshes the page
-      window.addEventListener('beforeunload', (event) => {
-        // Cancel the event to show confirmation dialog (optional)
-        // event.preventDefault();
-        
-        // Save the base URL (will be used after refresh)
-        const baseUrl = window.location.origin;
-        localStorage.setItem('redirectUrl', baseUrl);
-      });
-      
-      // Check if we need to redirect after page load
-      if (localStorage.getItem('redirectUrl')) {
-        const url = localStorage.getItem('redirectUrl');
-        localStorage.removeItem('redirectUrl');
-        
-        // Only redirect if we're not already at the base URL
-        if (url && window.location.pathname !== '/') {
-          window.location.href = url;
-        }
-      }
+    if (Platform.OS !== 'web') return;
+    const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+    if (nav?.type === 'reload') {
+      window.location.replace('https://desyatka.site');
     }
   }, []);
 
