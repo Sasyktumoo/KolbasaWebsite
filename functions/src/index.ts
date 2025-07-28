@@ -6,7 +6,7 @@ export const sendMail = onRequest(
   {
     cors: [
       "http://localhost:8081", // dev origin
-      "https://desyatka.site",
+      "https://desyatka.com",
     ],
     secrets: ["CLIENT_ID", "CLIENT_SECRET", "REFRESH_TOKEN"],
   },

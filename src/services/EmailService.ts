@@ -109,7 +109,7 @@ class EmailService {
           to,
           subject,
           html,
-          from: 'Desyatka <post@desyatka.site>',
+          from: 'Desyatka <post@desyatka.com>',
           cc: options.cc,
           replyTo: options.replyTo
         }),
