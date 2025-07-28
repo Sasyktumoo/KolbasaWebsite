@@ -74,7 +74,7 @@ const AppContent = () => {
     if (Platform.OS !== 'web') return;
     const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
     if (nav?.type === 'reload') {
-      window.location.replace('https://desyatka.come');
+      window.location.replace('https://desyatka.com');
     }
   }, []);
 
