@@ -230,10 +230,7 @@ export default function ProductDetailMain({
       
       {/* Supplier Card */}
       <View style={[styles.supplierCard, responsiveStyles.supplierCard]}>
-        <Text style={styles.supplierName}>Vyacheslav Nikolaevich Tyulenev</Text>
-        <View style={styles.supplierBadge}>
-          <Text style={styles.supplierBadgeText}>{t('productDetail.producer')}</Text>
-        </View>
+
         
         {/* Write to supplier button */}
         <TouchableOpacity 

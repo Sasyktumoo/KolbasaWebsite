@@ -131,24 +131,24 @@
       "submit": "Enviar",
       "close": "Cerrar"
     },
-  "aboutUs": {
-    "title": "Sobre Nosotros",
-    "paragraph1": "Desyatka es una tienda de embutidos y delicatessen cárnicas de calidad con entrega a domicilio u oficina desde Barcelona hasta Murcia. Creamos nuestro servicio para aquellos que valoran la calidad y el sabor auténtico — desde embutidos cocidos tradicionales hasta delicatessen cárnicas.",
-    "advantages": "Nuestras ventajas:",
-    "advantage1": "Calidad probada — trabajamos con el proveedor más confiable utilizando recetas comprobadas, solo carne y especias, sin aditivos ni conservantes dañinos.",
-    "advantage2": "Entrega rápida y estable según un calendario planificado — condiciones flexibles para el cliente.",
-    "advantage3": "Amplio surtido — embutidos ahumados y cocidos, salchichas, filetes y mucho más.",
-    "suitableForTitle": "Para quién son adecuados nuestros productos:",
-    "suitableFor1": "Niños y adultos, todos los días.",
-    "suitableFor2": "Entregamos productos tanto a clientes privados (familias, oficinas) como a restaurantes, tiendas, cafeterías, hoteles y pensiones.",
-    "suitableFor3": "Trabajamos con particulares y empresas: HoReCa, venta minorista, catering.",
-    "conclusion": "Precio más calidad, un argumento insuperable para nuestros productos — ¡pruébalos y definitivamente querrás tener estos productos en tu mesa constantemente!",
-    "contactsTitle": "Nuestros contactos:",
-    "companyName": "Desyatka",
-    "address": "Dirección: España, Barcelona",
-    "phone": "Teléfono: +34 652 34 65 51",
-    "email": "Email: post@ulus.cz"
-  },
+    "aboutUs": {
+      "title": "Sobre Nosotros",
+      "paragraph1": "Desyatka es una tienda de embutidos y delicatessen cárnicas de calidad con entrega a domicilio u oficina desde Barcelona hasta Murcia. Creamos nuestro servicio para aquellos que valoran la calidad y el sabor auténtico — desde embutidos cocidos tradicionales hasta delicatessen cárnicas.",
+      "advantages": "Nuestras ventajas:",
+      "advantage1": "Calidad probada — trabajamos con el proveedor más confiable de Polonia utilizando recetas comprobadas, solo carne y especias, sin aditivos ni conservantes dañinos.",
+      "advantage2": "Entrega rápida y estable según un calendario planificado — condiciones flexibles para el cliente.",
+      "advantage3": "Amplio surtido — embutidos ahumados y cocidos, salchichas, filetes y mucho más.",
+      "suitableForTitle": "Para quién son adecuados nuestros productos:",
+      "suitableFor1": "Niños y adultos, todos los días.",
+      "suitableFor2": "Entregamos productos tanto a clientes privados (familias, oficinas) como a restaurantes, tiendas, cafeterías, hoteles y pensiones.",
+      "suitableFor3": "Trabajamos con particulares y empresas: HoReCa, venta minorista, catering.",
+      "conclusion": "Precio más calidad, un argumento insuperable para nuestros productos — ¡pruébalos y definitivamente querrás tener estos productos en tu mesa constantemente!",
+      "contactsTitle": "Nuestros contactos:",
+      "companyName": "Desyatka",
+      "address": "Dirección: España, Benidorm",
+      "phone": "Teléfono: +34 652 34 65 51",
+      "email": "Email: post@ulus.cz"
+    },
     "reviews": {
       "title": "Opiniones de Clientes",
       "writeReview": "Escribir Opinión",
@@ -383,14 +383,14 @@
       "holidays": "Los horarios festivos se publican en la sección «Noticias»."
     },
     "homepage": {
-      "title": "¡Bienvenido a Desyatka, tu tienda online de carne fresca!",
-      "introduction": "Pide carnes de primera calidad con entrega directa a tu hogar u oficina en cualquier punto de España. Una vez realizado el pedido, un miembro de nuestro equipo se pondrá en contacto contigo para confirmar la hora y la dirección de entrega. Ofrecemos descuentos flexibles en el envío y un programa de fidelidad premium para clientes habituales.",
-      "advantagesTitle": "¿Por qué comprar con nosotros?",
-      "advantage1": "Ahorra tiempo y esfuerzo. Evita el viaje al supermercado y las largas colas — nosotros lo llevamos todo a tu puerta.",
-      "advantage2": "Frescura y calidad. Nos abastecemos directamente de granjas y procesadores de carne de confianza, garantizando productos de primera.",
-      "advantage3": "Precios justos. Cadenas de suministro independientes nos permiten mantener precios razonables sin recargos artificiales.",
-      "advantage4": "Selección flexible. ¿No encuentras el corte que buscas? Usa nuestro formulario de contacto y lo localizaremos para ti; aparecerá en el catálogo en tu próximo pedido.",
-      "conclusion": "¡Disfruta de tus compras y de tus deliciosas comidas!"
+      "title": "¡Bienvenido a Diezka — la mejor tienda online de productos cárnicos naturales!",
+      "introduction": "Pide productos cárnicos y carne de vacuno de alta calidad con entrega directa a tu hogar u oficina en ciudades españolas desde Barcelona hasta Marbella en la Costa del Sol. Una vez realizado el pedido, un miembro de nuestro equipo se pondrá en contacto contigo para confirmar la hora y la dirección de entrega. Ofrecemos descuentos flexibles en el envío y un programa de fidelidad premium para clientes habituales.",
+      "advantagesTitle": "¿Por qué deberías comprar con nosotros?",
+      "advantage1": "Ahorra tiempo y esfuerzo. Olvídate de perder tiempo y gastos en viajes a supermercados buscando productos y haciendo largas colas — nosotros te lo llevamos todo mientras te concentras en tus actividades.",
+      "advantage2": "Calidad y frescura. Nuestros productos provienen de plantas procesadoras de carne polacas, incluido el importante exportador Animex, lo que garantiza productos de la más alta calidad.",
+      "advantage3": "Comprueba y compara nuestros precios — tenemos un precio único para todos los productos, el mejor de España. Todos los productos de calidad premium a solo 10 euros por kilogramo. Compra, prueba y aprecia.",
+      "advantage4": "Si no encuentras un producto específico en nuestra gama, pídenoslo e intentaremos entregártelo. Aparecerá en el catálogo para tu próximo pedido. Solo házmoslo saber a través de nuestro formulario de contacto.",
+      "conclusion": "¡Felices compras y buen provecho!"
     },
     "productDelivery": {
       "title": "Condiciones de entrega",
