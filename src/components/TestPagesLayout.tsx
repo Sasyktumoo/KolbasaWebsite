@@ -7,7 +7,6 @@ import {
   Platform,
   Dimensions
 } from 'react-native';
-import Header from './Header/Header';
 
 
 interface LayoutProps {
@@ -26,9 +25,8 @@ const TextPagesLayout = ({ children, activeCategory }: LayoutProps) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header />
+      {/* Header removed from here */}
       <View style={styles.contentContainer}>
-
         
         {/* Main content area */}
         <View style={styles.mainContent}>

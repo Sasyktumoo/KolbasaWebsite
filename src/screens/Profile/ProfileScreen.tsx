@@ -17,7 +17,6 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/AppNavigator';
 import { useUser } from '../../context/UserContext';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
-import Header from '../../components/Header/Header';
 import { Ionicons } from '@expo/vector-icons';
 import { useLanguage } from '../../context/languages/useLanguage';
 import { useAlert } from '../../context/AlertContext';
@@ -282,16 +281,7 @@ const ProfileScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header
-        onCatalogPress={() =>
-          navigation.navigate('CategoryPage', {
-            categoryId: 'someId',
-            categoryPath: ['somePath'],
-            categoryName: 'Catalog',
-            locale: 'en', // or whichever locale you need
-          })
-        }
-      />
+      {/* Remove Header component here */}
       
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.profileHeader}>

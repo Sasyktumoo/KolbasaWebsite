@@ -12,7 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import BreadcrumbNavigation from '../../components/BreadcrumbNavigation';
-import Header from '../../components/Header/Header';
+// Remove Header import
 import styles from './ProductDetailPageDesign';
 import { useLanguage } from '../../context/languages/useLanguage';
 import { useCart } from '../../context/cart/CartContext';
@@ -312,7 +312,7 @@ const ProductDetailScreen = ({ route }: ProductDetailScreenProps) => {
   
   return (
     <SafeAreaView style={styles.safeArea}>
-      <Header onCatalogPress={handleCatalogPress} />
+      {/* Remove Header component here */}
 
       <FlatList
         ref={flatListRef}

@@ -8,18 +8,15 @@ import {
   Modal
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { signOut } from 'firebase/auth';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { useUser } from '../../context/UserContext';
 import { useLanguage } from '../../context/languages/useLanguage';
 import { useCart } from '../../context/cart/CartContext';
-import { RootStackParamList } from '../../navigation/AppNavigator';
+import { navigate } from '../../navigation/AppNavigator';
 import { styles } from './styles';
 
 const ActionIcons: React.FC = () => {
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [dropdownAnimation] = useState(new Animated.Value(0));
   const { user } = useUser();
@@ -214,7 +211,7 @@ const ActionIcons: React.FC = () => {
       {/* Cart icon */}
       <TouchableOpacity 
         style={styles.icon}
-        onPress={() => navigation.navigate('Cart')}
+        onPress={() => navigate('Cart')}
       >
         <Ionicons 
           name="cart-outline" 
@@ -281,7 +278,7 @@ const ActionIcons: React.FC = () => {
                   style={styles.dropdownItem}
                   onPress={() => {
                     setUserModalVisible(false);
-                    navigation.navigate('Profile');
+                    navigate('Profile');
                   }}
                 >
                   <Text style={styles.dropdownText}>{translate('auth.profile')}</Text>
@@ -303,7 +300,7 @@ const ActionIcons: React.FC = () => {
         // User is not logged in - show login/register button
         <TouchableOpacity 
           style={styles.icon}
-          onPress={() => navigation.navigate('Login')}
+          onPress={() => navigate('Login')}
         >
           {isMobile ? (
             <Ionicons name="log-in-outline" size={20} color="#FF3B30" />

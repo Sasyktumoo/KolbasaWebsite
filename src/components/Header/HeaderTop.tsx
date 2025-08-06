@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Dimensions } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../../navigation/AppNavigator';
+import { navigate } from '../../navigation/AppNavigator';
 import { useLanguage } from '../../context/languages/useLanguage';
 import { MobileHeaderLayout, DesktopHeaderLayout } from './HeaderTopLayouts';
 
@@ -11,7 +9,6 @@ interface HeaderTopProps {
 }
 
 const HeaderTop: React.FC<HeaderTopProps> = ({ onCatalogPress }) => {
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [searchQuery, setSearchQuery] = useState('');
   const { translate, currentLanguage } = useLanguage();
   const isMobile = Dimensions.get('window').width <= 768;
@@ -26,7 +23,7 @@ const HeaderTop: React.FC<HeaderTopProps> = ({ onCatalogPress }) => {
       onCatalogPress();
     } else {
       // Direct navigation to the CategoryPage instead of Home
-      navigation.navigate('CategoryPage', { 
+      navigate('CategoryPage', { 
         categoryId: 'undefined',
         categoryPath: ['product_catalog'],
         categoryName: 'All Categories',
@@ -43,7 +40,7 @@ const HeaderTop: React.FC<HeaderTopProps> = ({ onCatalogPress }) => {
     console.log('Searching for:', searchQuery);
     
     // Navigate to CategoryPage with search query parameter
-    navigation.navigate('CategoryPage', { 
+    navigate('CategoryPage', { 
       categoryId: 'search',
       categoryPath: ['product_catalog', 'search'],
       categoryName: `${translate('search.results')}: ${searchQuery}`,

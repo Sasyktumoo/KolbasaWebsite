@@ -17,7 +17,6 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/AppNavigator';
 import { useUser } from '../../context/UserContext';
-import Header from '../../components/Header/Header';
 import { Ionicons } from '@expo/vector-icons';
 import { useLanguage } from '../../context/languages/useLanguage';
 import { collection, addDoc, updateDoc, deleteDoc, getDocs, doc, getFirestore, query, where, setDoc } from 'firebase/firestore';
@@ -346,7 +345,6 @@ const AddressBookScreen = () => {
   
   return (
     <SafeAreaView style={styles.container}>
-      <Header onCatalogPress={() => navigation.navigate('Home', { locale: currentLanguage })} />
       
       <View style={styles.content}>
         <View style={styles.titleRow}>

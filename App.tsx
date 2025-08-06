@@ -10,12 +10,17 @@ import { onAuthStateChanged, User } from 'firebase/auth';
 import { FIREBASE_AUTH } from './FirebaseConfig';
 import Login from './src/screens/Registration/Login';
 import Register from './src/screens/Registration/Register';
-import AppNavigator, { getLinkingConfig, RootStackParamList as AppNavigatorParamList } from './src/navigation/AppNavigator';
+import AppNavigator, { 
+  getLinkingConfig, 
+  navigationRef, // Import the navigation reference
+  RootStackParamList as AppNavigatorParamList 
+} from './src/navigation/AppNavigator';
 import { UserProvider } from './src/context/UserContext';
 import { LanguageProvider } from './src/context/languages/LanguageContext'; 
-import { useLanguage } from './src/context/languages/useLanguage'; // Add this import
+import { useLanguage } from './src/context/languages/useLanguage';
 import { CartProvider } from './src/context/cart/CartContext';
 import { AlertProvider } from './src/context/AlertContext';
+import Header from './src/components/Header/Header'; // Import the Header component
 
 // Extend the RootStackParamList to include 'Main'
 type RootStackParamList = AppNavigatorParamList & {
@@ -64,7 +69,7 @@ const AppContent = () => {
   const [user, setUser] = useState<User | null>(null);
   const [initializing, setInitializing] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { t } = useLanguage(); // Add translation hook
+  const { t } = useLanguage();
   
   // Get the linking configuration from AppNavigator
   const linking = getLinkingConfig();
@@ -128,6 +133,7 @@ const AppContent = () => {
         backgroundColor: '#fff'
       }}>
         <NavigationContainer 
+          ref={navigationRef} // Use the navigation reference
           linking={linking}
           fallback={<Text>Loading Navigation...</Text>}
           documentTitle={{
@@ -175,6 +181,9 @@ const AppContent = () => {
             },
           }}
         >
+          {/* Header placed here once at the app level */}
+          <Header />
+          
           <Stack.Navigator 
             id={undefined} 
             screenOptions={{ 

@@ -14,7 +14,6 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/AppNavigator';
 import { Ionicons } from '@expo/vector-icons';
-import Header from '../../components/Header/Header';
 import { useLanguage } from '../../context/languages/useLanguage';
 import { useCart } from '../../context/cart/CartContext';
 import { useUser } from '../../context/UserContext';
@@ -198,7 +197,6 @@ const OrderReviewScreen = () => {
   
   return (
     <SafeAreaView style={styles.container}>
-      <Header onCatalogPress={() => navigation.navigate('Home', { locale: currentLanguage })} />
       
       <ScrollView style={styles.scrollView}>
         <View style={styles.content}>

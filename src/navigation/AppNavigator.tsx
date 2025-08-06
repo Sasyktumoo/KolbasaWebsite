@@ -2,7 +2,13 @@ import React, { useEffect } from 'react';
 import { Platform } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as Linking from 'expo-linking';
-import { LinkingOptions, useNavigation, useRoute, NavigationProp } from '@react-navigation/native';
+import { 
+  LinkingOptions, 
+  useNavigation, 
+  useRoute, 
+  NavigationProp,
+  createNavigationContainerRef
+} from '@react-navigation/native';
 
 import ProductDetailPage from '../screens/ProductDetail/ProductDetailScreen';
 import CategoryPage from '../screens/CategoryPage';
@@ -23,8 +29,21 @@ import CheckoutFormScreen from '../screens/Cart/CheckoutFormScreen';
 import OrderReviewScreen from '../screens/Cart/OrderReviewScreen';
 import OrderHistory from '../screens/Profile/OrderHistory';
 
-// Add this import
+// Create and export navigation reference
+export const navigationRef = createNavigationContainerRef<RootStackParamList>();
 
+// Helper to build the correct tuple type for every route
+type NavArgs<R extends keyof RootStackParamList> =
+  undefined extends RootStackParamList[R]
+    ? [screen: R] | [screen: R, params: RootStackParamList[R]]
+    : [screen: R, params: RootStackParamList[R]];
+
+// Type-safe navigation function with proper parameter handling
+export function navigate<R extends keyof RootStackParamList>(...args: NavArgs<R>) {
+  if (navigationRef.isReady()) {
+    (navigationRef.navigate as any)(...args); // Single, localized type assertion
+  }
+}
 
 // Define your root stack param list and export it for reuse elsewhere
 export type RootStackParamList = {

@@ -14,7 +14,6 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/AppNavigator';
 import { Ionicons } from '@expo/vector-icons';
-import Header from '../../components/Header/Header';
 import { useLanguage } from '../../context/languages/useLanguage';
 import { useUser } from '../../context/UserContext';
 import { getFirestore, collection, query, where, orderBy, getDocs } from 'firebase/firestore';
@@ -178,8 +177,6 @@ const OrderHistory = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header onCatalogPress={() => navigation.navigate('Home', { locale: currentLanguage })} />
-      
       <View style={styles.content}>
         <View style={styles.titleRow}>
           <TouchableOpacity 

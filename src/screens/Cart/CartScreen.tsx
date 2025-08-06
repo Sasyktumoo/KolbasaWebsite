@@ -16,10 +16,9 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Dialog, Portal, Button, Provider as PaperProvider } from 'react-native-paper';
 import { RootStackParamList } from '../../navigation/AppNavigator';
-import Header from '../../components/Header/Header';
+// Remove Header import
 import { useCart } from '../../context/cart/CartContext';
 import { useLanguage } from '../../context/languages/useLanguage';
-// Import the translateWeightUnit function
 import { translateWeightUnit } from '../CategoryPage';
 
 const CartScreen = () => {
@@ -138,16 +137,7 @@ const CartScreen = () => {
   return (
     <PaperProvider>
       <SafeAreaView style={styles.container}>
-        <Header
-          onCatalogPress={() =>
-            navigation.navigate('CategoryPage', {
-              categoryId: 'someId',
-              categoryPath: ['somePath'],
-              categoryName: 'Catalog',
-              locale: 'en', // or whichever locale you need
-            })
-          }
-        />
+        {/* Remove Header component here */}
         
         <View style={styles.titleContainer}>
           <Text style={styles.title}>{t('cart.title')}</Text>

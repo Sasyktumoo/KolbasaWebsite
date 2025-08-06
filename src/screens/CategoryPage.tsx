@@ -16,7 +16,6 @@ import BreadcrumbNavigation from '../components/BreadcrumbNavigation';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList as BaseRootStackParamList } from '../navigation/AppNavigator';
-import Header from '../components/Header/Header';
 import { collection, getDocs } from 'firebase/firestore';
 import { FIREBASE_DB } from '../../FirebaseConfig';
 import { useTranslation } from 'react-i18next';
@@ -397,10 +396,6 @@ const CategoryPage = ({ route }: CategoryPageProps) => {
       flex: 1,
       backgroundColor: '#f9f9f9',
     }}>
-      <Header onCatalogPress={() => {
-        setLoading(true);
-        fetchProducts();
-      }} />
       
       <BreadcrumbNavigation items={generateBreadcrumbItems()} />
       

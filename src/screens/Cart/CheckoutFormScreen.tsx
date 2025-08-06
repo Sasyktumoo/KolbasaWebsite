@@ -17,7 +17,6 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/AppNavigator';
 import { Ionicons } from '@expo/vector-icons';
-import Header from '../../components/Header/Header';
 import { useLanguage } from '../../context/languages/useLanguage';
 import { useUser } from '../../context/UserContext';
 import { collection, getDocs, query, where, getFirestore, addDoc } from 'firebase/firestore';
@@ -254,7 +253,7 @@ const CheckoutFormScreen = () => {
   
   return (
     <SafeAreaView style={styles.container}>
-      <Header onCatalogPress={() => navigation.navigate('Home', { locale: currentLanguage })} />
+      {/* Remove Header component here */}
       
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
